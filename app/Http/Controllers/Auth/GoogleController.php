@@ -33,6 +33,12 @@ class GoogleController extends Controller
          $existingUser = User::where('email', $email)->first();
      
          if ($existingUser) {
+             // Deny access if user doesn't have a role
+             if (is_null($existingUser->role)) {
+                 Log::warning('Access denied: User has no role.', ['email' => $email]);
+                 return redirect('/')->with('error', 'Access denied. You do not have the required permissions.');
+             }
+     
              $existingUser->update([
                  'name' => $user->getName(),
                  'google_id' => $user->getId(),
@@ -48,6 +54,7 @@ class GoogleController extends Controller
      
          return redirect('/')->with('error', 'Access denied. You do not have the required permissions.');
      }
+     
      
      
 
