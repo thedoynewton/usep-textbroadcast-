@@ -2,7 +2,8 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <!-- Email Login Form -->
+    <form method="POST" action="{{ route('login.email') }}">
         @csrf
 
         <!-- Email Address -->
@@ -27,6 +28,4 @@
             Continue with Google
         </a>
     </div>
-
-
 </x-guest-layout>

@@ -13,10 +13,9 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 
 Route::middleware('guest')->group(function () {
     // Keep only the login routes
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
-
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('/login-with-email', [AuthenticatedSessionController::class, 'loginWithEmail'])->name('login.email');
 });
 
 Route::middleware('auth')->group(function () {
