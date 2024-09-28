@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('google_id')->nullable(); // Google ID for SSO
             $table->string('avatar')->nullable(); // Avatar URL
-            $table->string('role')->default('user'); // Role field with a default value
+            $table->string('role')->nullable(); // Role field with a default null value
             $table->rememberToken();
             $table->timestamps();
         });
