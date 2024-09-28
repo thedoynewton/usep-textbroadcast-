@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     // Apply the role middleware using the full class name
     Route::middleware([RoleMiddleware::class . ':admin'])->group(function () {
         Route::get('/user-management', [UserManagementController::class, 'index'])->name('user-management');
+        Route::post('/user-management/add', [UserManagementController::class, 'addUser'])->name('user-management.addUser');
         Route::post('/user-management/update-role/{id}', [UserManagementController::class, 'updateRole'])->name('user-management.updateRole');
         Route::delete('/user-management/remove-role/{id}', [UserManagementController::class, 'removeRole'])->name('user-management.removeRole');
     });
