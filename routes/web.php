@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppManagementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/user-management/add', [UserManagementController::class, 'addUser'])->name('user-management.addUser');
         Route::post('/user-management/update-role/{id}', [UserManagementController::class, 'updateRole'])->name('user-management.updateRole');
         Route::delete('/user-management/remove-role/{id}', [UserManagementController::class, 'removeRole'])->name('user-management.removeRole');
+
+        Route::resource('app-management', AppManagementController::class);
     });
 });
 
