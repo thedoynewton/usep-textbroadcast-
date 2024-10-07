@@ -9,6 +9,13 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
 
+                <!-- Success Message -->
+                @if (session('success'))
+                    <div class="bg-green-500 text-white font-bold py-2 px-4 rounded mb-4">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <!-- Search Form and Filters -->
                 <form method="GET" action="{{ route('app-management.index') }}" class="mb-6">
                     <div class="flex items-center space-x-4">
@@ -152,7 +159,7 @@
                                         <div class="flex justify-end">
                                             <x-primary-button>Update</x-primary-button>
                                         </div>
-                                    </div>  
+                                    </div>
                                 </form>
                             </x-modal>
                         @endforeach
