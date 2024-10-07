@@ -17,6 +17,12 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    @if (Auth::user()->role === 'admin' || Auth::user()->role === 'subadmin')
+                    <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.index')">
+                        {{ __('Messages') }}
+                    </x-nav-link>
+                    @endif
+
                     @if (Auth::user()->role === 'admin')
                         <x-nav-link :href="route('user-management')" :active="request()->routeIs('user-management')">
                             {{ __('User Management') }}
@@ -24,9 +30,6 @@
                         <x-nav-link :href="route('app-management.index')" :active="request()->routeIs('app-management.index')">
                             {{ __('App Management') }}
                         </x-nav-link>
-                    @endif
-
-                    @if (Auth::user()->role === 'admin' || Auth::user()->role === 'subadmin')
                     @endif
                 </div>
             </div>  

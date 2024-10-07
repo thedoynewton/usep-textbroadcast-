@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppManagementController;
+use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
 
     // Apply role middleware for both admin and subadmin roles
     Route::middleware([RoleMiddleware::class . ':admin,subadmin'])->group(function () {
+        Route::resource('messages', MessagesController::class);
     });
     
     // Apply the role middleware for only admin
