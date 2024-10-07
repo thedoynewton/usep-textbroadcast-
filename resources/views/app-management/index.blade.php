@@ -57,6 +57,7 @@
                         <thead>
                             <tr class="bg-gray-200 dark:bg-gray-700 text-left">
                                 <th class="px-4 py-2 border dark:border-gray-600">Title</th>
+                                <th class="px-4 py-2 border dark:border-gray-600">Content</th>
                                 <th class="px-4 py-2 border dark:border-gray-600">Actions</th>
                             </tr>
                         </thead>
@@ -64,6 +65,18 @@
                             @foreach ($messageTemplates as $template)
                                 <tr class="bg-white dark:bg-gray-900">
                                     <td class="border dark:border-gray-700 px-4 py-2">{{ $template->name }}</td>
+                                    <td class="border dark:border-gray-700 px-4 py-2">
+                                        <!-- Display short content with "Read More" link if content exceeds 30 characters -->
+                                        @if (strlen($template->content) > 30)
+                                            {{ Str::limit($template->content, 30) }}...
+                                            <button class="text-blue-500 hover:underline" x-data
+                                                    @click="$dispatch('open-modal', 'read-more-{{ $template->id }}')">
+                                                Read More
+                                            </button>
+                                        @else
+                                            {{ $template->content }}
+                                        @endif
+                                    </td>
                                     <td class="border dark:border-gray-700 px-4 py-2">
                                         <!-- Button to Open Edit Modal -->
                                         <button class="bg-yellow-500 text-white px-4 py-2 rounded" x-data
@@ -81,6 +94,19 @@
                                         </form>
                                     </td>
                                 </tr>
+
+                                <!-- Read More Modal -->
+                                <x-modal name="read-more-{{ $template->id }}" :show="false">
+                                    <div class="p-4">
+                                        <h2 class="text-lg font-semibold mb-4">Message Template Content</h2>
+                                        <p class="mb-4">{{ $template->content }}</p>
+                                        <div class="flex justify-end">
+                                            <x-primary-button @click="$dispatch('close-modal', 'read-more-{{ $template->id }}')">
+                                                Close
+                                            </x-primary-button>
+                                        </div>
+                                    </div>
+                                </x-modal>
 
                                 <!-- Edit Message Template Modal -->
                                 <x-modal name="edit-message-template-{{ $template->id }}" :show="false">
