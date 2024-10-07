@@ -12,9 +12,11 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
                     @if (Auth::user()->role === 'admin')
                         <x-nav-link :href="route('user-management')" :active="request()->routeIs('user-management')">
                             {{ __('User Management') }}
@@ -23,8 +25,11 @@
                             {{ __('App Management') }}
                         </x-nav-link>
                     @endif
+
+                    @if (Auth::user()->role === 'admin' || Auth::user()->role === 'subadmin')
+                    @endif
                 </div>
-            </div>
+            </div>  
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
