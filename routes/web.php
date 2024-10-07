@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppManagementController;
+use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/user-management/remove-role/{id}', [UserManagementController::class, 'removeRole'])->name('user-management.removeRole');
 
         Route::resource('app-management', AppManagementController::class);
+
+        // Message Templates CRUD Routes
+        Route::resource('message-templates', MessageTemplateController::class);
     });
 });
 

@@ -2,63 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Campus;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\Campus;
+use App\Models\MessageTemplate;
 use Illuminate\Http\Request;
 
 class AppManagementController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        // Get the search and filter query from the request
-        $search = $request->input('search');
-        $filterCampus = $request->input('campus_id');
-    
-        // Fetch all campuses for the filter dropdown
-        $campuses = Campus::all();
-    
-        // Fetch students and employees with pagination, optional search, and filtering
-        $studentsQuery = Student::with('campus');
-        $employeesQuery = Employee::with('campus');
-    
-        // Apply campus filter if provided
-        if ($filterCampus) {
-            $studentsQuery->where('campus_id', $filterCampus);
-            $employeesQuery->where('campus_id', $filterCampus);
-        }
-    
-        // Apply search filter if provided
-        if ($search) {
-            $studentsQuery->where(function ($query) use ($search) {
-                $query->where('stud_fname', 'like', "%{$search}%")
-                      ->orWhere('stud_lname', 'like', "%{$search}%")
-                      ->orWhere('stud_email', 'like', "%{$search}%");
-            });
-    
-            $employeesQuery->where(function ($query) use ($search) {
-                $query->where('emp_fname', 'like', "%{$search}%")
-                      ->orWhere('emp_lname', 'like', "%{$search}%")
-                      ->orWhere('emp_email', 'like', "%{$search}%");
-            });
-        }
-    
-        // Fetch the results with pagination
-        $students = $studentsQuery->paginate(10); // Display 10 students per page
-        $employees = $employeesQuery->paginate(10); // Display 10 employees per page
-    
-        // Total counts (without pagination)
-        $totalStudents = $studentsQuery->count();
-        $totalEmployees = $employeesQuery->count();
-    
-        return view('app-management.index', compact('students', 'employees', 'campuses', 'filterCampus', 'search', 'totalStudents', 'totalEmployees'));
+        // Fetch all students and employees with campus information
+        $students = Student::with('campus')
+                    ->when($request->search, function($query, $search) {
+                        return $query->where('stud_fname', 'like', "%{$search}%")
+                                     ->orWhere('stud_lname', 'like', "%{$search}%")
+                                     ->orWhere('stud_email', 'like', "%{$search}%");
+                    })
+                    ->when($request->campus_id, function($query, $campusId) {
+                        return $query->where('campus_id', $campusId);
+                    })
+                    ->paginate(10);
+
+        $employees = Employee::with('campus')
+                    ->when($request->search, function($query, $search) {
+                        return $query->where('emp_fname', 'like', "%{$search}%")
+                                     ->orWhere('emp_lname', 'like', "%{$search}%")
+                                     ->orWhere('emp_email', 'like', "%{$search}%");
+                    })
+                    ->when($request->campus_id, function($query, $campusId) {
+                        return $query->where('campus_id', $campusId);
+                    })
+                    ->paginate(10);
+
+        // Fetch all message templates
+        $messageTemplates = MessageTemplate::paginate(10);
+
+        // Get total counts
+        $totalStudents = Student::count();
+        $totalEmployees = Employee::count();
+        $campuses = Campus::all(); // For campus filter
+
+        // Return the view with the required data
+        return view('app-management.index', compact('students', 'employees', 'messageTemplates', 'totalStudents', 'totalEmployees', 'campuses'));
     }
     
-      
-
     /**
      * Show the form for creating a new resource.
      */
