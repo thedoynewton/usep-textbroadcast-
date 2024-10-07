@@ -33,8 +33,10 @@ class MessageTemplateController extends Controller
         ]);
 
         MessageTemplate::create($validated);
-        // Updated redirect route
-        return redirect()->route('app-management.index')->with('success', 'Message Template created successfully.');
+
+        // Redirect to the 'Message Templates' section of the 'App Management' page
+        return redirect()->route('app-management.index', ['section' => 'templates'])
+            ->with('success', 'Message Template created successfully.');
     }
 
     /**
@@ -56,8 +58,10 @@ class MessageTemplateController extends Controller
         ]);
 
         $messageTemplate->update($validated);
-        // Updated redirect route
-        return redirect()->route('app-management.index')->with('success', 'Message Template updated successfully.');
+
+        // Redirect to the 'Message Templates' section of the 'App Management' page
+        return redirect()->route('app-management.index', ['section' => 'templates'])
+            ->with('success', 'Message Template updated successfully.');
     }
 
     /**
@@ -66,7 +70,10 @@ class MessageTemplateController extends Controller
     public function destroy(MessageTemplate $messageTemplate)
     {
         $messageTemplate->delete();
-        // Updated redirect route
-        return redirect()->route('app-management.index')->with('success', 'Message Template deleted successfully.');
+
+        // Redirect to the 'Message Templates' section of the 'App Management' page
+        return redirect()->route('app-management.index', ['section' => 'templates'])
+            ->with('success', 'Message Template deleted successfully.');
     }
 }
+    
