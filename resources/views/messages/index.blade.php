@@ -12,13 +12,16 @@
                 <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
                 <ul class="flex border-b">
                     <li class="-mb-px mr-1">
-                        <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-red-500' : '' }}">ALL</a>
+                        <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}"
+                            class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-red-500' : '' }}">ALL</a>
                     </li>
                     <li class="-mb-px mr-1">
-                        <a href="{{ route('messages.index', ['tab' => 'students', 'campus' => request('campus')]) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-red-500' : '' }}">STUDENTS</a>
+                        <a href="{{ route('messages.index', ['tab' => 'students', 'campus' => request('campus')]) }}"
+                            class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-red-500' : '' }}">STUDENTS</a>
                     </li>
                     <li class="-mb-px mr-1">
-                        <a href="{{ route('messages.index', ['tab' => 'employees', 'campus' => request('campus')]) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-red-500' : '' }}">EMPLOYEES</a>
+                        <a href="{{ route('messages.index', ['tab' => 'employees', 'campus' => request('campus')]) }}"
+                            class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-red-500' : '' }}">EMPLOYEES</a>
                     </li>
                 </ul>
 
@@ -31,10 +34,13 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="campus" value="Campus" />
-                            <select id="campus" name="campus" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm" onchange="this.form.submit()">
+                            <select id="campus" name="campus"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm"
+                                onchange="this.form.submit()">
                                 <option value="">Select Campus</option>
                                 @foreach ($campuses as $campus)
-                                    <option value="{{ $campus->campus_id }}" {{ request('campus') == $campus->campus_id ? 'selected' : '' }}>
+                                    <option value="{{ $campus->campus_id }}"
+                                        {{ request('campus') == $campus->campus_id ? 'selected' : '' }}>
                                         {{ $campus->campus_name }}
                                     </option>
                                 @endforeach
@@ -43,43 +49,49 @@
 
                         <div>
                             <x-input-label for="template" value="Select Template" />
-                            <select id="template" name="template" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                            <select id="template" name="template"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                 <option value="">Select a Template</option>
-                                @foreach($messageTemplates as $template)
-                                    <option value="{{ $template->id }}" data-content="{{ $template->content }}">{{ $template->name }}</option>
+                                @foreach ($messageTemplates as $template)
+                                    <option value="{{ $template->id }}" data-content="{{ $template->content }}">
+                                        {{ $template->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        
+
                     </div>
 
-                    @if(request('tab') == 'students')
+                    @if (request('tab') == 'students')
                         <!-- Additional filters for students -->
                         <div class="grid grid-cols-4 gap-4 mt-6">
                             <div>
                                 <x-input-label for="academic_unit" value="Academic Unit" />
-                                <select id="academic_unit" name="academic_unit" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="academic_unit" name="academic_unit"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Academic Unit</option>
                                     <!-- Add Academic Unit Options Here -->
                                 </select>
                             </div>
                             <div>
                                 <x-input-label for="program" value="Program" />
-                                <select id="program" name="program" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="program" name="program"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Program</option>
                                     <!-- Add Program Options Here -->
                                 </select>
                             </div>
                             <div>
                                 <x-input-label for="major" value="Major" />
-                                <select id="major" name="major" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="major" name="major"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Major</option>
                                     <!-- Add Major Options Here -->
                                 </select>
                             </div>
                             <div>
                                 <x-input-label for="year" value="Year" />
-                                <select id="year" name="year" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="year" name="year"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Year</option>
                                     <!-- Add Year Options Here -->
                                 </select>
@@ -90,21 +102,24 @@
                         <div class="grid grid-cols-3 gap-4 mt-6">
                             <div>
                                 <x-input-label for="office" value="Office" />
-                                <select id="office" name="office" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="office" name="office"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Office</option>
                                     <!-- Add Office Options Here -->
                                 </select>
                             </div>
                             <div>
                                 <x-input-label for="status" value="Status" />
-                                <select id="status" name="status" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="status" name="status"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Status</option>
                                     <!-- Add Status Options Here -->
                                 </select>
                             </div>
                             <div>
                                 <x-input-label for="type" value="Type" />
-                                <select id="type" name="type" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="type" name="type"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option>Select Type</option>
                                     <!-- Add Type Options Here -->
                                 </select>
@@ -115,13 +130,15 @@
                     <!-- Message Input -->
                     <div class="mt-6">
                         <x-input-label for="message" value="Message" />
-                        <textarea id="message" name="message" rows="4" class="mt-1 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md" placeholder="Enter your message here..."></textarea>
+                        <textarea id="message" name="message" rows="4"
+                            class="mt-1 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
+                            placeholder="Enter your message here..."></textarea>
                     </div>
 
-                        <!-- Character count display -->
-                        <div class="text-right mt-2 text-sm text-gray-600">
-                            <span id="char-count">0</span>/160 characters
-                        </div>
+                    <!-- Character count display -->
+                    <div class="text-right mt-2 text-sm text-gray-600">
+                        <span id="char-count">0</span>/160 characters
+                    </div>
 
                     <!-- Additional Controls -->
                     <div class="grid grid-cols-4 gap-4 mt-6">
@@ -129,19 +146,22 @@
                             <x-input-label for="batch_size" value="Batch Size" />
                             <x-text-input id="batch_size" name="batch_size" type="number" value="1" />
                         </div>
-                    <!-- Total Recipients -->
-                    <div class="grid grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <x-input-label for="total_recipients" value="Total Recipients" />
-                            <x-text-input id="total_recipients" name="total_recipients" type="number" value="{{ $totalRecipients }}" readonly />
+                        <!-- Total Recipients -->
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <x-input-label for="total_recipients" value="Total Recipients" />
+                                <x-text-input id="total_recipients" name="total_recipients" type="number"
+                                    value="{{ $totalRecipients }}" readonly />
+                            </div>
                         </div>
-                    </div>
                         <div class="flex items-center mt-6">
                             <label class="text-sm font-medium text-gray-700">Send Message:</label>
                             <div class="ml-4">
-                                <input type="radio" id="send_now" name="send_message" value="now" class="mr-2" checked />
+                                <input type="radio" id="send_now" name="send_message" value="now"
+                                    class="mr-2" checked />
                                 <label for="send_now" class="text-sm font-medium text-gray-700">Now</label>
-                                <input type="radio" id="send_later" name="send_message" value="later" class="ml-4 mr-2" />
+                                <input type="radio" id="send_later" name="send_message" value="later"
+                                    class="ml-4 mr-2" />
                                 <label for="send_later" class="text-sm font-medium text-gray-700">Send Later</label>
                             </div>
                         </div>
@@ -161,26 +181,6 @@
         </div>
     </div>
 
-    <!-- Add JavaScript for character count -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const messageInput = document.getElementById('message');
-            const charCountDisplay = document.getElementById('char-count');
-            const templateDropdown = document.getElementById('template');
-    
-            // Update character count when typing in the message field
-            messageInput.addEventListener('input', function () {
-                charCountDisplay.textContent = messageInput.value.length;
-            });
-    
-            // Populate the message field when a template is selected and update character count
-            templateDropdown.addEventListener('change', function () {
-                const selectedTemplate = this.options[this.selectedIndex];
-                const content = selectedTemplate.getAttribute('data-content');
-                messageInput.value = content || '';
-                charCountDisplay.textContent = messageInput.value.length;  // Update character count
-            });
-        });
-    </script>
-    
+    @vite(['resources/js/messages.js'])
+
 </x-app-layout>
