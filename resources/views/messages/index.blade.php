@@ -30,9 +30,12 @@
                             <x-input-label for="campus" value="Campus" />
                             <select id="campus" name="campus" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                 <option>Select Campus</option>
-                                <!-- Add Campus Options Here -->
+                                @foreach ($campuses as $campus)
+                                    <option value="{{ $campus->id }}">{{ $campus->campus_name }}</option>
+                                @endforeach
                             </select>
                         </div>
+                        
 
                         <div>
                             <x-input-label for="template" value="Select Template" />
