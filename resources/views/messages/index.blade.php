@@ -66,12 +66,14 @@
                         <div class="grid grid-cols-4 gap-4 mt-6">
                             <div>
                                 <x-input-label for="academic_unit" value="Academic Unit" />
-                                <select id="academic_unit" name="academic_unit"
-                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Academic Unit</option>
-                                    <!-- Add Academic Unit Options Here -->
+                                <select id="academic_unit" name="academic_unit" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                    <option value="">Select Academic Unit</option>
+                                    @foreach ($colleges as $college)
+                                        <option value="{{ $college->id }}">{{ $college->college_name }}</option> <!-- Use the correct field here -->
+                                    @endforeach
                                 </select>
-                            </div>
+                            </div>                            
+                            
                             <div>
                                 <x-input-label for="program" value="Program" />
                                 <select id="program" name="program"

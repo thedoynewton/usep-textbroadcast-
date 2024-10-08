@@ -13,6 +13,7 @@ use App\Models\Major;
 use App\Models\Office;
 use App\Models\Status;
 use App\Models\Type;
+use Illuminate\Support\Facades\Log;
 
 class MessagesController extends Controller
 {
@@ -23,7 +24,7 @@ class MessagesController extends Controller
     
         $campuses = Campus::all(); // Fetch all campuses from the database
         $messageTemplates = MessageTemplate::all(); // Fetch all message templates
-        
+    
         // Initialize base queries for students and employees
         $studentsQuery = Student::query();
         $employeesQuery = Employee::query();
@@ -32,6 +33,15 @@ class MessagesController extends Controller
         if ($campusId) {
             $studentsQuery->where('campus_id', $campusId);
             $employeesQuery->where('campus_id', $campusId);
+            $colleges = College::where('campus_id', $campusId)->get(); // Fetch only colleges for the selected campus
+    
+            // Log the colleges being populated
+            Log::info('Colleges being populated for Campus ID: ' . $campusId, [
+                'colleges' => $colleges->pluck('college_name')->toArray(),
+            ]);
+        } else {
+            $colleges = collect(); // Empty collection when no campus is selected
+            Log::info('No campus selected. No colleges being populated.');
         }
     
         // Fetch data based on the selected tab
@@ -45,8 +55,6 @@ class MessagesController extends Controller
         }
     
         // Return view with total recipients count and other data
-        return view('messages.index', compact('totalRecipients', 'campuses', 'campusId', 'messageTemplates'));
+        return view('messages.index', compact('totalRecipients', 'campuses', 'campusId', 'messageTemplates', 'colleges'));
     }
-    
-
 }
