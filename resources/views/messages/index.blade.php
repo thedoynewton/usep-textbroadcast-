@@ -12,30 +12,34 @@
                 <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
                 <ul class="flex border-b">
                     <li class="-mb-px mr-1">
-                        <a href="{{ route('messages.index', ['tab' => 'all']) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-red-500' : '' }}">ALL</a>
+                        <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-red-500' : '' }}">ALL</a>
                     </li>
                     <li class="-mb-px mr-1">
-                        <a href="{{ route('messages.index', ['tab' => 'students']) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-red-500' : '' }}">STUDENTS</a>
+                        <a href="{{ route('messages.index', ['tab' => 'students', 'campus' => request('campus')]) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-red-500' : '' }}">STUDENTS</a>
                     </li>
                     <li class="-mb-px mr-1">
-                        <a href="{{ route('messages.index', ['tab' => 'employees']) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-red-500' : '' }}">EMPLOYEES</a>
+                        <a href="{{ route('messages.index', ['tab' => 'employees', 'campus' => request('campus')]) }}" class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-red-500' : '' }}">EMPLOYEES</a>
                     </li>
                 </ul>
 
                 <!-- Message Form based on selected tab -->
-                <form action="#" method="POST" class="mt-6">
+                <form action="#" method="GET" class="mt-6">
                     @csrf
+                    <!-- Hidden field to retain the selected tab -->
+                    <input type="hidden" name="tab" value="{{ request('tab') }}">
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="campus" value="Campus" />
-                            <select id="campus" name="campus" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option>Select Campus</option>
+                            <select id="campus" name="campus" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm" onchange="this.form.submit()">
+                                <option value="">Select Campus</option>
                                 @foreach ($campuses as $campus)
-                                    <option value="{{ $campus->id }}">{{ $campus->campus_name }}</option>
+                                    <option value="{{ $campus->campus_id }}" {{ request('campus') == $campus->campus_id ? 'selected' : '' }}>
+                                        {{ $campus->campus_name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-                        
 
                         <div>
                             <x-input-label for="template" value="Select Template" />
