@@ -122,10 +122,13 @@
                             <x-input-label for="batch_size" value="Batch Size" />
                             <x-text-input id="batch_size" name="batch_size" type="number" value="1" />
                         </div>
+                    <!-- Total Recipients -->
+                    <div class="grid grid-cols-2 gap-4 mt-4">
                         <div>
                             <x-input-label for="total_recipients" value="Total Recipients" />
-                            <x-text-input id="total_recipients" name="total_recipients" type="number" value="0" readonly />
+                            <x-text-input id="total_recipients" name="total_recipients" type="number" value="{{ $totalRecipients }}" readonly />
                         </div>
+                    </div>
                         <div class="flex items-center mt-6">
                             <label class="text-sm font-medium text-gray-700">Send Message:</label>
                             <div class="ml-4">
