@@ -22,6 +22,7 @@ class MessagesController extends Controller
         $campusId = $request->get('campus'); // Get the selected campus
     
         $campuses = Campus::all(); // Fetch all campuses from the database
+        $messageTemplates = MessageTemplate::all(); // Fetch all message templates
         
         // Initialize base queries for students and employees
         $studentsQuery = Student::query();
@@ -44,7 +45,7 @@ class MessagesController extends Controller
         }
     
         // Return view with total recipients count and other data
-        return view('messages.index', compact('totalRecipients', 'campuses', 'campusId'));
+        return view('messages.index', compact('totalRecipients', 'campuses', 'campusId', 'messageTemplates'));
     }
     
 

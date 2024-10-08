@@ -44,10 +44,13 @@
                         <div>
                             <x-input-label for="template" value="Select Template" />
                             <select id="template" name="template" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option>Select a Template</option>
-                                <!-- Add Template Options Here -->
+                                <option value="">Select a Template</option>
+                                @foreach($messageTemplates as $template)
+                                    <option value="{{ $template->id }}" data-content="{{ $template->content }}">{{ $template->name }}</option>
+                                @endforeach
                             </select>
                         </div>
+                        
                     </div>
 
                     @if(request('tab') == 'students')
@@ -163,10 +166,21 @@
         document.addEventListener('DOMContentLoaded', function () {
             const messageInput = document.getElementById('message');
             const charCountDisplay = document.getElementById('char-count');
-
+            const templateDropdown = document.getElementById('template');
+    
+            // Update character count when typing in the message field
             messageInput.addEventListener('input', function () {
                 charCountDisplay.textContent = messageInput.value.length;
             });
+    
+            // Populate the message field when a template is selected and update character count
+            templateDropdown.addEventListener('change', function () {
+                const selectedTemplate = this.options[this.selectedIndex];
+                const content = selectedTemplate.getAttribute('data-content');
+                messageInput.value = content || '';
+                charCountDisplay.textContent = messageInput.value.length;  // Update character count
+            });
         });
     </script>
+    
 </x-app-layout>
