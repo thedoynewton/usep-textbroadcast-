@@ -34,16 +34,9 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="campus" value="Campus" />
-                            <select id="campus" name="campus"
-                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm"
-                                onchange="this.form.submit()">
-                                <option value="">Select Campus</option>
-                                @foreach ($campuses as $campus)
-                                    <option value="{{ $campus->campus_id }}"
-                                        {{ request('campus') == $campus->campus_id ? 'selected' : '' }}>
-                                        {{ $campus->campus_name }}
-                                    </option>
-                                @endforeach
+                            <select id="campus" name="campus" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <option>Select Campus</option>
+                                <!-- Add Campus Options Here -->
                             </select>
                         </div>
 
@@ -138,7 +131,7 @@
                     </div>
 
                     <!-- Character count display -->
-                    <div class="text-right mt-2 text-sm text-gray-600">
+                    <div class="text-right mt-2 text-sm text-white  ">
                         <span id="char-count">0</span>/160 characters
                     </div>
 
@@ -157,14 +150,14 @@
                             </div>
                         </div>
                         <div class="flex items-center mt-6">
-                            <label class="text-sm font-medium text-gray-700">Send Message:</label>
+                            <label class="text-sm font-medium text-white">Send Message:</label>
                             <div class="ml-4">
                                 <input type="radio" id="send_now" name="send_message" value="now"
                                     class="mr-2" checked />
-                                <label for="send_now" class="text-sm font-medium text-gray-700">Now</label>
+                                <label for="send_now" class="text-sm font-medium text-white">Now</label>
                                 <input type="radio" id="send_later" name="send_message" value="later"
                                     class="ml-4 mr-2" />
-                                <label for="send_later" class="text-sm font-medium text-gray-700">Send Later</label>
+                                <label for="send_later" class="text-sm font-medium text-white">Send Later</label>
                             </div>
                         </div>
                         <div>
