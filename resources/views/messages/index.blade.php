@@ -70,10 +70,7 @@
                                 <select id="academic_unit" name="academic_unit"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="">Select Academic Unit</option>
-                                    @foreach ($colleges as $college)
-                                        <option value="{{ $college->college_id }}">{{ $college->college_name }}
-                                        </option>
-                                    @endforeach
+                                    <!-- Options will be populated dynamically using JavaScript -->
                                 </select>
                             </div>
 
@@ -170,9 +167,10 @@
                             <div>
                                 <x-input-label for="total_recipients" value="Total Recipients" />
                                 <x-text-input id="total_recipients" name="total_recipients" type="number"
-                                    value="{{ $totalRecipients }}" readonly />
+                                    value="{{ $totalRecipients ?? 0 }}" readonly />
                             </div>
                         </div>
+
                         <div class="flex items-center mt-6">
                             <label class="text-sm font-medium text-white">Send Message:</label>
                             <div class="ml-4">

@@ -7,7 +7,8 @@ use App\Models\Office;
 use App\Models\Program;
 use App\Models\Major;
 use App\Models\Year;
-use App\Http\Controllers\Controller;
+use App\Models\Student;
+use App\Models\Employee;
 use App\Models\Type;
 use Illuminate\Http\Request;
 
@@ -54,5 +55,33 @@ class FilterController extends Controller
     {
         return response()->json(Year::all());
     }
-}
 
+    // New method for dynamically updating recipient count based on campus and tab
+    public function getRecipientCount(Request $request)
+    {
+        $campusId = $request->get('campus');
+        $tab = $request->get('tab', 'all');
+
+        // Initialize base queries for students and employees
+        $studentsQuery = Student::query();
+        $employeesQuery = Employee::query();
+
+        // Filter by campus if a campus is selected
+        if ($campusId) {
+            $studentsQuery->where('campus_id', $campusId);
+            $employeesQuery->where('campus_id', $campusId);
+        }
+
+        // Calculate the total recipients based on the selected tab
+        if ($tab === 'students') {
+            $totalRecipients = $studentsQuery->count();
+        } elseif ($tab === 'employees') {
+            $totalRecipients = $employeesQuery->count();
+        } else {
+            // For 'all' tab, sum the students and employees count
+            $totalRecipients = $studentsQuery->count() + $employeesQuery->count();
+        }
+
+        return response()->json(['totalRecipients' => $totalRecipients]);
+    }
+}

@@ -8,8 +8,36 @@ document.addEventListener('DOMContentLoaded', function () {
     const typeSelect = document.getElementById('type'); // For employees
     const statusSelect = document.getElementById('status'); // For employees
 
-    // Check which tab is active and run code accordingly
+    const totalRecipientsInput = document.getElementById('total_recipients'); // Total Recipients field
     const currentTab = document.querySelector('input[name="tab"]').value; // Identify current tab (all, students, or employees)
+
+    // Function to dynamically update total recipients count
+    function updateTotalRecipients(tab, campusId) {
+        fetch(`/api/recipient-count?tab=${tab}&campus=${campusId}`)
+            .then(response => response.json())
+            .then(data => {
+                totalRecipientsInput.value = data.totalRecipients;
+            })
+            .catch(error => console.error('Error fetching recipient count:', error));
+    }
+
+    // Update total recipients when the campus changes
+    if (campusSelect) {
+        campusSelect.addEventListener('change', function () {
+            const campusId = this.value;
+            updateTotalRecipients(currentTab, campusId); // Dynamically update recipients
+        });
+    }
+
+    // Update total recipients when switching tabs (All, Students, Employees)
+    const tabs = document.querySelectorAll('a[href^="?tab="]');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function (event) {
+            event.preventDefault();
+            const selectedTab = this.href.split('tab=')[1];
+            updateTotalRecipients(selectedTab, campusSelect.value); // Dynamically update recipients
+        });
+    });
 
     if (currentTab === 'students') {
         // For Students: Fetch and update colleges when a campus is selected

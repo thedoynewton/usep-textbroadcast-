@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
         // Fetch all types based on selected office
         Route::get('/api/types/{officeId}', [FilterController::class, 'getTypesByOffice']);
 
+        // Fetch recipient count dynamically based on tab and campus
+        Route::get('/api/recipient-count', [FilterController::class, 'getRecipientCount']);
+
+
     });
 
     // Apply the role middleware for only admin
