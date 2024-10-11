@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const campusSelect = document.getElementById('campus');
-    const academicUnitSelect = document.getElementById('academic_unit'); // For students
+    const academicUnitSelect = document.getElementById('academic_unit'); // For students (college)
     const programSelect = document.getElementById('program'); // For students
     const majorSelect = document.getElementById('major'); // For students
+    const yearSelect = document.getElementById('year'); // For students (independent)
 
     const officeSelect = document.getElementById('office'); // For employees
     const typeSelect = document.getElementById('type'); // For employees
@@ -12,8 +13,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const currentTab = document.querySelector('input[name="tab"]').value; // Identify current tab (all, students, or employees)
 
     // Function to dynamically update total recipients count
-    function updateTotalRecipients(tab, campusId) {
-        fetch(`/api/recipient-count?tab=${tab}&campus=${campusId}`)
+    function updateTotalRecipients(tab, campusId, collegeId = null, programId = null, majorId = null, yearId = null) {
+        let url = `/api/recipient-count?tab=${tab}&campus=${campusId}`;
+        
+        if (collegeId) url += `&college=${collegeId}`;
+        if (programId) url += `&program=${programId}`;
+        if (majorId) url += `&major=${majorId}`;
+        if (yearId) url += `&year=${yearId}`;
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 totalRecipientsInput.value = data.totalRecipients;
@@ -35,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tab.addEventListener('click', function (event) {
             event.preventDefault();
             const selectedTab = this.href.split('tab=')[1];
-            updateTotalRecipients(selectedTab, campusSelect.value); // Dynamically update recipients
+            updateTotalRecipients(selectedTab, campusSelect.value, academicUnitSelect ? academicUnitSelect.value : null);
         });
     });
 
@@ -45,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
             campusSelect.addEventListener('change', function () {
                 const campusId = this.value;
 
-                // Clear the Academic Unit, Program, and Major dropdowns
+                // Clear the Academic Unit, Program, Major dropdowns
                 if (academicUnitSelect) academicUnitSelect.innerHTML = '<option>Select Academic Unit</option>';
                 if (programSelect) programSelect.innerHTML = '<option>Select Program</option>';
                 if (majorSelect) majorSelect.innerHTML = '<option>Select Major</option>';
@@ -70,10 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (academicUnitSelect) {
             academicUnitSelect.addEventListener('change', function () {
                 const collegeId = this.value;
+                const campusId = campusSelect.value;
 
-                // Clear the Program and Major dropdowns
+                // Clear the Program, Major dropdowns
                 if (programSelect) programSelect.innerHTML = '<option>Select Program</option>';
                 if (majorSelect) majorSelect.innerHTML = '<option>Select Major</option>';
+
+                // Dynamically update total recipients when a college is selected
+                updateTotalRecipients(currentTab, campusId, collegeId);
 
                 if (collegeId) {
                     fetch(`/api/programs/${collegeId}`)
@@ -94,9 +106,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (programSelect) {
             programSelect.addEventListener('change', function () {
                 const programId = this.value;
+                const campusId = campusSelect.value;
+                const collegeId = academicUnitSelect.value;
 
                 // Clear the Major dropdown
                 if (majorSelect) majorSelect.innerHTML = '<option>Select Major</option>';
+
+                // Dynamically update total recipients when a program is selected
+                updateTotalRecipients(currentTab, campusId, collegeId, programId);
 
                 if (programId) {
                     fetch(`/api/majors/${programId}`)
@@ -110,6 +127,33 @@ document.addEventListener('DOMContentLoaded', function () {
                         })
                         .catch(error => console.error('Error fetching majors:', error));
                 }
+            });
+        }
+
+        // Update total recipients when a major is selected
+        if (majorSelect) {
+            majorSelect.addEventListener('change', function () {
+                const majorId = this.value;
+                const campusId = campusSelect.value;
+                const collegeId = academicUnitSelect.value;
+                const programId = programSelect.value;
+
+                // Dynamically update total recipients when a major is selected
+                updateTotalRecipients(currentTab, campusId, collegeId, programId, majorId);
+            });
+        }
+
+        // Update total recipients when a year is selected (Year independent)
+        if (yearSelect) {
+            yearSelect.addEventListener('change', function () {
+                const yearId = this.value;
+                const campusId = campusSelect.value;
+                const collegeId = academicUnitSelect.value;
+                const programId = programSelect.value;
+                const majorId = majorSelect.value;
+
+                // Dynamically update total recipients when a year is selected
+                updateTotalRecipients(currentTab, campusId, collegeId, programId, majorId, yearId);
             });
         }
     }

@@ -60,18 +60,42 @@ class FilterController extends Controller
     public function getRecipientCount(Request $request)
     {
         $campusId = $request->get('campus');
+        $collegeId = $request->get('college');
+        $programId = $request->get('program');
+        $majorId = $request->get('major');
+        $yearId = $request->get('year');  // Get the selected year
         $tab = $request->get('tab', 'all');
-
+    
         // Initialize base queries for students and employees
         $studentsQuery = Student::query();
         $employeesQuery = Employee::query();
-
+    
         // Filter by campus if a campus is selected
         if ($campusId) {
             $studentsQuery->where('campus_id', $campusId);
             $employeesQuery->where('campus_id', $campusId);
         }
-
+    
+        // Filter by college if a college is selected (for students)
+        if ($tab === 'students' && $collegeId) {
+            $studentsQuery->where('college_id', $collegeId);
+        }
+    
+        // Filter by program if a program is selected (for students)
+        if ($tab === 'students' && $programId) {
+            $studentsQuery->where('program_id', $programId);
+        }
+    
+        // Filter by major if a major is selected (for students)
+        if ($tab === 'students' && $majorId) {
+            $studentsQuery->where('major_id', $majorId);
+        }
+    
+        // Filter by year if a year is selected (for students)
+        if ($tab === 'students' && $yearId) {
+            $studentsQuery->where('year_id', $yearId);  // Apply the year filter
+        }
+    
         // Calculate the total recipients based on the selected tab
         if ($tab === 'students') {
             $totalRecipients = $studentsQuery->count();
@@ -81,7 +105,9 @@ class FilterController extends Controller
             // For 'all' tab, sum the students and employees count
             $totalRecipients = $studentsQuery->count() + $employeesQuery->count();
         }
-
+    
         return response()->json(['totalRecipients' => $totalRecipients]);
     }
+    
+
 }
