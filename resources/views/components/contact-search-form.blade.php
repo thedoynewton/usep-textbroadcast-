@@ -3,7 +3,7 @@
         <div class="flex items-center space-x-4">
             <!-- Search Input -->
             <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Search by name or email"
+                   placeholder="Search by email"
                    class="border rounded px-4 py-2 dark:bg-gray-700 dark:text-gray-100" />
 
             <!-- Campus Filter Dropdown -->
