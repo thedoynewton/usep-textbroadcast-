@@ -8,11 +8,11 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-black dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">User Management</h3>
+                <h3 class="text-lg font-semibold mb-4 text-white dark:text-gray-100">User Management</h3>
 
                 <!-- Add User Form -->
                 <div class="mb-6">
-                    <h4 class="text-md font-semibold mb-2 text-gray-800 dark:text-gray-100">Add New User</h4>
+                    <h4 class="text-md font-semibold mb-2 text-white dark:text-gray-100">Add New User</h4>
                     <form action="{{ route('user-management.addUser') }}" method="POST" class="flex items-center space-x-4">
                         @csrf
                         <input type="email" name="email" placeholder="Enter USeP Email" required

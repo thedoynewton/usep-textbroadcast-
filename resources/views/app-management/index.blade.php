@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+            <div class="bg-black dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
 
                 <!-- Success Message -->
                 @if (session('success'))
@@ -28,13 +28,13 @@
                     <ul class="flex space-x-4">
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'contacts']) }}"
-                               class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-gray-700 dark:text-gray-300' }}">
+                               class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
                                 Contacts
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'templates']) }}"
-                               class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-gray-700 dark:text-gray-300' }}">
+                               class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
                                 Message Templates
                             </a>
                         </li>

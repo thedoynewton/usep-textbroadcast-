@@ -1,5 +1,5 @@
 <div>
-    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Message Templates</h3>
+    <h3 class="text-lg font-semibold mb-4 text-white dark:text-gray-100">Message Templates</h3>
 
     <!-- Button to Open Create Modal -->
     <button class="bg-blue-500 text-white px-4 py-2 rounded mb-4" x-data

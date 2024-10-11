@@ -1,5 +1,5 @@
 <div>
-    <h3 class="text-lg font-semibold mt-8 mb-4 text-gray-800 dark:text-gray-100">Employees (Total: {{ $totalEmployees }})</h3>
+    <h3 class="text-lg font-semibold mt-8 mb-4 text-white dark:text-gray-100">Employees (Total: {{ $totalEmployees }})</h3>
     <table class="table-auto w-full border dark:border-gray-700">
         <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-left">
