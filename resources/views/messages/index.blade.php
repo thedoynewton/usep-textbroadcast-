@@ -32,11 +32,18 @@
                     <input type="hidden" name="tab" value="{{ request('tab') }}">
 
                     <div class="grid grid-cols-2 gap-4">
+                        <!-- Campus Dropdown -->
                         <div>
                             <x-input-label for="campus" value="Campus" />
-                            <select id="campus" name="campus" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option>Select Campus</option>
-                                <!-- Add Campus Options Here -->
+                            <select id="campus" name="campus"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <option value="">Select Campus</option>
+                                @foreach ($campuses as $campus)
+                                    <option value="{{ $campus->campus_id }}"
+                                        {{ $campusId == $campus->campus_id ? 'selected' : '' }}>
+                                        {{ $campus->campus_name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -55,38 +62,50 @@
                     </div>
 
                     @if (request('tab') == 'students')
-                        <!-- Additional filters for students -->
+                        <!-- Filters for students -->
                         <div class="grid grid-cols-4 gap-4 mt-6">
+                            <!-- Academic Unit (College) Dropdown -->
                             <div>
                                 <x-input-label for="academic_unit" value="Academic Unit" />
-                                <select id="academic_unit" name="academic_unit" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <select id="academic_unit" name="academic_unit"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="">Select Academic Unit</option>
-                                    <!-- Add College Options Here -->
+                                    @foreach ($colleges as $college)
+                                        <option value="{{ $college->college_id }}">{{ $college->college_name }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                            </div>                            
-                            
+                            </div>
+
+                            <!-- Program Dropdown -->
                             <div>
                                 <x-input-label for="program" value="Program" />
                                 <select id="program" name="program"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Program</option>
-                                    <!-- Add Program Options Here -->
+                                    <option value="">Select Program</option>
+                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
+
+                            <!-- Major Dropdown -->
                             <div>
                                 <x-input-label for="major" value="Major" />
                                 <select id="major" name="major"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Major</option>
-                                    <!-- Add Major Options Here -->
+                                    <option value="">Select Major</option>
+                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
+
+                            <!-- Year Dropdown -->
                             <div>
                                 <x-input-label for="year" value="Year" />
                                 <select id="year" name="year"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Year</option>
-                                    <!-- Add Year Options Here -->
+                                    <option value="">Select Year</option>
+                                    @foreach ($years as $year)
+                                        <option value="{{ $year->year_id }}">{{ $year->year_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -174,6 +193,6 @@
         </div>
     </div>
 
-    @vite(['resources/js/messages.js'])
+    @vite(['resources/js/messages.js', 'resources/js/dynamicFilters.js'])
 
 </x-app-layout>
