@@ -7,19 +7,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const officeSelect = document.getElementById('office'); // For employees
     const typeSelect = document.getElementById('type'); // For employees
-    const statusSelect = document.getElementById('status'); // For employees
+    const statusSelect = document.getElementById('status'); // For employees (independent)
 
     const totalRecipientsInput = document.getElementById('total_recipients'); // Total Recipients field
     const currentTab = document.querySelector('input[name="tab"]').value; // Identify current tab (all, students, or employees)
 
-    // Function to dynamically update total recipients count
-    function updateTotalRecipients(tab, campusId, collegeId = null, programId = null, majorId = null, yearId = null) {
+    // Function to dynamically update total recipients count for both students and employees
+    function updateTotalRecipients(tab, campusId, collegeId = null, programId = null, majorId = null, yearId = null, officeId = null, typeId = null, statusId = null) {
         let url = `/api/recipient-count?tab=${tab}&campus=${campusId}`;
         
         if (collegeId) url += `&college=${collegeId}`;
         if (programId) url += `&program=${programId}`;
         if (majorId) url += `&major=${majorId}`;
         if (yearId) url += `&year=${yearId}`;
+        if (officeId) url += `&office=${officeId}`;
+        if (typeId) url += `&type=${typeId}`;
+        if (statusId) url += `&status=${statusId}`;
 
         fetch(url)
             .then(response => response.json())
@@ -181,6 +184,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         })
                         .catch(error => console.error('Error fetching offices:', error));
                 }
+
+                // Dynamically update total recipients when a campus is selected (for Employees)
+                updateTotalRecipients(currentTab, campusId);
             });
         }
 
@@ -188,22 +194,51 @@ document.addEventListener('DOMContentLoaded', function () {
         if (officeSelect) {  // Ensure officeSelect exists
             officeSelect.addEventListener('change', function () {
                 const officeId = this.value;
+                const campusId = campusSelect.value;
 
                 // Clear the Type dropdown
                 if (typeSelect) typeSelect.innerHTML = '<option>Select Type</option>';
+
+                // Dynamically update total recipients when an office is selected
+                updateTotalRecipients(currentTab, campusId, null, null, null, null, officeId);
 
                 if (officeId) {
                     fetch(`/api/types/${officeId}`)
                         .then(response => response.json())
                         .then(data => {
-                            if (typeSelect) {
-                                data.forEach(type => {
+                            data.forEach(type => {
+                                if (typeSelect) {
                                     typeSelect.innerHTML += `<option value="${type.type_id}">${type.type_name}</option>`;
-                                });
-                            }
+                                }
+                            });
                         })
                         .catch(error => console.error('Error fetching types:', error));
                 }
+            });
+        }
+
+        // Update total recipients when a type is selected
+        if (typeSelect) {
+            typeSelect.addEventListener('change', function () {
+                const typeId = this.value;
+                const campusId = campusSelect.value;
+                const officeId = officeSelect.value;
+
+                // Dynamically update total recipients when a type is selected
+                updateTotalRecipients(currentTab, campusId, null, null, null, null, officeId, typeId);
+            });
+        }
+
+        // Update total recipients when a status is selected (Status is independent)
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function () {
+                const statusId = this.value;
+                const campusId = campusSelect.value;
+                const officeId = officeSelect.value;
+                const typeId = typeSelect.value;
+
+                // Dynamically update total recipients when a status is selected
+                updateTotalRecipients(currentTab, campusId, null, null, null, null, officeId, typeId, statusId);
             });
         }
     }

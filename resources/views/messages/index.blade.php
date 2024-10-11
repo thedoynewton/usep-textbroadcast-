@@ -120,6 +120,16 @@
                                 </select>
                             </div>
 
+                            <!-- Type Dropdown -->
+                            <div>
+                                <x-input-label for="type" value="Type" />
+                                <select id="type" name="type"
+                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                    <option value="">Select Type</option>
+                                    <!-- Options populated dynamically using JavaScript -->
+                                </select>
+                            </div>
+
                             <!-- Status Dropdown -->
                             <div>
                                 <x-input-label for="status" value="Status" />
@@ -131,16 +141,7 @@
                                     @endforeach
                                 </select>
                             </div>
-
-                            <!-- Type Dropdown -->
-                            <div>
-                                <x-input-label for="type" value="Type" />
-                                <select id="type" name="type"
-                                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Type</option>
-                                    <!-- Options populated dynamically using JavaScript -->
-                                </select>
-                            </div>
+                            
                         </div>
                     @endif
 
