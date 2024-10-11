@@ -13,45 +13,46 @@ use Illuminate\Http\Request;
 
 class FilterController extends Controller
 {
+    // Generic method to fetch data based on a model and field
+    protected function fetchDataByField($model, $field, $value)
+    {
+        return response()->json($model::where($field, $value)->get());
+    }
+
     // Fetch colleges for a specific campus
     public function getCollegesByCampus($campusId)
     {
-        // Fetch colleges where the campus_id matches the selected campus
-        $colleges = College::where('campus_id', $campusId)->get();
-        return response()->json($colleges);
+        return $this->fetchDataByField(College::class, 'campus_id', $campusId);
     }
 
-    // Method to fetch programs based on the selected college
+    // Fetch programs for a specific college
     public function getPrograms($collegeId)
     {
-        return response()->json(Program::where('college_id', $collegeId)->get());
+        return $this->fetchDataByField(Program::class, 'college_id', $collegeId);
     }
 
-    // Method to fetch majors based on the selected program
+    // Fetch majors for a specific program
     public function getMajors($programId)
     {
-        return response()->json(Major::where('program_id', $programId)->get());
-    }
-
-    // Method to fetch all years
-    public function getYears()
-    {
-        return response()->json(Year::all());
+        return $this->fetchDataByField(Major::class, 'program_id', $programId);
     }
 
     // Fetch offices for a specific campus
     public function getOfficesByCampus($campusId)
     {
-        // Fetch offices where the campus_id matches the selected campus
-        $offices = Office::where('campus_id', $campusId)->get();
-        return response()->json($offices);
+        return $this->fetchDataByField(Office::class, 'campus_id', $campusId);
     }
 
     // Fetch types for a specific office
     public function getTypesByOffice($officeId)
     {
-        $types = Type::where('office_id', $officeId)->get();
-        return response()->json($types);
+        return $this->fetchDataByField(Type::class, 'office_id', $officeId);
     }
 
+    // Fetch all years (no filter)
+    public function getYears()
+    {
+        return response()->json(Year::all());
+    }
 }
+
