@@ -36,6 +36,13 @@ Route::middleware('auth')->group(function () {
 
         // Fetch all years
         Route::get('/api/years', [FilterController::class, 'getYears']);
+
+        // Fetch all offices based on selected campus
+        Route::get('/api/offices/{campusId}', [FilterController::class, 'getOfficesByCampus']);
+
+        // Fetch all types based on selected office
+        Route::get('/api/types/{officeId}', [FilterController::class, 'getTypesByOffice']);
+
     });
 
     // Apply the role middleware for only admin

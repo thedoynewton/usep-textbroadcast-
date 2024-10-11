@@ -26,6 +26,7 @@ class MessagesController extends Controller
         $campuses = Campus::all(); // Fetch all campuses from the database
         $messageTemplates = MessageTemplate::all(); // Fetch all message templates
         $years = Year::all(); // Fetch all years to populate the year dropdown
+        $statuses = Status::all(); // Fetch all statuses to populate the status dropdown
 
         // Initialize base queries for students and employees
         $studentsQuery = Student::query();
@@ -57,6 +58,6 @@ class MessagesController extends Controller
         }
 
         // Return view with total recipients count, colleges, years, and other data
-        return view('messages.index', compact('totalRecipients', 'campuses', 'campusId', 'messageTemplates', 'colleges', 'years'));
+        return view('messages.index', compact('totalRecipients', 'campuses', 'campusId', 'messageTemplates', 'colleges', 'years', 'statuses'));
     }
 }

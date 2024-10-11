@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\College;
+use App\Models\Office;
 use App\Models\Program;
 use App\Models\Major;
 use App\Models\Year;
 use App\Http\Controllers\Controller;
+use App\Models\Type;
 use Illuminate\Http\Request;
 
 class FilterController extends Controller
@@ -36,4 +38,20 @@ class FilterController extends Controller
     {
         return response()->json(Year::all());
     }
+
+    // Fetch offices for a specific campus
+    public function getOfficesByCampus($campusId)
+    {
+        // Fetch offices where the campus_id matches the selected campus
+        $offices = Office::where('campus_id', $campusId)->get();
+        return response()->json($offices);
+    }
+
+    // Fetch types for a specific office
+    public function getTypesByOffice($officeId)
+    {
+        $types = Type::where('office_id', $officeId)->get();
+        return response()->json($types);
+    }
+
 }

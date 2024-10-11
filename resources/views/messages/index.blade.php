@@ -110,30 +110,37 @@
                             </div>
                         </div>
                     @elseif(request('tab') == 'employees')
-                        <!-- Additional filters for employees -->
+                        <!-- Filters for employees -->
                         <div class="grid grid-cols-3 gap-4 mt-6">
+                            <!-- Office Dropdown -->
                             <div>
                                 <x-input-label for="office" value="Office" />
                                 <select id="office" name="office"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Office</option>
-                                    <!-- Add Office Options Here -->
+                                    <option value="">Select Office</option>
+                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
+
+                            <!-- Status Dropdown -->
                             <div>
                                 <x-input-label for="status" value="Status" />
                                 <select id="status" name="status"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Status</option>
-                                    <!-- Add Status Options Here -->
+                                    <option value="">Select Status</option>
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status->status_id }}">{{ $status->status_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
+
+                            <!-- Type Dropdown -->
                             <div>
                                 <x-input-label for="type" value="Type" />
                                 <select id="type" name="type"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option>Select Type</option>
-                                    <!-- Add Type Options Here -->
+                                    <option value="">Select Type</option>
+                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
                         </div>
