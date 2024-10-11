@@ -37,10 +37,10 @@
                             <x-input-label for="campus" value="Campus" />
                             <select id="campus" name="campus"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option value="">Select Campus</option>
+                                <option value="" disabled selected>Select Campus</option> <!-- Default option disabled and selected -->
                                 @foreach ($campuses as $campus)
-                                    <option value="{{ $campus->campus_id }}"
-                                        {{ $campusId == $campus->campus_id ? 'selected' : '' }}>
+                                    <option value="{{ $campus->campus_id }}" 
+                                        {{ old('campus') == $campus->campus_id ? 'selected' : '' }}>
                                         {{ $campus->campus_name }}
                                     </option>
                                 @endforeach
@@ -51,7 +51,7 @@
                             <x-input-label for="template" value="Select Template" />
                             <select id="template" name="template"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option value="">Select a Template</option>
+                                <option value="" disabled selected>Select a Template</option> <!-- Default option disabled and selected -->
                                 @foreach ($messageTemplates as $template)
                                     <option value="{{ $template->id }}" data-content="{{ $template->content }}">
                                         {{ $template->name }}</option>
@@ -69,7 +69,7 @@
                                 <x-input-label for="academic_unit" value="Academic Unit" />
                                 <select id="academic_unit" name="academic_unit"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Academic Unit</option>
+                                    <option value="" disabled selected>Select Academic Unit</option> <!-- Disabled Option -->
                                     <!-- Options will be populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -79,7 +79,7 @@
                                 <x-input-label for="program" value="Program" />
                                 <select id="program" name="program"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Program</option>
+                                    <option value="" disabled selected>Select Program</option> <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -89,7 +89,7 @@
                                 <x-input-label for="major" value="Major" />
                                 <select id="major" name="major"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Major</option>
+                                    <option value="" disabled selected>Select Major</option> <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -99,7 +99,7 @@
                                 <x-input-label for="year" value="Year" />
                                 <select id="year" name="year"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Year</option>
+                                    <option value="" disabled selected>Select Year</option> <!-- Disabled Option -->
                                     @foreach ($years as $year)
                                         <option value="{{ $year->year_id }}">{{ $year->year_name }}</option>
                                     @endforeach
@@ -115,7 +115,7 @@
                                 <x-input-label for="office" value="Office" />
                                 <select id="office" name="office"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Office</option>
+                                    <option value="" disabled selected>Select Office</option> <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -125,7 +125,7 @@
                                 <x-input-label for="type" value="Type" />
                                 <select id="type" name="type"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Type</option>
+                                    <option value="" disabled selected>Select Type</option> <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -135,7 +135,7 @@
                                 <x-input-label for="status" value="Status" />
                                 <select id="status" name="status"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="">Select Status</option>
+                                    <option value="" disabled selected>Select Status</option> <!-- Disabled Option -->
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status->status_id }}">{{ $status->status_name }}</option>
                                     @endforeach
