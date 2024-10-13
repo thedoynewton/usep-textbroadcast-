@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/api/offices/{campusId}', [FilterController::class, 'getOfficesByCampus']);
 
         // Fetch all types based on selected office
-        Route::get('/api/types/{officeId}', [FilterController::class, 'getTypesByOffice']);
+        Route::get('/api/types/{officeId}', [FilterController::class, 'getTypes']);
 
         // Fetch recipient count dynamically based on tab and campus
         Route::get('/api/recipient-count', [FilterController::class, 'getRecipientCount']);
