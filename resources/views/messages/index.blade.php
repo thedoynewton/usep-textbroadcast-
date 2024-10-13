@@ -200,6 +200,6 @@
         </div>
     </div>
 
-    @vite(['resources/js/messages.js', 'resources/js/dynamicFilters.js'])
+    @vite(['resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js'])
 
 </x-app-layout>
