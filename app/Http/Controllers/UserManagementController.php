@@ -4,10 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Log;
 
 class UserManagementController extends Controller
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of the users.
      */
@@ -17,6 +25,9 @@ class UserManagementController extends Controller
         return view('user-management.index', compact('users'));
     }
 
+    /**
+     * Handle user creation.
+     */
     public function addUser(Request $request)
     {
         $request->validate([
@@ -31,14 +42,7 @@ class UserManagementController extends Controller
         }
 
         try {
-            // Create the user with default data
-            $user = User::create([
-                'name' => 'New User',
-                'email' => $email,
-                'google_id' => null,
-                'avatar' => 'default-avatar.png',
-            ]);
-
+            $this->userService->createUser($email);
             return redirect()->route('user-management')->with('success', 'User added successfully.');
         } catch (\Exception $e) {
             Log::error('Failed to add user: ' . $e->getMessage());
@@ -46,15 +50,14 @@ class UserManagementController extends Controller
         }
     }
 
-
     /**
      * Update the user's role.
      */
     public function updateRole(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $user->role = $request->role;
-        $user->save();
+
+        $this->userService->updateUserRole($user, $request->role);
 
         return redirect()->route('user-management')->with('success', 'User role updated successfully.');
     }
@@ -65,8 +68,8 @@ class UserManagementController extends Controller
     public function removeRole($id)
     {
         $user = User::findOrFail($id);
-        $user->role = null;
-        $user->save();
+
+        $this->userService->removeUserRole($user);
 
         return redirect()->route('user-management')->with('success', 'User role removed successfully.');
     }
