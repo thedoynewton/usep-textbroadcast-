@@ -17,14 +17,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedStatus = document.getElementById('selected-status');
     const totalRecipients = document.getElementById('total-recipients');
     
-    // Date and time elements
     const sendLaterRadio = document.getElementById('send_later');
     const sendNowRadio = document.getElementById('send_now');
     const sendDateInput = document.getElementById('send_date');
     const sendDateTimeDisplay = document.getElementById('selected-send-datetime');
     const sendDateTimeValue = document.getElementById('send-datetime');
 
-    // Select elements
     const campusSelect = document.getElementById('campus');
     const academicUnitSelect = document.getElementById('academic_unit');
     const programSelect = document.getElementById('program');
@@ -34,6 +32,89 @@ document.addEventListener('DOMContentLoaded', function () {
     const typeSelect = document.getElementById('type');
     const statusSelect = document.getElementById('status');
     const totalRecipientsInput = document.getElementById('total_recipients');
+
+    // Error message elements
+    const errorMessageElements = {
+        campus: document.createElement('div'),
+        academic_unit: document.createElement('div'),
+        program: document.createElement('div'),
+        major: document.createElement('div'),
+        year: document.createElement('div'),
+        office: document.createElement('div'),
+        type: document.createElement('div'),
+        status: document.createElement('div'),
+        message: document.createElement('div'),
+        totalRecipients: document.createElement('div')
+    };
+
+    function displayError(field, message) {
+        errorMessageElements[field].textContent = message;
+        errorMessageElements[field].classList.add('text-red-500', 'text-sm');
+        document.getElementById(field).after(errorMessageElements[field]);
+    }
+
+    function clearErrors() {
+        Object.keys(errorMessageElements).forEach(field => {
+            errorMessageElements[field].textContent = '';
+        });
+    }
+
+    // Validation function
+    function validateForm() {
+        let isValid = true;
+        clearErrors();
+
+        if (!campusSelect.value) {
+            displayError('campus', 'Please select a campus.');
+            isValid = false;
+        }
+
+        if (document.querySelector('input[name="tab"]').value === 'students') {
+            if (!academicUnitSelect.value) {
+                displayError('academic_unit', 'Please select an academic unit.');
+                isValid = false;
+            }
+            if (!programSelect.value) {
+                displayError('program', 'Please select a program.');
+                isValid = false;
+            }
+            if (!majorSelect.value) {
+                displayError('major', 'Please select a major.');
+                isValid = false;
+            }
+            if (!yearSelect.value) {
+                displayError('year', 'Please select a year.');
+                isValid = false;
+            }
+        }
+
+        if (document.querySelector('input[name="tab"]').value === 'employees') {
+            if (!officeSelect.value) {
+                displayError('office', 'Please select an office.');
+                isValid = false;
+            }
+            if (!typeSelect.value) {
+                displayError('type', 'Please select a type.');
+                isValid = false;
+            }
+            if (!statusSelect.value) {
+                displayError('status', 'Please select a status.');
+                isValid = false;
+            }
+        }
+
+        if (messageInput.value.length === 0 || messageInput.value.length > 160) {
+            displayError('message', 'Message must not be empty.');
+            isValid = false;
+        }
+
+        if (totalRecipientsInput.value == 0) {
+            displayError('totalRecipients', 'No recipients counted.');
+            isValid = false;
+        }
+
+        return isValid;
+    }
 
     // Update character count when typing in the message field
     messageInput.addEventListener('input', function () {
@@ -54,11 +135,15 @@ document.addEventListener('DOMContentLoaded', function () {
     reviewButton.addEventListener('click', function (e) {
         e.preventDefault();
 
+        // Perform validation
+        if (!validateForm()) {
+            return; // If validation fails, don't show the modal
+        }
+
         // Populate the modal with the message and other selected details
         previewMessage.textContent = messageInput.value || 'No message entered';
         selectedCampus.textContent = campusSelect.options[campusSelect.selectedIndex].text || 'No campus selected';
 
-        // Handle visibility for student options
         const isStudentTab = document.querySelector('input[name="tab"]').value === 'students';
         if (isStudentTab) {
             selectedAcademicUnit.textContent = academicUnitSelect.options[academicUnitSelect.selectedIndex]?.text || 'N/A';
@@ -69,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('employee-options').classList.add('hidden');
         }
 
-        // Handle visibility for employee options
         const isEmployeeTab = document.querySelector('input[name="tab"]').value === 'employees';
         if (isEmployeeTab) {
             selectedOffice.textContent = officeSelect.options[officeSelect.selectedIndex]?.text || 'N/A';
@@ -79,10 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('student-options').classList.add('hidden');
         }
 
-        // Update total recipients
         totalRecipients.textContent = totalRecipientsInput.value || '0';
 
-        // Show date and time only if "Send Later" is selected
         if (sendLaterRadio.checked && sendDateInput.value) {
             sendDateTimeDisplay.classList.remove('hidden');
             sendDateTimeValue.textContent = new Date(sendDateInput.value).toLocaleString();
@@ -90,19 +172,15 @@ document.addEventListener('DOMContentLoaded', function () {
             sendDateTimeDisplay.classList.add('hidden');
         }
 
-        // Show the modal
         reviewModal.classList.remove('hidden');
     });
 
-    // Hide the review modal
     closeModalButton.addEventListener('click', function () {
         reviewModal.classList.add('hidden');
     });
 
-    // Handle the send message logic
     document.getElementById('confirm-send').addEventListener('click', function () {
         console.log("Message sent!");
-        // You can add the form submission or AJAX logic here
         reviewModal.classList.add('hidden');
     });
 });
