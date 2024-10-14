@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (messageInput.value.length === 0 || messageInput.value.length > 160) {
-            displayError('message', 'Message must not be empty.');
+            displayError('message', 'Please enter a message.');
             isValid = false;
         }
 
