@@ -38,6 +38,7 @@
                             <select id="campus" name="campus"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                 <option value="" disabled selected>Select Campus</option>
+                                <option value="all">All Campuses</option>
                                 <!-- Default option disabled and selected -->
                                 @foreach ($campuses as $campus)
                                     <option value="{{ $campus->campus_id }}"
@@ -72,6 +73,7 @@
                                 <select id="academic_unit" name="academic_unit"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Academic Unit</option>
+                                    <option value="all">All Academic Units</option>
                                     <!-- Disabled Option -->
                                     <!-- Options will be populated dynamically using JavaScript -->
                                 </select>
@@ -83,6 +85,7 @@
                                 <select id="program" name="program"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Program</option>
+                                    <option value="all">All Programs</option>
                                     <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
@@ -94,6 +97,7 @@
                                 <select id="major" name="major"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Major</option>
+                                    <option value="all">All Majors</option>
                                     <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
@@ -105,6 +109,7 @@
                                 <select id="year" name="year"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Year</option>
+                                    <option value="all">All Years</option>
                                     <!-- Disabled Option -->
                                     @foreach ($years as $year)
                                         <option value="{{ $year->year_id }}">{{ $year->year_name }}</option>

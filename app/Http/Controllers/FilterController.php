@@ -46,20 +46,31 @@ class FilterController extends Controller
 
     public function getRecipientCount(Request $request)
     {
-        $campusId = $request->get('campus');
-        $collegeId = $request->get('college');
-        $programId = $request->get('program');
-        $majorId = $request->get('major');
-        $yearId = $request->get('year');
+        $campusId = $request->get('campus', 'all');
+        $collegeId = $request->get('college', 'all');
+        $programId = $request->get('program', 'all');
+        $majorId = $request->get('major', 'all');
+        $yearId = $request->get('year', 'all');
 
-        $officeId = $request->get('office');
-        $typeId = $request->get('type');
-        $statusId = $request->get('status');
+        $officeId = $request->get('office', 'all');
+        $typeId = $request->get('type', 'all');
+        $statusId = $request->get('status', 'all');
 
         $tab = $request->get('tab', 'all');
 
-        $totalRecipients = $this->filterService->getRecipientCount($tab, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $typeId, $statusId);
+        $totalRecipients = $this->filterService->getRecipientCount(
+            $tab,
+            $campusId,
+            $collegeId,
+            $programId,
+            $majorId,
+            $yearId,
+            $officeId,
+            $typeId,
+            $statusId
+        );
 
         return response()->json(['totalRecipients' => $totalRecipients]);
     }
+
 }

@@ -49,57 +49,64 @@ class FilterService
         return Year::all();
     }
 
-    public function getRecipientCount($tab, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $typeId, $statusId)
-    {
-        // Initialize base queries for students and employees
+    public function getRecipientCount(
+        $tab,
+        $campusId,
+        $collegeId = 'all',
+        $programId = 'all',
+        $majorId = 'all',
+        $yearId = 'all',
+        $officeId = 'all',
+        $typeId = 'all',
+        $statusId = 'all'
+    ) {
         $studentsQuery = Student::query();
         $employeesQuery = Employee::query();
 
-        // Filter by campus if a campus is selected (for both students and employees)
-        if ($campusId) {
+        // Check if "All" is selected and skip the filter if so
+        if ($campusId !== 'all') {
             $studentsQuery->where('campus_id', $campusId);
             $employeesQuery->where('campus_id', $campusId);
         }
 
-        // Students filtering logic
         if ($tab === 'students') {
-            if ($collegeId) {
+            if ($collegeId !== 'all') {
                 $studentsQuery->where('college_id', $collegeId);
             }
 
-            if ($programId) {
+            if ($programId !== 'all') {
                 $studentsQuery->where('program_id', $programId);
             }
 
-            if ($majorId) {
+            if ($majorId !== 'all') {
                 $studentsQuery->where('major_id', $majorId);
             }
 
-            if ($yearId) {
+            if ($yearId !== 'all') {
                 $studentsQuery->where('year_id', $yearId);
             }
 
             return $studentsQuery->count();
         }
 
-        // Employees filtering logic
         if ($tab === 'employees') {
-            if ($officeId) {
+            if ($officeId !== 'all') {
                 $employeesQuery->where('office_id', $officeId);
             }
 
-            if ($typeId) {
+            if ($typeId !== 'all') {
                 $employeesQuery->where('type_id', $typeId);
             }
 
-            if ($statusId) {
+            if ($statusId !== 'all') {
                 $employeesQuery->where('status_id', $statusId);
             }
 
             return $employeesQuery->count();
         }
 
-        // For 'all' tab, sum the students and employees count
+        // For the "all" tab, sum the students and employees count
         return $studentsQuery->count() + $employeesQuery->count();
     }
+
 }

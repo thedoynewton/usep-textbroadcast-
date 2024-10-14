@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         type: document.createElement('div'),
         status: document.createElement('div'),
         message: document.createElement('div'),
-        totalRecipients: document.createElement('div')
+        total_recipients: document.createElement('div')
     };
 
     function displayError(field, message) {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (totalRecipientsInput.value == 0) {
-            displayError('totalRecipients', 'No recipients counted.');
+            displayError('total_recipients', 'No recipients counted.');
             isValid = false;
         }
 
