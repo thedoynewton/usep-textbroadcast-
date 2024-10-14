@@ -37,9 +37,10 @@
                             <x-input-label for="campus" value="Campus" />
                             <select id="campus" name="campus"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option value="" disabled selected>Select Campus</option> <!-- Default option disabled and selected -->
+                                <option value="" disabled selected>Select Campus</option>
+                                <!-- Default option disabled and selected -->
                                 @foreach ($campuses as $campus)
-                                    <option value="{{ $campus->campus_id }}" 
+                                    <option value="{{ $campus->campus_id }}"
                                         {{ old('campus') == $campus->campus_id ? 'selected' : '' }}>
                                         {{ $campus->campus_name }}
                                     </option>
@@ -51,7 +52,8 @@
                             <x-input-label for="template" value="Select Template" />
                             <select id="template" name="template"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                <option value="" disabled selected>Select a Template</option> <!-- Default option disabled and selected -->
+                                <option value="" disabled selected>Select a Template</option>
+                                <!-- Default option disabled and selected -->
                                 @foreach ($messageTemplates as $template)
                                     <option value="{{ $template->id }}" data-content="{{ $template->content }}">
                                         {{ $template->name }}</option>
@@ -69,7 +71,8 @@
                                 <x-input-label for="academic_unit" value="Academic Unit" />
                                 <select id="academic_unit" name="academic_unit"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Academic Unit</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Academic Unit</option>
+                                    <!-- Disabled Option -->
                                     <!-- Options will be populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -79,7 +82,8 @@
                                 <x-input-label for="program" value="Program" />
                                 <select id="program" name="program"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Program</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Program</option>
+                                    <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -89,7 +93,8 @@
                                 <x-input-label for="major" value="Major" />
                                 <select id="major" name="major"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Major</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Major</option>
+                                    <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -99,7 +104,8 @@
                                 <x-input-label for="year" value="Year" />
                                 <select id="year" name="year"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Year</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Year</option>
+                                    <!-- Disabled Option -->
                                     @foreach ($years as $year)
                                         <option value="{{ $year->year_id }}">{{ $year->year_name }}</option>
                                     @endforeach
@@ -115,7 +121,8 @@
                                 <x-input-label for="office" value="Office" />
                                 <select id="office" name="office"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Office</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Office</option>
+                                    <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -125,7 +132,8 @@
                                 <x-input-label for="type" value="Type" />
                                 <select id="type" name="type"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Type</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Type</option>
+                                    <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
@@ -135,13 +143,14 @@
                                 <x-input-label for="status" value="Status" />
                                 <select id="status" name="status"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
-                                    <option value="" disabled selected>Select Status</option> <!-- Disabled Option -->
+                                    <option value="" disabled selected>Select Status</option>
+                                    <!-- Disabled Option -->
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status->status_id }}">{{ $status->status_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            
+
                         </div>
                     @endif
 
@@ -192,8 +201,91 @@
 
                     <!-- Review Button -->
                     <div class="flex justify-end mt-6">
-                        <x-primary-button>{{ __('Review Message') }}</x-primary-button>
+                        <x-primary-button id="open-review-modal">{{ __('Review Message') }}</x-primary-button>
                     </div>
+
+                    <!-- Review Message Modal (Hidden by default) -->
+                    <div id="reviewModal" class="fixed z-10 inset-0 overflow-y-auto hidden"
+                        aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                        <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
+                            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                                aria-hidden="true"></div>
+
+                            <!-- Modal Panel -->
+                            <div
+                                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-3xl sm:w-full">
+                                <div class="bg-white dark:bg-gray-800 px-6 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                    <!-- Modal Content -->
+                                    <div class="sm:flex sm:items-start">
+                                        <!-- Preview Phone Mockup with Image -->
+                                        <div
+                                            class="flex-shrink-0 flex items-center justify-center w-full sm:w-1/3 mb-4 sm:mb-0">
+                                            <!-- iPhone Mockup Image -->
+                                            <div class="relative">
+                                                <img src="{{ asset('images/iPhone15Mockup.png') }}"
+                                                    alt="iPhone Mockup" class="w-64 h-auto mx-auto">
+                                                <!-- Message preview inside the phone mockup -->
+                                                <div
+                                                    class="absolute inset-0 top-20 p-4 w-48 h-96 mx-auto overflow-auto bg-transparent">
+                                                    <p class="text-sm text-gray-800" id="preview-message">
+                                                        <!-- Message Preview Here -->
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 text-center sm:mt-0 sm:ml-6 sm:text-left w-full sm:w-2/3">
+                                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                                Review Message
+                                            </h3>
+                                            <div class="mt-2">
+                                                <h2>Selected:</h2>
+                                                <p class="text-sm text-gray-500">Campus: <span
+                                                        id="selected-campus"></span></p>
+
+                                                <!-- For Students Tab -->
+                                                <div id="student-options" class="hidden">
+                                                    <p class="text-sm text-gray-500">Academic Unit: <span
+                                                            id="selected-academic-unit"></span></p>
+                                                    <p class="text-sm text-gray-500">Program: <span
+                                                            id="selected-program"></span></p>
+                                                    <p class="text-sm text-gray-500">Major: <span
+                                                            id="selected-major"></span></p>
+                                                    <p class="text-sm text-gray-500">Year: <span
+                                                            id="selected-year"></span></p>
+                                                </div>
+
+                                                <!-- For Employees Tab -->
+                                                <div id="employee-options" class="hidden">
+                                                    <p class="text-sm text-gray-500">Office: <span
+                                                            id="selected-office"></span></p>
+                                                    <p class="text-sm text-gray-500">Type: <span
+                                                            id="selected-type"></span></p>
+                                                    <p class="text-sm text-gray-500">Status: <span
+                                                            id="selected-status"></span></p>
+                                                </div>
+
+                                                <p class="text-sm text-gray-500">Total Recipients: <span
+                                                        id="total-recipients"></span></p>
+
+                                                <!-- Show Date and Time when "Send Later" is selected -->
+                                                <p id="selected-send-datetime" class="text-sm text-gray-500 hidden">
+                                                    Send Date & Time: <span id="send-datetime"></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                    <x-primary-button id="confirm-send">{{ __('Send Message') }}</x-primary-button>
+                                    <x-secondary-button id="close-review-modal" class="mt-3 sm:mt-0 sm:ml-3">
+                                        {{ __('Edit Message') }}
+                                    </x-secondary-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Modal -->
+
                 </form>
 
             </div>

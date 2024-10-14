@@ -32,6 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error fetching recipient count:', error));
     }
 
+    // Helper function to create a default "Select" option
+    function createDefaultOption(text) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.text = `Select ${text}`;
+        option.disabled = true;
+        option.selected = true;
+        return option;
+    }
+
     // Update total recipients when the campus changes
     if (campusSelect) {
         campusSelect.addEventListener('change', function () {
@@ -40,26 +50,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Update total recipients when switching tabs (All, Students, Employees)
-    const tabs = document.querySelectorAll('a[href^="?tab="]');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function (event) {
-            event.preventDefault();
-            const selectedTab = this.href.split('tab=')[1];
-            updateTotalRecipients(selectedTab, campusSelect.value, academicUnitSelect ? academicUnitSelect.value : null);
-        });
-    });
-
     if (currentTab === 'students') {
         // For Students: Fetch and update colleges when a campus is selected
         if (campusSelect) {
             campusSelect.addEventListener('change', function () {
                 const campusId = this.value;
 
-                // Clear the Academic Unit, Program, Major dropdowns
-                if (academicUnitSelect) academicUnitSelect.innerHTML = '<option>Select Academic Unit</option>';
-                if (programSelect) programSelect.innerHTML = '<option>Select Program</option>';
-                if (majorSelect) majorSelect.innerHTML = '<option>Select Major</option>';
+                // Clear and add default option to Academic Unit, Program, Major dropdowns
+                academicUnitSelect.innerHTML = '';
+                programSelect.innerHTML = '';
+                majorSelect.innerHTML = '';
+
+                academicUnitSelect.appendChild(createDefaultOption('Academic Unit'));
+                programSelect.appendChild(createDefaultOption('Program'));
+                majorSelect.appendChild(createDefaultOption('Major'));
 
                 // Fetch colleges for the selected campus
                 if (campusId) {
@@ -67,9 +71,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(response => response.json())
                         .then(data => {
                             data.forEach(college => {
-                                if (academicUnitSelect) {
-                                    academicUnitSelect.innerHTML += `<option value="${college.college_id}">${college.college_name}</option>`;
-                                }
+                                const option = document.createElement('option');
+                                option.value = college.college_id;
+                                option.text = college.college_name;
+                                academicUnitSelect.appendChild(option);
                             });
                         })
                         .catch(error => console.error('Error fetching colleges:', error));
@@ -83,9 +88,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const collegeId = this.value;
                 const campusId = campusSelect.value;
 
-                // Clear the Program, Major dropdowns
-                if (programSelect) programSelect.innerHTML = '<option>Select Program</option>';
-                if (majorSelect) majorSelect.innerHTML = '<option>Select Major</option>';
+                // Clear and add default option to Program and Major dropdowns
+                programSelect.innerHTML = '';
+                majorSelect.innerHTML = '';
+
+                programSelect.appendChild(createDefaultOption('Program'));
+                majorSelect.appendChild(createDefaultOption('Major'));
 
                 // Dynamically update total recipients when a college is selected
                 updateTotalRecipients(currentTab, campusId, collegeId);
@@ -95,9 +103,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(response => response.json())
                         .then(data => {
                             data.forEach(program => {
-                                if (programSelect) {
-                                    programSelect.innerHTML += `<option value="${program.program_id}">${program.program_name}</option>`;
-                                }
+                                const option = document.createElement('option');
+                                option.value = program.program_id;
+                                option.text = program.program_name;
+                                programSelect.appendChild(option);
                             });
                         })
                         .catch(error => console.error('Error fetching programs:', error));
@@ -112,8 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const campusId = campusSelect.value;
                 const collegeId = academicUnitSelect.value;
 
-                // Clear the Major dropdown
-                if (majorSelect) majorSelect.innerHTML = '<option>Select Major</option>';
+                // Clear and add default option to Major dropdown
+                majorSelect.innerHTML = '';
+                majorSelect.appendChild(createDefaultOption('Major'));
 
                 // Dynamically update total recipients when a program is selected
                 updateTotalRecipients(currentTab, campusId, collegeId, programId);
@@ -123,9 +133,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(response => response.json())
                         .then(data => {
                             data.forEach(major => {
-                                if (majorSelect) {
-                                    majorSelect.innerHTML += `<option value="${major.major_id}">${major.major_name}</option>`;
-                                }
+                                const option = document.createElement('option');
+                                option.value = major.major_id;
+                                option.text = major.major_name;
+                                majorSelect.appendChild(option);
                             });
                         })
                         .catch(error => console.error('Error fetching majors:', error));
@@ -163,24 +174,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (currentTab === 'employees') {
         // For Employees: Fetch and update offices based on the selected campus
-        if (campusSelect && officeSelect) {  // Ensure both campusSelect and officeSelect exist
+        if (campusSelect && officeSelect) {
             campusSelect.addEventListener('change', function () {
                 const campusId = this.value;
 
-                // Clear the Office and Type dropdowns
-                if (officeSelect) officeSelect.innerHTML = '<option>Select Office</option>';
-                if (typeSelect) typeSelect.innerHTML = '<option>Select Type</option>';
+                // Clear and add default option to Office and Type dropdowns
+                officeSelect.innerHTML = '';
+                typeSelect.innerHTML = '';
+
+                officeSelect.appendChild(createDefaultOption('Office'));
+                typeSelect.appendChild(createDefaultOption('Type'));
 
                 // Fetch offices for the selected campus
                 if (campusId) {
                     fetch(`/api/offices/${campusId}`)
                         .then(response => response.json())
                         .then(data => {
-                            if (officeSelect) {
-                                data.forEach(office => {
-                                    officeSelect.innerHTML += `<option value="${office.office_id}">${office.office_name}</option>`;
-                                });
-                            }
+                            data.forEach(office => {
+                                const option = document.createElement('option');
+                                option.value = office.office_id;
+                                option.text = office.office_name;
+                                officeSelect.appendChild(option);
+                            });
                         })
                         .catch(error => console.error('Error fetching offices:', error));
                 }
@@ -191,13 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // For Employees: Fetch and update types based on the selected office
-        if (officeSelect) {  // Ensure officeSelect exists
+        if (officeSelect) {
             officeSelect.addEventListener('change', function () {
                 const officeId = this.value;
                 const campusId = campusSelect.value;
 
-                // Clear the Type dropdown
-                if (typeSelect) typeSelect.innerHTML = '<option>Select Type</option>';
+                // Clear and add default option to Type dropdown
+                typeSelect.innerHTML = '';
+                typeSelect.appendChild(createDefaultOption('Type'));
 
                 // Dynamically update total recipients when an office is selected
                 updateTotalRecipients(currentTab, campusId, null, null, null, null, officeId);
@@ -207,9 +223,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(response => response.json())
                         .then(data => {
                             data.forEach(type => {
-                                if (typeSelect) {
-                                    typeSelect.innerHTML += `<option value="${type.type_id}">${type.type_name}</option>`;
-                                }
+                                const option = document.createElement('option');
+                                option.value = type.type_id;
+                                option.text = type.type_name;
+                                typeSelect.appendChild(option);
                             });
                         })
                         .catch(error => console.error('Error fetching types:', error));

@@ -31,7 +31,7 @@ class UserManagementController extends Controller
     public function addUser(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|max:320|email|unique:users,email',
         ]);
 
         $email = $request->input('email');
