@@ -63,6 +63,21 @@ document.addEventListener('DOMContentLoaded', function () {
             campusSelect.addEventListener('change', function () {
                 const campusId = this.value;
 
+                // If "All Campuses" is selected, set all related dropdowns to "All"
+                if (campusId === 'all') {
+                    academicUnitSelect.innerHTML = '';
+                    academicUnitSelect.appendChild(createAllOption('Academic Units'));
+
+                    programSelect.innerHTML = '';
+                    programSelect.appendChild(createAllOption('Programs'));
+
+                    majorSelect.innerHTML = '';
+                    majorSelect.appendChild(createAllOption('Majors'));
+
+                    updateTotalRecipients(currentTab, 'all', 'all', 'all', 'all');
+                    return;
+                }
+
                 // Clear and add default option to Academic Unit, Program, Major dropdowns
                 academicUnitSelect.innerHTML = '';
                 programSelect.innerHTML = '';
@@ -100,6 +115,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const collegeId = this.value;
                 const campusId = campusSelect.value;
 
+                // If "All Academic Units" is selected, set Program and Major to "All"
+                if (collegeId === 'all') {
+                    programSelect.innerHTML = '';
+                    programSelect.appendChild(createAllOption('Programs'));
+
+                    majorSelect.innerHTML = '';
+                    majorSelect.appendChild(createAllOption('Majors'));
+
+                    updateTotalRecipients(currentTab, campusId, 'all', 'all', 'all');
+                    return;
+                }
+
                 // Clear and add default option to Program and Major dropdowns
                 programSelect.innerHTML = '';
                 majorSelect.innerHTML = '';
@@ -135,6 +162,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const programId = this.value;
                 const campusId = campusSelect.value;
                 const collegeId = academicUnitSelect.value;
+
+                // If "All Programs" is selected, set Major to "All"
+                if (programId === 'all') {
+                    majorSelect.innerHTML = '';
+                    majorSelect.appendChild(createAllOption('Majors'));
+
+                    updateTotalRecipients(currentTab, campusId, collegeId, 'all', 'all');
+                    return;
+                }
 
                 // Clear and add default option to Major dropdown
                 majorSelect.innerHTML = '';
@@ -194,6 +230,18 @@ document.addEventListener('DOMContentLoaded', function () {
             campusSelect.addEventListener('change', function () {
                 const campusId = this.value;
 
+                // If "All Campuses" is selected, set Office and Type to "All"
+                if (campusId === 'all') {
+                    officeSelect.innerHTML = '';
+                    officeSelect.appendChild(createAllOption('Offices'));
+
+                    typeSelect.innerHTML = '';
+                    typeSelect.appendChild(createAllOption('Types'));
+
+                    updateTotalRecipients(currentTab, 'all', null, null, null, null, 'all', 'all');
+                    return;
+                }
+
                 // Clear and add default option to Office and Type dropdowns
                 officeSelect.innerHTML = '';
                 typeSelect.innerHTML = '';
@@ -229,6 +277,15 @@ document.addEventListener('DOMContentLoaded', function () {
             officeSelect.addEventListener('change', function () {
                 const officeId = this.value;
                 const campusId = campusSelect.value;
+
+                // If "All Offices" is selected, set Type to "All"
+                if (officeId === 'all') {
+                    typeSelect.innerHTML = '';
+                    typeSelect.appendChild(createAllOption('Types'));
+
+                    updateTotalRecipients(currentTab, campusId, null, null, null, null, 'all', 'all');
+                    return;
+                }
 
                 // Clear and add default option to Type dropdown
                 typeSelect.innerHTML = '';
