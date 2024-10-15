@@ -127,6 +127,7 @@
                                 <select id="office" name="office"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Office</option>
+                                    <option value="all">All Offices</option>
                                     <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
@@ -138,6 +139,7 @@
                                 <select id="type" name="type"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Type</option>
+                                    <option value="all">All Types</option>
                                     <!-- Disabled Option -->
                                     <!-- Options populated dynamically using JavaScript -->
                                 </select>
@@ -149,6 +151,7 @@
                                 <select id="status" name="status"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Status</option>
+                                    <option value="all">All Status</option>
                                     <!-- Disabled Option -->
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status->status_id }}">{{ $status->status_name }}</option>

@@ -32,13 +32,20 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error fetching recipient count:', error));
     }
 
-    // Helper function to create a default "Select" option
+    // Helper function to create a default "Select" option and an "All" option
     function createDefaultOption(text) {
         const option = document.createElement('option');
         option.value = '';
         option.text = `Select ${text}`;
         option.disabled = true;
         option.selected = true;
+        return option;
+    }
+
+    function createAllOption(text) {
+        const option = document.createElement('option');
+        option.value = 'all';
+        option.text = `All ${text}`;
         return option;
     }
 
@@ -62,8 +69,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 majorSelect.innerHTML = '';
 
                 academicUnitSelect.appendChild(createDefaultOption('Academic Unit'));
+                academicUnitSelect.appendChild(createAllOption('Academic Units'));
+
                 programSelect.appendChild(createDefaultOption('Program'));
+                programSelect.appendChild(createAllOption('Programs'));
+
                 majorSelect.appendChild(createDefaultOption('Major'));
+                majorSelect.appendChild(createAllOption('Majors'));
 
                 // Fetch colleges for the selected campus
                 if (campusId) {
@@ -93,7 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 majorSelect.innerHTML = '';
 
                 programSelect.appendChild(createDefaultOption('Program'));
+                programSelect.appendChild(createAllOption('Programs'));
+
                 majorSelect.appendChild(createDefaultOption('Major'));
+                majorSelect.appendChild(createAllOption('Majors'));
 
                 // Dynamically update total recipients when a college is selected
                 updateTotalRecipients(currentTab, campusId, collegeId);
@@ -124,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Clear and add default option to Major dropdown
                 majorSelect.innerHTML = '';
                 majorSelect.appendChild(createDefaultOption('Major'));
+                majorSelect.appendChild(createAllOption('Majors'));
 
                 // Dynamically update total recipients when a program is selected
                 updateTotalRecipients(currentTab, campusId, collegeId, programId);
@@ -183,7 +199,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 typeSelect.innerHTML = '';
 
                 officeSelect.appendChild(createDefaultOption('Office'));
+                officeSelect.appendChild(createAllOption('Offices'));
+
                 typeSelect.appendChild(createDefaultOption('Type'));
+                typeSelect.appendChild(createAllOption('Types'));
 
                 // Fetch offices for the selected campus
                 if (campusId) {
@@ -214,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Clear and add default option to Type dropdown
                 typeSelect.innerHTML = '';
                 typeSelect.appendChild(createDefaultOption('Type'));
+                typeSelect.appendChild(createAllOption('Types'));
 
                 // Dynamically update total recipients when an office is selected
                 updateTotalRecipients(currentTab, campusId, null, null, null, null, officeId);

@@ -16,32 +16,35 @@ class FilterService
     // Generic method to fetch data based on a model and field
     public function fetchDataByField($model, $field, $value)
     {
+        if ($value === null) {
+            return $model::all(); // If no value is provided, return all results
+        }
         return $model::where($field, $value)->get();
     }
 
     public function getCollegesByCampus($campusId)
     {
-        return $this->fetchDataByField(College::class, 'campus_id', $campusId);
+        return $campusId === null ? College::all() : $this->fetchDataByField(College::class, 'campus_id', $campusId);
     }
 
     public function getProgramsByCollege($collegeId)
     {
-        return $this->fetchDataByField(Program::class, 'college_id', $collegeId);
+        return $collegeId === null ? Program::all() : $this->fetchDataByField(Program::class, 'college_id', $collegeId);
     }
 
     public function getMajorsByProgram($programId)
     {
-        return $this->fetchDataByField(Major::class, 'program_id', $programId);
+        return $programId === null ? Major::all() : $this->fetchDataByField(Major::class, 'program_id', $programId);
     }
 
     public function getOfficesByCampus($campusId)
     {
-        return $this->fetchDataByField(Office::class, 'campus_id', $campusId);
+        return $campusId === null ? Office::all() : $this->fetchDataByField(Office::class, 'campus_id', $campusId);
     }
 
     public function getTypesByOffice($officeId)
     {
-        return $this->fetchDataByField(Type::class, 'office_id', $officeId);
+        return $officeId === null ? Type::all() : $this->fetchDataByField(Type::class, 'office_id', $officeId);
     }
 
     public function getYears()
@@ -51,38 +54,38 @@ class FilterService
 
     public function getRecipientCount(
         $tab,
-        $campusId,
-        $collegeId = 'all',
-        $programId = 'all',
-        $majorId = 'all',
-        $yearId = 'all',
-        $officeId = 'all',
-        $typeId = 'all',
-        $statusId = 'all'
+        $campusId = null,
+        $collegeId = null,
+        $programId = null,
+        $majorId = null,
+        $yearId = null,
+        $officeId = null,
+        $typeId = null,
+        $statusId = null
     ) {
         $studentsQuery = Student::query();
         $employeesQuery = Employee::query();
 
-        // Check if "All" is selected and skip the filter if so
-        if ($campusId !== 'all') {
+        // Apply filters based on selected options, skip the filter if "all" or null
+        if ($campusId !== null) {
             $studentsQuery->where('campus_id', $campusId);
             $employeesQuery->where('campus_id', $campusId);
         }
 
         if ($tab === 'students') {
-            if ($collegeId !== 'all') {
+            if ($collegeId !== null) {
                 $studentsQuery->where('college_id', $collegeId);
             }
 
-            if ($programId !== 'all') {
+            if ($programId !== null) {
                 $studentsQuery->where('program_id', $programId);
             }
 
-            if ($majorId !== 'all') {
+            if ($majorId !== null) {
                 $studentsQuery->where('major_id', $majorId);
             }
 
-            if ($yearId !== 'all') {
+            if ($yearId !== null) {
                 $studentsQuery->where('year_id', $yearId);
             }
 
@@ -90,15 +93,15 @@ class FilterService
         }
 
         if ($tab === 'employees') {
-            if ($officeId !== 'all') {
+            if ($officeId !== null) {
                 $employeesQuery->where('office_id', $officeId);
             }
 
-            if ($typeId !== 'all') {
+            if ($typeId !== null) {
                 $employeesQuery->where('type_id', $typeId);
             }
 
-            if ($statusId !== 'all') {
+            if ($statusId !== null) {
                 $employeesQuery->where('status_id', $statusId);
             }
 
@@ -108,5 +111,4 @@ class FilterService
         // For the "all" tab, sum the students and employees count
         return $studentsQuery->count() + $employeesQuery->count();
     }
-
 }
