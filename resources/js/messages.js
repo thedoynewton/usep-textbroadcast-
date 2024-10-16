@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeModalButton = document.getElementById('close-review-modal');
     const reviewModal = document.getElementById('reviewModal');
     const previewMessage = document.getElementById('preview-message');
+    const messageForm = document.getElementById('message-form');  // Add form reference
     
     const selectedCampus = document.getElementById('selected-campus');
     const selectedAcademicUnit = document.getElementById('selected-academic-unit');
@@ -179,8 +180,9 @@ document.addEventListener('DOMContentLoaded', function () {
         reviewModal.classList.add('hidden');
     });
 
+    // Handle form submission from the modal
     document.getElementById('confirm-send').addEventListener('click', function () {
-        console.log("Message sent!");
-        reviewModal.classList.add('hidden');
+        messageForm.submit();  // Submit the form
+        reviewModal.classList.add('hidden');  // Close the modal
     });
 });

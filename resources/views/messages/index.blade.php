@@ -7,6 +7,13 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            @if (session('success'))
+                <div class="bg-green-500 text-white p-4 rounded-md mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="bg-black dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
 
                 <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
@@ -26,7 +33,7 @@
                 </ul>
 
                 <!-- Message Form based on selected tab -->
-                <form action="#" method="GET" class="mt-6">
+                <form action="{{ route('messages.store') }}" method="POST" id="message-form" class="mt-6">
                     @csrf
                     <!-- Hidden field to retain the selected tab -->
                     <input type="hidden" name="tab" value="{{ request('tab') }}">
