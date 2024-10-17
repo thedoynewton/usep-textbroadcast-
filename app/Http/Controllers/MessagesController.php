@@ -69,67 +69,56 @@ class MessagesController extends Controller
             'failed_count' => 0  // Initially set to 0
         ]);
     
-        // Fetch recipients based on the selected tab (students, employees, or all)
-        if ($recipientType === 'students') {
-            // If "All Campuses" is selected, skip filtering by campus_id
-            $recipients = Student::when($campusId, function ($query, $campusId) {
-                return $query->where('campus_id', $campusId);
-            })->get();
-        } elseif ($recipientType === 'employees') {
-            // If "All Campuses" is selected, skip filtering by campus_id
-            $recipients = Employee::when($campusId, function ($query, $campusId) {
-                return $query->where('campus_id', $campusId);
-            })->get();
-        } else {
-            // For 'all', retrieve both students and employees
+        // Separate fetching and logging logic for students and employees
+        if ($recipientType === 'students' || $recipientType === 'all') {
+            // Fetch and log students
             $students = Student::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
             })->get();
     
+            foreach ($students as $student) {
+                MessageRecipient::create([
+                    'message_log_id' => $messageLog->id,
+                    'recipient_type' => 'student',
+                    'stud_id' => $student->stud_id,
+                    'emp_id' => null,  // For students, emp_id is null
+                    'fname' => $student->stud_fname,
+                    'lname' => $student->stud_lname,
+                    'mname' => $student->stud_mname,
+                    'c_num' => $student->stud_contact,
+                    'email' => $student->stud_email,
+                    'campus_id' => $student->campus_id,
+                    'college_id' => $student->college_id,
+                    'program_id' => $student->program_id,
+                    'major_id' => $student->major_id,
+                    'year_id' => $student->year_id,
+                    'enrollment_stat' => $student->enrollment_stat,  // Include enrollment_stat
+                    'sent_status' => 'Failed',  // Default to 'Failed', can update after sending
+                ]);
+            }
+        }
+    
+        if ($recipientType === 'employees' || $recipientType === 'all') {
+            // Fetch and log employees
             $employees = Employee::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
             })->get();
     
-            $recipients = $students->merge($employees);
-        }
-    
-        // Log each recipient in the message_recipients table
-        foreach ($recipients as $recipient) {
-            if ($recipient instanceof Student) {
-                // Handle students
-                MessageRecipient::create([
-                    'message_log_id' => $messageLog->id,
-                    'recipient_type' => 'student',
-                    'stud_id' => $recipient->stud_id,
-                    'emp_id' => null,  // For students, emp_id is null
-                    'fname' => $recipient->stud_fname,
-                    'lname' => $recipient->stud_lname,
-                    'mname' => $recipient->stud_mname,
-                    'c_num' => $recipient->stud_contact,
-                    'email' => $recipient->stud_email,
-                    'campus_id' => $recipient->campus_id,
-                    'college_id' => $recipient->college_id,
-                    'program_id' => $recipient->program_id,
-                    'major_id' => $recipient->major_id,
-                    'year_id' => $recipient->year_id,
-                    'sent_status' => 'Failed',  // Default to 'Failed', can update after sending
-                ]);
-            } elseif ($recipient instanceof Employee) {
-                // Handle employees
+            foreach ($employees as $employee) {
                 MessageRecipient::create([
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'employee',
                     'stud_id' => null,  // For employees, stud_id is null
-                    'emp_id' => $recipient->emp_id,
-                    'fname' => $recipient->emp_fname,
-                    'lname' => $recipient->emp_lname,
-                    'mname' => $recipient->emp_mname,
-                    'c_num' => $recipient->emp_contact,
-                    'email' => $recipient->emp_email,
-                    'campus_id' => $recipient->campus_id,
-                    'office_id' => $recipient->office_id,
-                    'status_id' => $recipient->status_id,
-                    'type_id' => $recipient->type_id,
+                    'emp_id' => $employee->emp_id,
+                    'fname' => $employee->emp_fname,
+                    'lname' => $employee->emp_lname,
+                    'mname' => $employee->emp_mname,
+                    'c_num' => $employee->emp_contact,
+                    'email' => $employee->emp_email,
+                    'campus_id' => $employee->campus_id,
+                    'office_id' => $employee->office_id,
+                    'status_id' => $employee->status_id,
+                    'type_id' => $employee->type_id,
                     'sent_status' => 'Failed',  // Default to 'Failed', can update after sending
                 ]);
             }
@@ -137,7 +126,6 @@ class MessagesController extends Controller
     
         if ($sendType === 'now') {
             // Logic for sending the message immediately
-            // After sending, update 'sent_count' and 'failed_count'
             $messageLog->update([
                 'sent_count' => $totalRecipients,
                 'failed_count' => 0,  // Adjust this if there are failures
@@ -149,7 +137,6 @@ class MessagesController extends Controller
             return redirect()->route('messages.index')->with('success', 'Message sent successfully.');
         } elseif ($sendType === 'later') {
             // Logic for scheduling the message
-    
             return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
         }
     }

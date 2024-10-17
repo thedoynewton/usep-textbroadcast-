@@ -10,6 +10,12 @@ class Student extends Model
     use HasFactory;
     protected $primaryKey = 'stud_id';
 
+    protected $fillable = [
+        'stud_id', 'stud_fname', 'stud_lname', 'stud_mname', 'stud_contact', 
+        'stud_email', 'campus_id', 'college_id', 'program_id', 'major_id', 
+        'year_id', 'enrollment_stat' // Ensure these fields are listed here
+    ];
+
     public function campus()
     {
         return $this->belongsTo(Campus::class, 'campus_id');

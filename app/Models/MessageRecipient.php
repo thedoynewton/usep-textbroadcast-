@@ -12,7 +12,7 @@ class MessageRecipient extends Model
     protected $fillable = [
         'message_log_id', 'recipient_type', 'stud_id', 'emp_id', 
         'fname', 'lname', 'mname', 'c_num', 'email', 'campus_id', 
-        'college_id', 'program_id', 'major_id', 'year_id', 'office_id', 
+        'college_id', 'program_id', 'major_id', 'year_id', 'enrollment_stat', 'office_id', 
         'status_id', 'type_id', 'sent_status', 'failure_reason'
     ];
 
