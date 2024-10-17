@@ -42,12 +42,12 @@ class MessagesController extends Controller
         $sendType = $request->input('send_message');  // 'now' or 'later'
         $user = Auth::user();
     
-        // Convert 'all' to 0 for database compatibility
+        // Convert 'all' to null for database compatibility
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
     
         // Handle recipient type based on tab selection
         $recipientType = $request->input('tab') ?? 'all';
-        
+    
         $messageContent = $request->input('message');
         $totalRecipients = $request->input('total_recipients');
     
@@ -57,7 +57,7 @@ class MessagesController extends Controller
         // Log the message in the MessageLog
         $messageLog = MessageLog::create([
             'user_id' => $user->id,
-            'campus_id' => $campusId,  // This will now be 0 if "All Campuses" is selected
+            'campus_id' => $campusId,  // This will now be null if "All Campuses" is selected
             'recipient_type' => $recipientType,  // Ensure 'all', 'students', or 'employees' is logged
             'content' => $messageContent,
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
@@ -71,14 +71,26 @@ class MessagesController extends Controller
     
         // Fetch recipients based on the selected tab (students, employees, or all)
         if ($recipientType === 'students') {
-            $recipients = Student::where('campus_id', $campusId)->get(); // Adjust filtering as needed
+            // If "All Campuses" is selected, skip filtering by campus_id
+            $recipients = Student::when($campusId, function ($query, $campusId) {
+                return $query->where('campus_id', $campusId);
+            })->get();
         } elseif ($recipientType === 'employees') {
-            $recipients = Employee::where('campus_id', $campusId)->get(); // Adjust filtering as needed
+            // If "All Campuses" is selected, skip filtering by campus_id
+            $recipients = Employee::when($campusId, function ($query, $campusId) {
+                return $query->where('campus_id', $campusId);
+            })->get();
         } else {
             // For 'all', retrieve both students and employees
-            $recipients = Student::where('campus_id', $campusId)->get()->merge(
-                Employee::where('campus_id', $campusId)->get()
-            );
+            $students = Student::when($campusId, function ($query, $campusId) {
+                return $query->where('campus_id', $campusId);
+            })->get();
+    
+            $employees = Employee::when($campusId, function ($query, $campusId) {
+                return $query->where('campus_id', $campusId);
+            })->get();
+    
+            $recipients = $students->merge($employees);
         }
     
         // Log each recipient in the message_recipients table
