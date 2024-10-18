@@ -44,6 +44,15 @@ class MessagesController extends Controller
     
         // Convert 'all' to null for database compatibility
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
+        $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
+        $programId = $request->input('program') === 'all' ? null : $request->input('program');
+        $majorId = $request->input('major') === 'all' ? null : $request->input('major');
+        $yearId = $request->input('year') === 'all' ? null : $request->input('year');
+    
+        // Employee-specific filters
+        $officeId = $request->input('office') === 'all' ? null : $request->input('office');
+        $statusId = $request->input('status') === 'all' ? null : $request->input('status');
+        $typeId = $request->input('type') === 'all' ? null : $request->input('type');
     
         // Handle recipient type based on tab selection
         $recipientType = $request->input('tab') ?? 'all';
@@ -69,12 +78,25 @@ class MessagesController extends Controller
             'failed_count' => 0  // Initially set to 0
         ]);
     
-        // Separate fetching and logging logic for students and employees
+        // Fetch and log students if recipient type is students or all
         if ($recipientType === 'students' || $recipientType === 'all') {
-            // Fetch and log students
+            // Fetch students based on the user's filters
             $students = Student::when($campusId, function ($query, $campusId) {
-                return $query->where('campus_id', $campusId);
-            })->get();
+                    return $query->where('campus_id', $campusId);
+                })
+                ->when($collegeId, function ($query, $collegeId) {
+                    return $query->where('college_id', $collegeId);
+                })
+                ->when($programId, function ($query, $programId) {
+                    return $query->where('program_id', $programId);
+                })
+                ->when($majorId, function ($query, $majorId) {
+                    return $query->where('major_id', $majorId);
+                })
+                ->when($yearId, function ($query, $yearId) {
+                    return $query->where('year_id', $yearId);
+                })
+                ->get();
     
             foreach ($students as $student) {
                 MessageRecipient::create([
@@ -98,11 +120,21 @@ class MessagesController extends Controller
             }
         }
     
+        // Fetch and log employees if recipient type is employees or all
         if ($recipientType === 'employees' || $recipientType === 'all') {
-            // Fetch and log employees
             $employees = Employee::when($campusId, function ($query, $campusId) {
-                return $query->where('campus_id', $campusId);
-            })->get();
+                    return $query->where('campus_id', $campusId);
+                })
+                ->when($officeId, function ($query, $officeId) {
+                    return $query->where('office_id', $officeId);
+                })
+                ->when($statusId, function ($query, $statusId) {
+                    return $query->where('status_id', $statusId);
+                })
+                ->when($typeId, function ($query, $typeId) {
+                    return $query->where('type_id', $typeId);
+                })
+                ->get();
     
             foreach ($employees as $employee) {
                 MessageRecipient::create([
