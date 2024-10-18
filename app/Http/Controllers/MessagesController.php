@@ -63,12 +63,29 @@ class MessagesController extends Controller
         // Prepare the scheduled date if 'send_later' is selected
         $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'))->format('Y-m-d H:i:s') : null;
     
+        // Determine if a message template was selected
+        $templateId = $request->input('template');
+        if ($templateId) {
+            // A template was selected, retrieve the template's name to log it
+            $template = MessageTemplate::find($templateId);
+            $logContent = $template->name; // Log the template name
+        } else {
+            // No template was selected, log the actual message content and create a new template
+            $logContent = $messageContent;
+    
+            // Add the message as a new template
+            $newTemplate = MessageTemplate::create([
+                'name' => 'Custom Template ' . now()->format('Y-m-d H:i:s'),  // You can customize the name as needed
+                'content' => $messageContent,
+            ]);
+        }
+    
         // Log the message in the MessageLog
         $messageLog = MessageLog::create([
             'user_id' => $user->id,
             'campus_id' => $campusId,  // This will now be null if "All Campuses" is selected
             'recipient_type' => $recipientType,  // Ensure 'all', 'students', or 'employees' is logged
-            'content' => $messageContent,
+            'content' => $logContent,  // Log either the template name or the message content
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
             'scheduled_at' => $scheduledAt,
             'sent_at' => $sendType === 'now' ? now() : null,
