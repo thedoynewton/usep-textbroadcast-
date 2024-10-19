@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
         type: document.createElement('div'),
         status: document.createElement('div'),
         message: document.createElement('div'),
-        total_recipients: document.createElement('div')
+        total_recipients: document.createElement('div'),
+        send_date: document.createElement('div')
     };
 
     function displayError(field, message) {
@@ -117,6 +118,21 @@ document.addEventListener('DOMContentLoaded', function () {
         return isValid;
     }
 
+    // Validation function for Send Later option
+function validateSendLater() {
+    let isValid = true;
+    clearErrors();
+
+    // Check if "Send Later" is selected but no date is provided
+    if (sendLaterRadio.checked && !sendDateInput.value) {
+        displayError('send_date', 'Please select a date and time to schedule the message.');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+
     // Update character count when typing in the message field
     messageInput.addEventListener('input', function () {
         charCountDisplay.textContent = messageInput.value.length;
@@ -136,10 +152,10 @@ document.addEventListener('DOMContentLoaded', function () {
     reviewButton.addEventListener('click', function (e) {
         e.preventDefault();
 
-        // Perform validation
-        if (!validateForm()) {
-            return; // If validation fails, don't show the modal
-        }
+    // Perform form validation and check if "Send Later" option is selected without a date
+    if (!validateForm() || !validateSendLater()) {
+        return; // If validation fails, don't show the modal
+    }
 
         // Populate the modal with the message and other selected details
         previewMessage.textContent = messageInput.value || 'No message entered';
