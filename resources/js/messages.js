@@ -105,8 +105,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (messageInput.value.length === 0 || messageInput.value.length > 160) {
+        if (messageInput.value.length === 0) {
             displayError('message', 'Please enter a message.');
+            isValid = false;
+        }
+
+        if (messageInput.value.length > 160) {
+            displayError('message', 'The message is too long.');
             isValid = false;
         }
 
