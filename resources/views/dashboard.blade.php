@@ -58,13 +58,21 @@
                 <div class="flex items-center justify-center min-h-screen px-4 text-center">
                     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
-                    <div class="inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
+                    <div
+                        class="inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
                         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recipients Details</h3>
+
                             <ul id="recipientList" class="divide-y divide-gray-200">
                                 <!-- Recipients will be injected here dynamically -->
                             </ul>
+
+                            <!-- Pagination links container -->
+                            <div id="paginationContainer" class="mt-4 flex justify-center space-x-2">
+                                <!-- Pagination buttons will be injected here -->
+                            </div>
                         </div>
+
                         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                             <button type="button" class="btn btn-secondary" id="closeModal">Close</button>
                         </div>
@@ -77,41 +85,39 @@
                 <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4 items-center">
                     <!-- Search Bar -->
                     <div class="flex-grow">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            value="{{ request('search') }}" 
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             placeholder="Search by message content or user name...">
                     </div>
 
                     <!-- Recipient Type Filter -->
                     <div>
-                        <select 
-                            name="recipient_type" 
+                        <select name="recipient_type"
                             class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <option value="">All Recipient Types</option>
-                            <option value="students" {{ request('recipient_type') == 'students' ? 'selected' : '' }}>Students</option>
-                            <option value="employees" {{ request('recipient_type') == 'employees' ? 'selected' : '' }}>Employees</option>
+                            <option value="students" {{ request('recipient_type') == 'students' ? 'selected' : '' }}>
+                                Students</option>
+                            <option value="employees" {{ request('recipient_type') == 'employees' ? 'selected' : '' }}>
+                                Employees</option>
                         </select>
                     </div>
 
                     <!-- Status Filter -->
                     <div>
-                        <select 
-                            name="status" 
+                        <select name="status"
                             class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <option value="">All Status</option>
                             <option value="sent" {{ request('status') == 'sent' ? 'selected' : '' }}>Sent</option>
-                            <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>
+                                Scheduled</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
+                                Cancelled</option>
                         </select>
                     </div>
 
                     <!-- Submit Button -->
                     <div>
-                        <button 
-                            type="submit" 
+                        <button type="submit"
                             class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 disabled:opacity-25 transition">
                             Filter
                         </button>
@@ -124,7 +130,7 @@
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-semibold mb-4">Recent Messages</h3>
 
-                    @if($messageLogs->isEmpty())
+                    @if ($messageLogs->isEmpty())
                         <p>No messages have been logged yet.</p>
                     @else
                         <div class="overflow-x-auto">
@@ -150,7 +156,8 @@
                                     @foreach ($messageLogs as $log)
                                         <tr>
                                             <td class="border px-4 py-2">{{ $log->user->name ?? 'Unknown' }}</td>
-                                            <td class="border px-4 py-2">{{ $log->campus->campus_name ?? 'All Campuses' }}</td>
+                                            <td class="border px-4 py-2">
+                                                {{ $log->campus->campus_name ?? 'All Campuses' }}</td>
                                             <td class="border px-4 py-2">{{ ucfirst($log->recipient_type) }}</td>
                                             <td class="border px-4 py-2">{{ $log->content ?? 'No Content' }}</td>
                                             <td class="border px-4 py-2">{{ ucfirst($log->message_type) }}</td>
@@ -158,7 +165,8 @@
                                             <td class="border px-4 py-2">{{ $log->sent_count ?? 0 }}</td>
                                             <td class="border px-4 py-2">{{ $log->failed_count ?? 0 }}</td>
                                             <td class="border px-4 py-2">{{ ucfirst($log->status) }}</td>
-                                            <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d H:i') }}</td>
+                                            <td class="border px-4 py-2">
+                                                {{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d H:i') }}</td>
                                             <td class="border px-4 py-2">
                                                 {{ isset($log->sent_at) ? \Carbon\Carbon::parse($log->sent_at)->format('Y-m-d H:i') : 'N/A' }}
                                             </td>
@@ -176,7 +184,8 @@
 
                         <!-- Pagination Links -->
                         <div class="mt-4">
-                            {{ $messageLogs->appends(request()->input())->links() }}  <!-- Keep filters when paginating -->
+                            {{ $messageLogs->appends(request()->input())->links() }}
+                            <!-- Keep filters when paginating -->
                         </div>
                     @endif
                 </div>
