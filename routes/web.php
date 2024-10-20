@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppManagementController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\MessageTemplateController;
@@ -29,6 +30,8 @@ Route::middleware('auth')->group(function () {
 
     // Admin and Subadmin Routes (Role-Based)
     Route::middleware([RoleMiddleware::class . ':admin,subadmin'])->group(function () {
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Messages CRUD Routes
         Route::resource('messages', MessagesController::class);

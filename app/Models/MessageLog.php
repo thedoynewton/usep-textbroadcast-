@@ -10,9 +10,24 @@ class MessageLog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'campus_id', 'recipient_type', 'content', 
-        'message_type', 'scheduled_at', 'sent_at', 'cancelled_at', 
-        'status', 'total_recipients', 'sent_count', 'failed_count'
+        'user_id',
+        'campus_id',
+        'recipient_type',
+        'content',
+        'message_type',
+        'scheduled_at',
+        'sent_at',
+        'cancelled_at',
+        'status',
+        'total_recipients',
+        'sent_count',
+        'failed_count'
+    ];
+
+    // Add casting for sent_at and scheduled_at fields
+    protected $casts = [
+        'sent_at' => 'datetime',
+        'scheduled_at' => 'datetime',
     ];
 
     public function user()
