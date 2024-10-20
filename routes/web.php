@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware([RoleMiddleware::class . ':admin,subadmin'])->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/recipients', [DashboardController::class, 'getRecipients']);
+
 
         // Messages CRUD Routes
         Route::resource('messages', MessagesController::class);

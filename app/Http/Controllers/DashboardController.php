@@ -3,18 +3,103 @@
 namespace App\Http\Controllers;
 
 use App\Models\MessageLog;
+use App\Models\MessageRecipient;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-    // Use paginate instead of get and specify the number of logs per page
-    $messageLogs = MessageLog::with(['user', 'campus']) // Eager load user and campus to avoid N+1 query issue
-        ->orderBy('created_at', 'desc')                 // Order by latest messages
-        ->paginate(10);                                 // Paginate with 10 logs per page
+        // Query logic for search and filtering
+        $query = MessageLog::query();
 
-    return view('dashboard', compact('messageLogs'));
+        // Apply search and filters
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($recipientType = $request->input('recipient_type')) {
+            $query->where('recipient_type', $recipientType);
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        // Paginate the logs and append the search/filter parameters
+        $messageLogs = $query->with(['user', 'campus'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->appends($request->all());
+
+        // Fetch card data counts from the message_recipients table
+        // Total Messages (recipients with 'Sent' status)
+        $totalMessages = MessageRecipient::where('sent_status', 'Sent')->count();
+
+        // Scheduled Messages (recipients with 'Sent' status linked to 'scheduled' message type)
+        $scheduledMessages = MessageRecipient::where('sent_status', 'Sent')
+            ->whereHas('messageLog', function ($q) {
+                $q->where('message_type', 'scheduled');
+            })->count();
+
+        // Immediate Messages (recipients with 'Sent' status linked to 'instant' message type)
+        $immediateMessages = MessageRecipient::where('sent_status', 'Sent')
+            ->whereHas('messageLog', function ($q) {
+                $q->where('message_type', 'instant');
+            })->count();
+
+        // Failed Messages (recipients with 'Failed' status)
+        $failedMessages = MessageRecipient::where('sent_status', 'Failed')->count();
+
+        // Cancelled Messages (messages in the message_logs table with a 'cancelled' status)
+        $cancelledMessages = MessageLog::where('status', 'cancelled')->count();
+
+        // Pending Messages (recipients with 'Pending' status)
+        $pendingMessages = MessageRecipient::where('sent_status', 'Pending')->count();
+
+        return view('dashboard', compact(
+            'messageLogs',
+            'totalMessages',
+            'scheduledMessages',
+            'immediateMessages',
+            'failedMessages',
+            'cancelledMessages',
+            'pendingMessages'
+        ));
     }
-    
+
+
+    public function getRecipients(Request $request)
+    {
+        $type = $request->query('type');
+
+        switch ($type) {
+            case 'total':
+                $recipients = MessageRecipient::all();
+                break;
+            case 'scheduled':
+                $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
+                    $query->where('message_type', 'scheduled');
+                })->get();
+                break;
+            case 'instant':
+                $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
+                    $query->where('message_type', 'instant');
+                })->get();
+                break;
+            case 'failed':
+                $recipients = MessageRecipient::where('sent_status', 'Failed')->get();
+                break;
+            default:
+                $recipients = [];
+        }
+
+        return response()->json(['recipients' => $recipients]);
+    }
+
 }

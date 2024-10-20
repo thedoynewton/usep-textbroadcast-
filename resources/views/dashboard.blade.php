@@ -14,6 +14,111 @@
                 </div>
             @endif
 
+            <!-- Cards Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Total Messages Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="totalMessagesCard">
+                    <h3 class="text-lg font-semibold mb-2">Total Messages Sent</h3>
+                    <p class="text-2xl">{{ $totalMessages }}</p>
+                </div>
+
+                <!-- Scheduled Messages Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="scheduledMessagesCard">
+                    <h3 class="text-lg font-semibold mb-2">Scheduled Messages Sent</h3>
+                    <p class="text-2xl">{{ $scheduledMessages }}</p>
+                </div>
+
+                <!-- Immediate Messages Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="immediateMessagesCard">
+                    <h3 class="text-lg font-semibold mb-2">Immediate Messages Sent</h3>
+                    <p class="text-2xl">{{ $immediateMessages }}</p>
+                </div>
+
+                <!-- Failed Messages Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="failedMessagesCard">
+                    <h3 class="text-lg font-semibold mb-2">Failed Messages Sent</h3>
+                    <p class="text-2xl">{{ $failedMessages }}</p>
+                </div>
+
+                <!-- Cancelled Messages Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Cancelled Scheduled Messages</h3>
+                    <p class="text-2xl">{{ $cancelledMessages }}</p>
+                </div>
+
+                <!-- Pending Messages Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold mb-2">Pending Scheduled Messages</h3>
+                    <p class="text-2xl">{{ $pendingMessages }}</p>
+                </div>
+            </div>
+
+            <!-- Modal for displaying recipients -->
+            <div id="recipientsModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                <div class="flex items-center justify-center min-h-screen px-4 text-center">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+
+                    <div class="inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:align-middle sm:max-w-lg sm:w-full">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recipients Details</h3>
+                            <ul id="recipientList" class="divide-y divide-gray-200">
+                                <!-- Recipients will be injected here dynamically -->
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="button" class="btn btn-secondary" id="closeModal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="mb-4 p-4 bg-white shadow-sm sm:rounded-lg">
+                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4 items-center">
+                    <!-- Search Bar -->
+                    <div class="flex-grow">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            value="{{ request('search') }}" 
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
+                            placeholder="Search by message content or user name...">
+                    </div>
+
+                    <!-- Recipient Type Filter -->
+                    <div>
+                        <select 
+                            name="recipient_type" 
+                            class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <option value="">All Recipient Types</option>
+                            <option value="students" {{ request('recipient_type') == 'students' ? 'selected' : '' }}>Students</option>
+                            <option value="employees" {{ request('recipient_type') == 'employees' ? 'selected' : '' }}>Employees</option>
+                        </select>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div>
+                        <select 
+                            name="status" 
+                            class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <option value="">All Status</option>
+                            <option value="sent" {{ request('status') == 'sent' ? 'selected' : '' }}>Sent</option>
+                            <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 disabled:opacity-25 transition">
+                            Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <!-- Message Logs Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -22,7 +127,7 @@
                     @if($messageLogs->isEmpty())
                         <p>No messages have been logged yet.</p>
                     @else
-                        <div class="overflow-x-auto"> <!-- Add scroll for responsiveness -->
+                        <div class="overflow-x-auto">
                             <table class="min-w-full bg-white border border-gray-200 table-auto">
                                 <thead>
                                     <tr>
@@ -67,15 +172,17 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                        </div> <!-- End of scrollable div -->
+                        </div>
 
                         <!-- Pagination Links -->
                         <div class="mt-4">
-                            {{ $messageLogs->links() }}  <!-- Display pagination links -->
+                            {{ $messageLogs->appends(request()->input())->links() }}  <!-- Keep filters when paginating -->
                         </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
+
+    @vite(['resources/js/recipientsModal.js'])
 </x-app-layout>
