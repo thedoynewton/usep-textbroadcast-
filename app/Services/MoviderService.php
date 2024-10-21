@@ -18,7 +18,7 @@ class MoviderService
         // Initialize the Guzzle client with base URI and timeout settings
         $this->client = new Client([
             'base_uri' => 'https://api.movider.co/v1/', // Base URL for Movider API
-            'timeout'  => 5.0, // Set a higher timeout in case of delays
+            'timeout' => 5.0, // Set a higher timeout in case of delays
         ]);
 
         // Get the API key and secret from the environment variables
@@ -128,31 +128,26 @@ class MoviderService
     public function getBalance()
     {
         try {
+            Log::info('Fetching Movider balance.');
 
             $response = $this->client->post('balance', [
                 'form_params' => [
-                    'api_key' => $this->apiKey,
-                    'api_secret' => $this->apiSecret,
+                    'api_key' => config('services.movider.api_key'),
+                    'api_secret' => config('services.movider.api_secret'),
                 ]
             ]);
 
             $data = json_decode($response->getBody()->getContents(), true);
 
+            Log::info('Movider Balance Response:', $data);
+
             $balance = $data['amount'] ?? 0;
 
             return ['balance' => $balance];
-        } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                // Capture the response and log the error message
-                $errorMessage = $e->getResponse()->getBody()->getContents();
-                Log::error('Error fetching Movider balance: ' . $errorMessage);
-            } else {
-                Log::error('Error fetching Movider balance: No response from the server.');
-            }
-            return ['balance' => 0];
-        } catch (Exception $e) {
-            Log::error('An error occurred while fetching Movider balance: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Error fetching Movider balance: ' . $e->getMessage());
             return ['balance' => 0];
         }
     }
+
 }
