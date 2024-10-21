@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\MessageLog;
 use App\Models\MessageRecipient;
+use App\Services\MoviderService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    protected $moviderService;
+
+    public function __construct(MoviderService $moviderService)
+    {
+        $this->moviderService = $moviderService; // Inject MoviderService
+    }
     public function index(Request $request)
     {
         // Query logic for search and filtering
@@ -62,6 +69,10 @@ class DashboardController extends Controller
         // Pending Messages (recipients with 'Pending' status)
         $pendingMessages = MessageRecipient::where('sent_status', 'Pending')->count();
 
+        // Fetch Movider balance using MoviderService
+        $balanceData = $this->moviderService->getBalance();
+        $balance = $balanceData['balance'] ?? 0;
+
         return view('dashboard', compact(
             'messageLogs',
             'totalMessages',
@@ -69,42 +80,43 @@ class DashboardController extends Controller
             'immediateMessages',
             'failedMessages',
             'cancelledMessages',
-            'pendingMessages'
+            'pendingMessages',
+            'balance'
         ));
     }
 
 
     public function getRecipients(Request $request)
-{
-    $type = $request->query('type');
-    $perPage = $request->query('perPage', 5); // Default to 5 recipients per page
+    {
+        $type = $request->query('type');
+        $perPage = $request->query('perPage', 5); // Default to 5 recipients per page
 
-    switch ($type) {
-        case 'total':
-            $recipients = MessageRecipient::paginate($perPage);
-            break;
-        case 'scheduled':
-            $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
-                $query->where('message_type', 'scheduled');
-            })->paginate($perPage);
-            break;
-        case 'instant':
-            $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
-                $query->where('message_type', 'instant');
-            })->paginate($perPage);
-            break;
-        case 'failed':
-            $recipients = MessageRecipient::where('sent_status', 'Failed')->paginate($perPage);
-            break;
-        default:
-            $recipients = collect([])->paginate($perPage); // Return empty collection if no valid type is provided
+        switch ($type) {
+            case 'total':
+                $recipients = MessageRecipient::paginate($perPage);
+                break;
+            case 'scheduled':
+                $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
+                    $query->where('message_type', 'scheduled');
+                })->paginate($perPage);
+                break;
+            case 'instant':
+                $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
+                    $query->where('message_type', 'instant');
+                })->paginate($perPage);
+                break;
+            case 'failed':
+                $recipients = MessageRecipient::where('sent_status', 'Failed')->paginate($perPage);
+                break;
+            default:
+                $recipients = collect([])->paginate($perPage); // Return empty collection if no valid type is provided
+        }
+
+        if ($request->ajax()) {
+            return view('recipients.pagination', compact('recipients'))->render();
+        }
+
+        return response()->json(['recipients' => $recipients]);
     }
-
-    if ($request->ajax()) {
-        return view('recipients.pagination', compact('recipients'))->render();
-    }
-
-    return response()->json(['recipients' => $recipients]);
-}
 
 }

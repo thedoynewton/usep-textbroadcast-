@@ -51,6 +51,16 @@
                     <h3 class="text-lg font-semibold mb-2">Pending Scheduled Messages</h3>
                     <p class="text-2xl">{{ $pendingMessages }}</p>
                 </div>
+
+                <!-- Movider Balance Card -->
+                <div class="bg-white shadow rounded-lg p-6">
+                    <div class="text-gray-800 font-bold text-lg">
+                        SMS Balance
+                    </div>
+                    <div class="text-2xl mt-2">
+                        ${{ number_format($balance, 2) }} <!-- Display the balance with 2 decimals -->
+                    </div>
+                </div>
             </div>
 
             <!-- Modal for displaying recipients -->
