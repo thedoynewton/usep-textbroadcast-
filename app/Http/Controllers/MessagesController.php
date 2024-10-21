@@ -84,7 +84,7 @@ class MessagesController extends Controller
         }
     
         // Prepare the scheduled date if 'send_later' is selected
-        $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'))->format('Y-m-d H:i:s') : null;
+        $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'), 'Asia/Manila') : null;
     
         // Determine if a message template was selected
         $templateId = $request->input('template');
@@ -108,7 +108,7 @@ class MessagesController extends Controller
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
             'scheduled_at' => $scheduledAt,
             'sent_at' => $sendType === 'now' ? now() : null,
-            'status' => $sendType === 'now' ? 'sent' : 'scheduled',
+            'status' => $sendType === 'now' ? 'sent' : 'pending',
             'total_recipients' => $totalRecipients,
             'sent_count' => 0,
             'failed_count' => 0
