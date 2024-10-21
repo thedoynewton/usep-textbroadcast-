@@ -49,6 +49,13 @@ class MessagesController extends Controller
         $sendType = $request->input('send_message');  // 'now' or 'later'
         $user = Auth::user();
 
+        // Fetch remaining balance from Movider
+        $balanceData = $this->moviderService->getBalance();
+        $remainingBalance = $balanceData['balance'] ?? 0;
+
+        // Assume cost per SMS is $0.0065 (or adjust according to your setup)
+        $costPerSms = 0.0065;
+
         // Convert 'all' to null for database compatibility
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
         $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
@@ -66,6 +73,18 @@ class MessagesController extends Controller
 
         $messageContent = $request->input('message');
         $totalRecipients = $request->input('total_recipients');
+
+        // Calculate the total cost for all recipients
+        $totalCost = $totalRecipients * $costPerSms;
+
+        // Check if the remaining balance is sufficient
+        if ($remainingBalance < $totalCost) {
+            // Calculate how many recipients can be sent with the remaining balance
+            $maxRecipients = floor($remainingBalance / $costPerSms);
+
+            // Flash error message and redirect back
+            return redirect()->back()->with('error', "Insufficient balance! You can only send to {$maxRecipients} out of {$totalRecipients} selected recipients. Please top-up or limit the recipients.");
+        }
 
         // Prepare the scheduled date if 'send_later' is selected
         $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'))->format('Y-m-d H:i:s') : null;
@@ -104,7 +123,6 @@ class MessagesController extends Controller
 
         // Fetch and log students if recipient type is students or all
         if ($recipientType === 'students' || $recipientType === 'all') {
-            // Fetch students based on the user's filters
             $students = Student::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
             })
@@ -123,16 +141,12 @@ class MessagesController extends Controller
                 ->get();
 
             foreach ($students as $student) {
-                // Format the phone number before sending the SMS
                 $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
 
-                // Send SMS and log recipient
                 try {
                     if ($sendType === 'now') {
-                        // Use Movider service to send SMS
                         $this->moviderService->sendSMS($formattedNumber, $messageContent);
                         $sentStatus = 'Sent'; // Success
-
                     } else {
                         $sentStatus = 'Scheduled';
                     }
@@ -146,19 +160,19 @@ class MessagesController extends Controller
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'student',
                     'stud_id' => $student->stud_id,
-                    'emp_id' => null,  // For students, emp_id is null
+                    'emp_id' => null,
                     'fname' => $student->stud_fname,
                     'lname' => $student->stud_lname,
                     'mname' => $student->stud_mname,
-                    'c_num' => $formattedNumber,  // Use the formatted phone number
+                    'c_num' => $formattedNumber,
                     'email' => $student->stud_email,
                     'campus_id' => $student->campus_id,
                     'college_id' => $student->college_id,
                     'program_id' => $student->program_id,
                     'major_id' => $student->major_id,
                     'year_id' => $student->year_id,
-                    'enrollment_stat' => $student->enrollment_stat,  // Include enrollment_stat
-                    'sent_status' => $sentStatus,  // Updated status based on send result
+                    'enrollment_stat' => $student->enrollment_stat,
+                    'sent_status' => $sentStatus,
                 ]);
             }
         }
@@ -180,16 +194,12 @@ class MessagesController extends Controller
                 ->get();
 
             foreach ($employees as $employee) {
-                // Format the phone number before sending the SMS
                 $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
 
-                // Send SMS and log recipient
                 try {
                     if ($sendType === 'now') {
-                        // Use Movider service to send SMS
                         $this->moviderService->sendSMS($formattedNumber, $messageContent);
                         $sentStatus = 'Sent'; // Success
-
                     } else {
                         $sentStatus = 'Scheduled';
                     }
@@ -202,18 +212,18 @@ class MessagesController extends Controller
                 MessageRecipient::create([
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'employee',
-                    'stud_id' => null,  // For employees, stud_id is null
+                    'stud_id' => null,
                     'emp_id' => $employee->emp_id,
                     'fname' => $employee->emp_fname,
                     'lname' => $employee->emp_lname,
                     'mname' => $employee->emp_mname,
-                    'c_num' => $formattedNumber,  // Use the formatted phone number
+                    'c_num' => $formattedNumber,
                     'email' => $employee->emp_email,
                     'campus_id' => $employee->campus_id,
                     'office_id' => $employee->office_id,
                     'status_id' => $employee->status_id,
                     'type_id' => $employee->type_id,
-                    'sent_status' => $sentStatus,  // Updated status based on send result
+                    'sent_status' => $sentStatus,
                 ]);
             }
         }
@@ -227,7 +237,6 @@ class MessagesController extends Controller
 
             return redirect()->route('messages.index')->with('success', 'Message sent successfully.');
         } elseif ($sendType === 'later') {
-            // Logic for scheduling the message
             return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
         }
     }
