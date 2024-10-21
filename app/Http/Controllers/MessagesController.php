@@ -7,6 +7,7 @@ use App\Models\MessageLog;
 use App\Models\MessageRecipient;
 use App\Models\Student;
 use App\Models\Year;
+use App\Services\MoviderService;
 use Illuminate\Http\Request;
 use App\Models\Campus;
 use App\Models\MessageTemplate;
@@ -17,6 +18,12 @@ use Illuminate\Support\Facades\Log;
 
 class MessagesController extends Controller
 {
+    protected $moviderService;
+
+    public function __construct(MoviderService $moviderService)
+    {
+        $this->moviderService = $moviderService;
+    }
     public function index(Request $request)
     {
         $tab = $request->get('tab', 'all'); // Default to 'all' if no tab is selected
@@ -38,31 +45,31 @@ class MessagesController extends Controller
             'send_message' => 'required|in:now,later',
             'send_date' => 'required_if:send_message,later|nullable|date|after:now',
         ]);
-    
+
         $sendType = $request->input('send_message');  // 'now' or 'later'
         $user = Auth::user();
-    
+
         // Convert 'all' to null for database compatibility
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
         $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
         $programId = $request->input('program') === 'all' ? null : $request->input('program');
         $majorId = $request->input('major') === 'all' ? null : $request->input('major');
         $yearId = $request->input('year') === 'all' ? null : $request->input('year');
-    
+
         // Employee-specific filters
         $officeId = $request->input('office') === 'all' ? null : $request->input('office');
         $statusId = $request->input('status') === 'all' ? null : $request->input('status');
         $typeId = $request->input('type') === 'all' ? null : $request->input('type');
-    
+
         // Handle recipient type based on tab selection
         $recipientType = $request->input('tab') ?? 'all';
-    
+
         $messageContent = $request->input('message');
         $totalRecipients = $request->input('total_recipients');
-    
+
         // Prepare the scheduled date if 'send_later' is selected
         $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'))->format('Y-m-d H:i:s') : null;
-    
+
         // Determine if a message template was selected
         $templateId = $request->input('template');
         if ($templateId) {
@@ -72,14 +79,14 @@ class MessagesController extends Controller
         } else {
             // No template was selected, log the actual message content and create a new template
             $logContent = $messageContent;
-    
+
             // Add the message as a new template
             $newTemplate = MessageTemplate::create([
                 'name' => 'Custom Template ' . now()->format('Y-m-d H:i:s'),  // You can customize the name as needed
                 'content' => $messageContent,
             ]);
         }
-    
+
         // Log the message in the MessageLog
         $messageLog = MessageLog::create([
             'user_id' => $user->id,
@@ -94,13 +101,13 @@ class MessagesController extends Controller
             'sent_count' => 0,  // Initially set to 0
             'failed_count' => 0  // Initially set to 0
         ]);
-    
+
         // Fetch and log students if recipient type is students or all
         if ($recipientType === 'students' || $recipientType === 'all') {
             // Fetch students based on the user's filters
             $students = Student::when($campusId, function ($query, $campusId) {
-                    return $query->where('campus_id', $campusId);
-                })
+                return $query->where('campus_id', $campusId);
+            })
                 ->when($collegeId, function ($query, $collegeId) {
                     return $query->where('college_id', $collegeId);
                 })
@@ -114,8 +121,27 @@ class MessagesController extends Controller
                     return $query->where('year_id', $yearId);
                 })
                 ->get();
-    
+
             foreach ($students as $student) {
+                // Format the phone number before sending the SMS
+                $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
+
+                // Send SMS and log recipient
+                try {
+                    if ($sendType === 'now') {
+                        // Use Movider service to send SMS
+                        $this->moviderService->sendSMS($formattedNumber, $messageContent);
+                        $sentStatus = 'Sent'; // Success
+
+                    } else {
+                        $sentStatus = 'Scheduled';
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to send SMS to {$formattedNumber}: " . $e->getMessage());
+                    $sentStatus = 'Failed'; // SMS send failure
+                }
+
+                // Log recipient
                 MessageRecipient::create([
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'student',
@@ -124,7 +150,7 @@ class MessagesController extends Controller
                     'fname' => $student->stud_fname,
                     'lname' => $student->stud_lname,
                     'mname' => $student->stud_mname,
-                    'c_num' => $student->stud_contact,
+                    'c_num' => $formattedNumber,  // Use the formatted phone number
                     'email' => $student->stud_email,
                     'campus_id' => $student->campus_id,
                     'college_id' => $student->college_id,
@@ -132,16 +158,16 @@ class MessagesController extends Controller
                     'major_id' => $student->major_id,
                     'year_id' => $student->year_id,
                     'enrollment_stat' => $student->enrollment_stat,  // Include enrollment_stat
-                    'sent_status' => 'Failed',  // Default to 'Failed', can update after sending
+                    'sent_status' => $sentStatus,  // Updated status based on send result
                 ]);
             }
         }
-    
+
         // Fetch and log employees if recipient type is employees or all
         if ($recipientType === 'employees' || $recipientType === 'all') {
             $employees = Employee::when($campusId, function ($query, $campusId) {
-                    return $query->where('campus_id', $campusId);
-                })
+                return $query->where('campus_id', $campusId);
+            })
                 ->when($officeId, function ($query, $officeId) {
                     return $query->where('office_id', $officeId);
                 })
@@ -152,8 +178,27 @@ class MessagesController extends Controller
                     return $query->where('type_id', $typeId);
                 })
                 ->get();
-    
+
             foreach ($employees as $employee) {
+                // Format the phone number before sending the SMS
+                $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
+
+                // Send SMS and log recipient
+                try {
+                    if ($sendType === 'now') {
+                        // Use Movider service to send SMS
+                        $this->moviderService->sendSMS($formattedNumber, $messageContent);
+                        $sentStatus = 'Sent'; // Success
+
+                    } else {
+                        $sentStatus = 'Scheduled';
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Failed to send SMS to {$formattedNumber}: " . $e->getMessage());
+                    $sentStatus = 'Failed'; // SMS send failure
+                }
+
+                // Log recipient
                 MessageRecipient::create([
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'employee',
@@ -162,32 +207,47 @@ class MessagesController extends Controller
                     'fname' => $employee->emp_fname,
                     'lname' => $employee->emp_lname,
                     'mname' => $employee->emp_mname,
-                    'c_num' => $employee->emp_contact,
+                    'c_num' => $formattedNumber,  // Use the formatted phone number
                     'email' => $employee->emp_email,
                     'campus_id' => $employee->campus_id,
                     'office_id' => $employee->office_id,
                     'status_id' => $employee->status_id,
                     'type_id' => $employee->type_id,
-                    'sent_status' => 'Failed',  // Default to 'Failed', can update after sending
+                    'sent_status' => $sentStatus,  // Updated status based on send result
                 ]);
             }
         }
-    
+
         if ($sendType === 'now') {
-            // Logic for sending the message immediately
+            // Update sent and failed counts
             $messageLog->update([
-                'sent_count' => $totalRecipients,
-                'failed_count' => 0,  // Adjust this if there are failures
+                'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
+                'failed_count' => $messageLog->recipients()->where('sent_status', 'Failed')->count(),
             ]);
-    
-            // Optionally, update the sent status for all recipients
-            MessageRecipient::where('message_log_id', $messageLog->id)->update(['sent_status' => 'Sent']);
-    
+
             return redirect()->route('messages.index')->with('success', 'Message sent successfully.');
         } elseif ($sendType === 'later') {
             // Logic for scheduling the message
             return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
         }
     }
-    
+
+    /**
+     * Format phone numbers by extracting the first 10 digits and prepending +63.
+     *
+     * @param string $number
+     * @return string
+     */
+    public function formatPhoneNumber($number)
+    {
+        // Remove all non-numeric characters
+        $number = preg_replace('/\D/', '', $number);
+
+        // Get the last 10 digits
+        $number = substr($number, -10);
+
+        // Prepend +63 country code
+        return '+63' . $number;
+    }
+
 }
