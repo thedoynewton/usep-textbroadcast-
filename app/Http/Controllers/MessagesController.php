@@ -142,7 +142,7 @@ class MessagesController extends Controller
                         $this->moviderService->sendSMS($formattedNumber, $messageContent);
                         $sentStatus = 'Sent'; // Success
                     } else {
-                        $sentStatus = 'Scheduled';
+                        $sentStatus = 'Pending';
                     }
                 } catch (\Exception $e) {
                     $sentStatus = 'Failed'; // SMS send failure
@@ -197,7 +197,7 @@ class MessagesController extends Controller
                         $this->moviderService->sendSMS($formattedNumber, $messageContent);
                         $sentStatus = 'Sent'; // Success
                     } else {
-                        $sentStatus = 'Scheduled';
+                        $sentStatus = 'Pending';
                     }
                 } catch (\Exception $e) {
                     $sentStatus = 'Failed'; // SMS send failure
