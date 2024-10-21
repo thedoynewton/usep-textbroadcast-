@@ -58,7 +58,7 @@
                         SMS Balance
                     </div>
                     <div class="text-2xl mt-2">
-                        ${{ number_format($balance, 2) }} <!-- Display the balance with 2 decimals -->
+                        ${{ number_format($balance, 4) }} <!-- Display the balance with 4 decimals -->
                     </div>
                 </div>
             </div>
