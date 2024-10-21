@@ -15,6 +15,7 @@ class DashboardController extends Controller
     {
         $this->moviderService = $moviderService; // Inject MoviderService
     }
+
     public function index(Request $request)
     {
         // Query logic for search and filtering
@@ -45,7 +46,7 @@ class DashboardController extends Controller
             ->appends($request->all());
 
         // Fetch card data counts from the message_recipients table
-        // Total Messages (recipients with 'Sent' status)
+        // Total Messages (only recipients with 'Sent' status)
         $totalMessages = MessageRecipient::where('sent_status', 'Sent')->count();
 
         // Scheduled Messages (recipients with 'Sent' status linked to 'scheduled' message type)
@@ -85,7 +86,6 @@ class DashboardController extends Controller
         ));
     }
 
-
     public function getRecipients(Request $request)
     {
         $type = $request->query('type');
@@ -93,17 +93,19 @@ class DashboardController extends Controller
 
         switch ($type) {
             case 'total':
-                $recipients = MessageRecipient::paginate($perPage);
+                $recipients = MessageRecipient::where('sent_status', 'Sent')->paginate($perPage);
                 break;
             case 'scheduled':
-                $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
-                    $query->where('message_type', 'scheduled');
-                })->paginate($perPage);
+                $recipients = MessageRecipient::where('sent_status', 'Sent')
+                    ->whereHas('messageLog', function ($query) {
+                        $query->where('message_type', 'scheduled');
+                    })->paginate($perPage);
                 break;
             case 'instant':
-                $recipients = MessageRecipient::whereHas('messageLog', function ($query) {
-                    $query->where('message_type', 'instant');
-                })->paginate($perPage);
+                $recipients = MessageRecipient::where('sent_status', 'Sent')
+                    ->whereHas('messageLog', function ($query) {
+                        $query->where('message_type', 'instant');
+                    })->paginate($perPage);
                 break;
             case 'failed':
                 $recipients = MessageRecipient::where('sent_status', 'Failed')->paginate($perPage);
@@ -118,5 +120,4 @@ class DashboardController extends Controller
 
         return response()->json(['recipients' => $recipients]);
     }
-
 }
