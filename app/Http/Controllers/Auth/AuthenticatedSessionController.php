@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
     public function loginWithEmail(Request $request): RedirectResponse
     {
         // Log the login attempt
-        Log::info('Login attempt with email: ' . $request->input('email'));
+        //Log::info('Login attempt with email: ' . $request->input('email'));
     
         // Validate the email format
         $validator = Validator::make($request->all(), [
@@ -56,7 +56,7 @@ class AuthenticatedSessionController extends Controller
         $email = $request->input('email');
         $domain = substr(strrchr($email, "@"), 1);
     
-        Log::info('Email domain check: ' . $domain);
+        //Log::info('Email domain check: ' . $domain);
     
         // Check if the email domain is 'usep.edu.ph'
         if ($domain !== 'usep.edu.ph') {
@@ -68,7 +68,7 @@ class AuthenticatedSessionController extends Controller
         $user = User::where('email', $email)->first();
     
         if ($user) {
-            Log::info('User found with email: ' . $user->email . ' | Role: ' . ($user->role ?? 'No role assigned'));
+            //Log::info('User found with email: ' . $user->email . ' | Role: ' . ($user->role ?? 'No role assigned'));
     
             // Deny access if user doesn't have a role
             if (is_null($user->role)) {
@@ -81,13 +81,13 @@ class AuthenticatedSessionController extends Controller
     
             // Redirect based on role
             if ($user->role === 'admin') {
-                Log::info('Admin logged in.');
+                //Log::info('Admin logged in.');
                 return redirect()->intended('/dashboard');
             } elseif ($user->role === 'subadmin') {
-                Log::info('Subadmin logged in.');
+                //Log::info('Subadmin logged in.');
                 return redirect()->intended('/dashboard');
             } else {
-                Log::info('User logged in as regular user.');
+                //Log::info('User logged in as regular user.');
                 return redirect()->intended('/dashboard');
             }
         } else {
