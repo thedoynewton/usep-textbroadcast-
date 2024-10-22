@@ -19,6 +19,12 @@
                 </div>
             @endif
 
+            <!-- Progress Bar (Hidden by Default) -->
+            <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-4 mb-4 hidden">
+                <div id="progress" class="bg-blue-600 h-4 rounded-full" style="width: 0%;"></div>
+            </div>
+
+
             <div class="bg-black dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
 
                 <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
@@ -312,6 +318,6 @@
         </div>
     </div>
 
-    @vite(['resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js'])
+    @vite(['resources/js/progressBar.js','resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js'])
 
 </x-app-layout>
