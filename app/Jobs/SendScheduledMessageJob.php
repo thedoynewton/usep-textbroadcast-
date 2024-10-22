@@ -19,15 +19,16 @@ class SendScheduledMessageJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $messageLogId;
-
+    protected $batchSize;
     /**
      * Create a new job instance.
      *
      * @param int $messageLogId
      */
-    public function __construct($messageLogId)
+    public function __construct($messageLogId, $batchSize = 1)
     {
         $this->messageLogId = $messageLogId;
+        $this->batchSize = $batchSize;
     }
 
     /**
@@ -77,84 +78,122 @@ class SendScheduledMessageJob implements ShouldQueue
 
     private function processStudents($messageLog, $messageContent)
     {
+        // Fetch all students based on the message log's campus
         $students = Student::where('campus_id', $messageLog->campus_id)->get();
-
-        foreach ($students as $student) {
-            $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
-            $failureReason = '';
-            $sentStatus = 'Pending';
-
-            try {
-                // Send the SMS
-                app(MoviderService::class)->sendSMS($formattedNumber, $messageContent);
-                $sentStatus = 'Sent'; // Success
-            } catch (\Exception $e) {
-                $sentStatus = 'Failed'; // SMS send failure
-                $failureReason = $e->getMessage();
-                Log::error("Failed to send SMS to {$formattedNumber}: " . $failureReason);
+    
+        // Split the students into batches
+        $batches = $students->chunk($this->batchSize);
+    
+        foreach ($batches as $batch) {
+            $recipients = [];
+            $recipientDetails = [];
+    
+            foreach ($batch as $student) {
+                $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
+                $recipients[] = $formattedNumber;
+    
+                $recipientDetails[] = [
+                    'message_log_id' => $messageLog->id,
+                    'recipient_type' => 'student',
+                    'stud_id' => $student->stud_id,
+                    'emp_id' => null,
+                    'fname' => $student->stud_fname ?? 'Unknown',
+                    'lname' => $student->stud_lname ?? 'Unknown',
+                    'mname' => $student->stud_mname ?? '',
+                    'c_num' => $formattedNumber,
+                    'email' => $student->stud_email ?? '',
+                    'campus_id' => $student->campus_id,
+                    'college_id' => $student->college_id,
+                    'program_id' => $student->program_id,
+                    'major_id' => $student->major_id,
+                    'year_id' => $student->year_id,
+                    'sent_status' => 'Pending',
+                    'failure_reason' => '',
+                ];
             }
-
-            // Log the recipient
-            MessageRecipient::create([
-                'message_log_id' => $messageLog->id,
-                'recipient_type' => 'student',
-                'stud_id' => $student->stud_id,
-                'emp_id' => null,
-                'fname' => $student->stud_fname ?? 'Unknown',
-                'lname' => $student->stud_lname ?? 'Unknown',
-                'mname' => $student->stud_mname ?? '',
-                'c_num' => $formattedNumber,
-                'email' => $student->stud_email ?? '',
-                'campus_id' => $student->campus_id,
-                'college_id' => $student->college_id,
-                'program_id' => $student->program_id,
-                'major_id' => $student->major_id,
-                'year_id' => $student->year_id,
-                'sent_status' => $sentStatus,
-                'failure_reason' => $failureReason,
-            ]);
+    
+            try {
+                // Send bulk SMS for this batch
+                app(MoviderService::class)->sendBulkSMS($recipients, $messageContent);
+    
+                // Mark the recipients as sent
+                foreach ($recipientDetails as &$details) {
+                    $details['sent_status'] = 'Sent';
+                }
+            } catch (\Exception $e) {
+                // Log errors and mark as failed
+                Log::error('Failed to send SMS: ' . $e->getMessage());
+                foreach ($recipientDetails as &$details) {
+                    $details['sent_status'] = 'Failed';
+                    $details['failure_reason'] = $e->getMessage();
+                }
+            }
+    
+            // Log recipients in the database
+            foreach ($recipientDetails as $details) {
+                MessageRecipient::create($details);
+            }
         }
     }
 
     private function processEmployees($messageLog, $messageContent)
     {
+        // Fetch all employees based on the message log's campus
         $employees = Employee::where('campus_id', $messageLog->campus_id)->get();
-
-        foreach ($employees as $employee) {
-            $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
-            $failureReason = '';
-            $sentStatus = 'Pending';
-
-            try {
-                // Send the SMS
-                app(MoviderService::class)->sendSMS($formattedNumber, $messageContent);
-                $sentStatus = 'Sent'; // Success
-            } catch (\Exception $e) {
-                $sentStatus = 'Failed'; // SMS send failure
-                $failureReason = $e->getMessage();
-                Log::error("Failed to send SMS to {$formattedNumber}: " . $failureReason);
+    
+        // Split the employees into batches
+        $batches = $employees->chunk($this->batchSize);
+    
+        foreach ($batches as $batch) {
+            $recipients = [];
+            $recipientDetails = [];
+    
+            foreach ($batch as $employee) {
+                $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
+                $recipients[] = $formattedNumber;
+    
+                $recipientDetails[] = [
+                    'message_log_id' => $messageLog->id,
+                    'recipient_type' => 'employee',
+                    'stud_id' => null,
+                    'emp_id' => $employee->emp_id,
+                    'fname' => $employee->emp_fname ?? 'Unknown',
+                    'lname' => $employee->emp_lname ?? 'Unknown',
+                    'mname' => $employee->emp_mname ?? '',
+                    'c_num' => $formattedNumber,
+                    'email' => $employee->emp_email ?? '',
+                    'campus_id' => $employee->campus_id,
+                    'office_id' => $employee->office_id,
+                    'status_id' => $employee->status_id,
+                    'type_id' => $employee->type_id,
+                    'sent_status' => 'Pending',
+                    'failure_reason' => '',
+                ];
             }
-
-            // Log the recipient
-            MessageRecipient::create([
-                'message_log_id' => $messageLog->id,
-                'recipient_type' => 'employee',
-                'stud_id' => null,
-                'emp_id' => $employee->emp_id,
-                'fname' => $employee->emp_fname ?? 'Unknown',
-                'lname' => $employee->emp_lname ?? 'Unknown',
-                'mname' => $employee->emp_mname ?? '',
-                'c_num' => $formattedNumber,
-                'email' => $employee->emp_email ?? '',
-                'campus_id' => $employee->campus_id,
-                'office_id' => $employee->office_id,
-                'status_id' => $employee->status_id,
-                'type_id' => $employee->type_id,
-                'sent_status' => $sentStatus,
-                'failure_reason' => $failureReason,
-            ]);
+    
+            try {
+                // Send bulk SMS for this batch
+                app(MoviderService::class)->sendBulkSMS($recipients, $messageContent);
+    
+                // Mark the recipients as sent
+                foreach ($recipientDetails as &$details) {
+                    $details['sent_status'] = 'Sent';
+                }
+            } catch (\Exception $e) {
+                // Log errors and mark as failed
+                Log::error('Failed to send SMS: ' . $e->getMessage());
+                foreach ($recipientDetails as &$details) {
+                    $details['sent_status'] = 'Failed';
+                    $details['failure_reason'] = $e->getMessage();
+                }
+            }
+    
+            // Log recipients in the database
+            foreach ($recipientDetails as $details) {
+                MessageRecipient::create($details);
+            }
         }
-    }
+    }    
 
     private function formatPhoneNumber($phone)
     {

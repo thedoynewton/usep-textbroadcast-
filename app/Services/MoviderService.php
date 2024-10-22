@@ -34,46 +34,46 @@ class MoviderService
      * @return array
      * @throws Exception
      */
-    public function sendSMS($phoneNumber, $message)
-    {
-        $url = 'sms'; // Movider API endpoint for SMS
-        $params = [
-            'form_params' => [
-                'api_key' => $this->apiKey,
-                'api_secret' => $this->apiSecret,
-                'to' => $phoneNumber,
-                'text' => $message,
-                'from' => 'USeP' // Replace with your app name or sender name
-            ]
-        ];
+    // public function sendSMS($phoneNumber, $message)
+    // {
+    //     $url = 'sms'; // Movider API endpoint for SMS
+    //     $params = [
+    //         'form_params' => [
+    //             'api_key' => $this->apiKey,
+    //             'api_secret' => $this->apiSecret,
+    //             'to' => $phoneNumber,
+    //             'text' => $message,
+    //             'from' => 'USeP' // Replace with your app name or sender name
+    //         ]
+    //     ];
 
-        try {
-            // Send the SMS request
-            $response = $this->client->post($url, $params);
-            $result = json_decode($response->getBody()->getContents(), true);
+    //     try {
+    //         // Send the SMS request
+    //         $response = $this->client->post($url, $params);
+    //         $result = json_decode($response->getBody()->getContents(), true);
 
-            // Log success message
-            Log::info('SMS sent successfully to ' . $phoneNumber, ['response' => $result]);
+    //         // Log success message
+    //         Log::info('SMS sent successfully to ' . $phoneNumber, ['response' => $result]);
 
-            return $result;
-        } catch (RequestException $e) {
-            // Check if a response was received
-            if ($e->hasResponse()) {
-                // Capture the response and log the error message
-                $errorMessage = $e->getResponse()->getBody()->getContents();
-                Log::error('Failed to send SMS: ' . $errorMessage);
-            } else {
-                Log::error('Failed to send SMS: No response from the server.');
-            }
+    //         return $result;
+    //     } catch (RequestException $e) {
+    //         // Check if a response was received
+    //         if ($e->hasResponse()) {
+    //             // Capture the response and log the error message
+    //             $errorMessage = $e->getResponse()->getBody()->getContents();
+    //             Log::error('Failed to send SMS: ' . $errorMessage);
+    //         } else {
+    //             Log::error('Failed to send SMS: No response from the server.');
+    //         }
 
-            // Rethrow the exception for handling in the controller or elsewhere
-            throw new Exception("SMS sending failed: " . $e->getMessage());
-        } catch (Exception $e) {
-            // Catch any other exceptions and log them
-            Log::error('An error occurred while sending SMS: ' . $e->getMessage());
-            throw new Exception("SMS sending failed: " . $e->getMessage());
-        }
-    }
+    //         // Rethrow the exception for handling in the controller or elsewhere
+    //         throw new Exception("SMS sending failed: " . $e->getMessage());
+    //     } catch (Exception $e) {
+    //         // Catch any other exceptions and log them
+    //         Log::error('An error occurred while sending SMS: ' . $e->getMessage());
+    //         throw new Exception("SMS sending failed: " . $e->getMessage());
+    //     }
+    // }
 
     /**
      * Send bulk SMS to multiple recipients
