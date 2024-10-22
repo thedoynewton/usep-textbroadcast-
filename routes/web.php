@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
 
         // Messages CRUD Routes
         Route::resource('messages', MessagesController::class);
+        Route::patch('/messages/cancel/{id}', [MessagesController::class, 'cancel'])->name('messages.cancel');
 
         // FilterController Routes (API)
         Route::prefix('/api')->group(function () {

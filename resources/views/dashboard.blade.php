@@ -160,6 +160,7 @@
                                         <th class="px-4 py-2 border">Sent At</th>
                                         <th class="px-4 py-2 border">Scheduled At</th>
                                         <th class="px-4 py-2 border">Cancelled At</th>
+                                        <th class="px-4 py-2 border">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -186,6 +187,15 @@
                                             <td class="border px-4 py-2">
                                                 {{ isset($log->cancelled_at) ? \Carbon\Carbon::parse($log->cancelled_at)->format('Y-m-d H:i') : 'N/A' }}
                                             </td>
+                                            <td>
+                                                @if ($log->status === 'pending' && $log->message_type === 'scheduled')
+                                                    <form action="{{ route('messages.cancel', $log->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this scheduled message?');">
+                                                        @csrf
+                                                        @method('PATCH') <!-- Important to specify the PATCH method -->
+                                                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                                    </form>
+                                                @endif
+                                            </td>                                                                              
                                         </tr>
                                     @endforeach
                                 </tbody>

@@ -128,7 +128,6 @@ class MoviderService
     public function getBalance()
     {
         try {
-            Log::info('Fetching Movider balance.');
 
             $response = $this->client->post('balance', [
                 'form_params' => [

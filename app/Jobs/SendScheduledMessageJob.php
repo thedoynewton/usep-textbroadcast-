@@ -40,25 +40,32 @@ class SendScheduledMessageJob implements ShouldQueue
     {
         // Fetch the message log
         $messageLog = MessageLog::find($this->messageLogId);
-
+    
+        // Check if the message log exists
         if (!$messageLog) {
             Log::error("Message log not found for ID: {$this->messageLogId}");
             return;
         }
-
+    
+        // Check if the message was canceled
+        if ($messageLog->status === 'cancelled') {
+            Log::info("Scheduled message {$this->messageLogId} was canceled at {$messageLog->cancelled_at}, skipping job.");
+            return; // Skip further processing if the message is canceled
+        }
+    
         $messageContent = $messageLog->content;
         $recipientType = $messageLog->recipient_type;
-
+    
         // Handle sending to students
         if ($recipientType === 'students' || $recipientType === 'all') {
             $this->processStudents($messageLog, $messageContent);
         }
-
+    
         // Handle sending to employees
         if ($recipientType === 'employees' || $recipientType === 'all') {
             $this->processEmployees($messageLog, $messageContent);
         }
-
+    
         // Update sent/failed counts and status
         $messageLog->update([
             'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
@@ -66,7 +73,7 @@ class SendScheduledMessageJob implements ShouldQueue
             'status' => 'sent',
             'sent_at' => now(),
         ]);
-    }
+    }    
 
     private function processStudents($messageLog, $messageContent)
     {

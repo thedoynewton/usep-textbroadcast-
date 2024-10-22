@@ -16,6 +16,7 @@ use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 
 class MessagesController extends Controller
 {
@@ -46,41 +47,41 @@ class MessagesController extends Controller
             'send_message' => 'required|in:now,later',
             'send_date' => 'required_if:send_message,later|nullable|date|after:now',
         ]);
-    
+
         $sendType = $request->input('send_message');  // 'now' or 'later'
         $user = Auth::user();
-    
+
         // Fetch remaining balance from Movider
         $balanceData = $this->moviderService->getBalance();
         $remainingBalance = $balanceData['balance'] ?? 0;
-    
+
         $costPerSms = 0.0065; // Assume cost per SMS is $0.0065
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
         $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
         $programId = $request->input('program') === 'all' ? null : $request->input('program');
         $majorId = $request->input('major') === 'all' ? null : $request->input('major');
         $yearId = $request->input('year') === 'all' ? null : $request->input('year');
-    
+
         $officeId = $request->input('office') === 'all' ? null : $request->input('office');
         $statusId = $request->input('status') === 'all' ? null : $request->input('status');
         $typeId = $request->input('type') === 'all' ? null : $request->input('type');
-    
+
         $recipientType = $request->input('tab') ?? 'all';
         $messageContent = $request->input('message');
         $totalRecipients = $request->input('total_recipients');
-    
+
         // Calculate the total cost for all recipients
         $totalCost = $totalRecipients * $costPerSms;
-    
+
         // Check if the remaining balance is sufficient
         if ($remainingBalance < $totalCost) {
             $maxRecipients = floor($remainingBalance / $costPerSms);
             return redirect()->back()->with('error', "Insufficient balance! You can only send to {$maxRecipients} out of {$totalRecipients} selected recipients. Please top-up or limit the recipients.");
         }
-    
+
         // Prepare the scheduled date if 'send_later' is selected
         $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'), 'Asia/Manila') : null;
-    
+
         // Log the message in the MessageLog
         $messageLog = MessageLog::create([
             'user_id' => $user->id,
@@ -95,13 +96,13 @@ class MessagesController extends Controller
             'sent_count' => 0,
             'failed_count' => 0
         ]);
-    
+
         // If sending now, process immediately
         if ($sendType === 'now') {
             $this->processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId);
             return redirect()->route('messages.index')->with('success', 'Message sent successfully.');
         }
-    
+
         // If sending later, schedule the job
         if ($sendType === 'later') {
             // Dispatch the job to send the message at the scheduled time
@@ -109,7 +110,7 @@ class MessagesController extends Controller
             return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
         }
     }
-    
+
     private function processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId)
     {
         if ($recipientType === 'students' || $recipientType === 'all') {
@@ -124,11 +125,11 @@ class MessagesController extends Controller
             })->when($yearId, function ($query, $yearId) {
                 return $query->where('year_id', $yearId);
             })->get();
-    
+
             foreach ($students as $student) {
                 $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
                 $failureReason = '';
-    
+
                 try {
                     $this->moviderService->sendSMS($formattedNumber, $messageContent);
                     $sentStatus = 'Sent'; // Success
@@ -137,7 +138,7 @@ class MessagesController extends Controller
                     $failureReason = $e->getMessage();
                     Log::error("Failed to send SMS to {$formattedNumber}: " . $failureReason);
                 }
-    
+
                 MessageRecipient::create([
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'student',
@@ -158,7 +159,7 @@ class MessagesController extends Controller
                 ]);
             }
         }
-    
+
         if ($recipientType === 'employees' || $recipientType === 'all') {
             $employees = Employee::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
@@ -169,11 +170,11 @@ class MessagesController extends Controller
             })->when($typeId, function ($query, $typeId) {
                 return $query->where('type_id', $typeId);
             })->get();
-    
+
             foreach ($employees as $employee) {
                 $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
                 $failureReason = '';
-    
+
                 try {
                     $this->moviderService->sendSMS($formattedNumber, $messageContent);
                     $sentStatus = 'Sent'; // Success
@@ -182,7 +183,7 @@ class MessagesController extends Controller
                     $failureReason = $e->getMessage();
                     Log::error("Failed to send SMS to {$formattedNumber}: " . $failureReason);
                 }
-    
+
                 MessageRecipient::create([
                     'message_log_id' => $messageLog->id,
                     'recipient_type' => 'employee',
@@ -202,14 +203,33 @@ class MessagesController extends Controller
                 ]);
             }
         }
-    
+
         // Update sent and failed counts
         $messageLog->update([
             'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
             'failed_count' => $messageLog->recipients()->where('sent_status', 'Failed')->count(),
         ]);
     }
-        
+
+    public function cancel($id)
+    {
+        // Find the message log
+        $messageLog = MessageLog::findOrFail($id);
+    
+        // Ensure the message is still pending and scheduled
+        if ($messageLog->status === 'pending' && $messageLog->message_type === 'scheduled') {
+            // Mark the message as canceled and record the cancellation time
+            $messageLog->update([
+                'status' => 'cancelled',
+                'cancelled_at' => now(), // Log the cancellation time
+            ]);
+    
+            return redirect()->back()->with('success', 'Scheduled message has been canceled.');
+        }
+    
+        // If the message is not pending or scheduled, show an error
+        return redirect()->back()->with('error', 'Message cannot be canceled.');
+    }    
 
     /**
      * Format phone numbers by extracting the first 10 digits and prepending +63.
