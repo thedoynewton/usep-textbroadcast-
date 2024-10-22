@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendScheduledMessageJob;
 use App\Models\Employee;
 use App\Models\MessageLog;
 use App\Models\MessageRecipient;
@@ -53,24 +54,18 @@ class MessagesController extends Controller
         $balanceData = $this->moviderService->getBalance();
         $remainingBalance = $balanceData['balance'] ?? 0;
     
-        // Assume cost per SMS is $0.0065 (or adjust according to your setup)
-        $costPerSms = 0.0065;
-    
-        // Convert 'all' to null for database compatibility
+        $costPerSms = 0.0065; // Assume cost per SMS is $0.0065
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
         $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
         $programId = $request->input('program') === 'all' ? null : $request->input('program');
         $majorId = $request->input('major') === 'all' ? null : $request->input('major');
         $yearId = $request->input('year') === 'all' ? null : $request->input('year');
     
-        // Employee-specific filters
         $officeId = $request->input('office') === 'all' ? null : $request->input('office');
         $statusId = $request->input('status') === 'all' ? null : $request->input('status');
         $typeId = $request->input('type') === 'all' ? null : $request->input('type');
     
-        // Handle recipient type based on tab selection
         $recipientType = $request->input('tab') ?? 'all';
-    
         $messageContent = $request->input('message');
         $totalRecipients = $request->input('total_recipients');
     
@@ -86,25 +81,12 @@ class MessagesController extends Controller
         // Prepare the scheduled date if 'send_later' is selected
         $scheduledAt = $sendType === 'later' ? Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'), 'Asia/Manila') : null;
     
-        // Determine if a message template was selected
-        $templateId = $request->input('template');
-        if ($templateId) {
-            $template = MessageTemplate::find($templateId);
-            $logContent = $template->name;
-        } else {
-            $logContent = $messageContent;
-            $newTemplate = MessageTemplate::create([
-                'name' => 'Custom Template ' . now()->format('Y-m-d H:i:s'),
-                'content' => $messageContent,
-            ]);
-        }
-    
         // Log the message in the MessageLog
         $messageLog = MessageLog::create([
             'user_id' => $user->id,
             'campus_id' => $campusId,
             'recipient_type' => $recipientType,
-            'content' => $logContent,
+            'content' => $messageContent,
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
             'scheduled_at' => $scheduledAt,
             'sent_at' => $sendType === 'now' ? now() : null,
@@ -114,36 +96,42 @@ class MessagesController extends Controller
             'failed_count' => 0
         ]);
     
-        // Fetch and log students if recipient type is students or all
+        // If sending now, process immediately
+        if ($sendType === 'now') {
+            $this->processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId);
+            return redirect()->route('messages.index')->with('success', 'Message sent successfully.');
+        }
+    
+        // If sending later, schedule the job
+        if ($sendType === 'later') {
+            // Dispatch the job to send the message at the scheduled time
+            SendScheduledMessageJob::dispatch($messageLog->id)->delay($scheduledAt);
+            return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
+        }
+    }
+    
+    private function processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId)
+    {
         if ($recipientType === 'students' || $recipientType === 'all') {
             $students = Student::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
-            })
-            ->when($collegeId, function ($query, $collegeId) {
+            })->when($collegeId, function ($query, $collegeId) {
                 return $query->where('college_id', $collegeId);
-            })
-            ->when($programId, function ($query, $programId) {
+            })->when($programId, function ($query, $programId) {
                 return $query->where('program_id', $programId);
-            })
-            ->when($majorId, function ($query, $majorId) {
+            })->when($majorId, function ($query, $majorId) {
                 return $query->where('major_id', $majorId);
-            })
-            ->when($yearId, function ($query, $yearId) {
+            })->when($yearId, function ($query, $yearId) {
                 return $query->where('year_id', $yearId);
-            })
-            ->get();
+            })->get();
     
             foreach ($students as $student) {
                 $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
                 $failureReason = '';
     
                 try {
-                    if ($sendType === 'now') {
-                        $this->moviderService->sendSMS($formattedNumber, $messageContent);
-                        $sentStatus = 'Sent'; // Success
-                    } else {
-                        $sentStatus = 'Pending';
-                    }
+                    $this->moviderService->sendSMS($formattedNumber, $messageContent);
+                    $sentStatus = 'Sent'; // Success
                 } catch (\Exception $e) {
                     $sentStatus = 'Failed'; // SMS send failure
                     $failureReason = $e->getMessage();
@@ -165,40 +153,30 @@ class MessagesController extends Controller
                     'program_id' => $student->program_id,
                     'major_id' => $student->major_id,
                     'year_id' => $student->year_id,
-                    'enrollment_stat' => $student->enrollment_stat,
                     'sent_status' => $sentStatus,
                     'failure_reason' => $failureReason,  // Log the failure reason
                 ]);
             }
         }
     
-        // Fetch and log employees if recipient type is employees or all
         if ($recipientType === 'employees' || $recipientType === 'all') {
             $employees = Employee::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
-            })
-            ->when($officeId, function ($query, $officeId) {
+            })->when($officeId, function ($query, $officeId) {
                 return $query->where('office_id', $officeId);
-            })
-            ->when($statusId, function ($query, $statusId) {
+            })->when($statusId, function ($query, $statusId) {
                 return $query->where('status_id', $statusId);
-            })
-            ->when($typeId, function ($query, $typeId) {
+            })->when($typeId, function ($query, $typeId) {
                 return $query->where('type_id', $typeId);
-            })
-            ->get();
+            })->get();
     
             foreach ($employees as $employee) {
                 $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
                 $failureReason = '';
     
                 try {
-                    if ($sendType === 'now') {
-                        $this->moviderService->sendSMS($formattedNumber, $messageContent);
-                        $sentStatus = 'Sent'; // Success
-                    } else {
-                        $sentStatus = 'Pending';
-                    }
+                    $this->moviderService->sendSMS($formattedNumber, $messageContent);
+                    $sentStatus = 'Sent'; // Success
                 } catch (\Exception $e) {
                     $sentStatus = 'Failed'; // SMS send failure
                     $failureReason = $e->getMessage();
@@ -225,19 +203,13 @@ class MessagesController extends Controller
             }
         }
     
-        if ($sendType === 'now') {
-            // Update sent and failed counts
-            $messageLog->update([
-                'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
-                'failed_count' => $messageLog->recipients()->where('sent_status', 'Failed')->count(),
-            ]);
-    
-            return redirect()->route('messages.index')->with('success', 'Message sent successfully.');
-        } elseif ($sendType === 'later') {
-            return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
-        }
+        // Update sent and failed counts
+        $messageLog->update([
+            'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
+            'failed_count' => $messageLog->recipients()->where('sent_status', 'Failed')->count(),
+        ]);
     }
-    
+        
 
     /**
      * Format phone numbers by extracting the first 10 digits and prepending +63.

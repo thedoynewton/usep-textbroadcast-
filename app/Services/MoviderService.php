@@ -144,7 +144,7 @@ class MoviderService
             $balance = $data['amount'] ?? 0;
 
             return ['balance' => $balance];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error fetching Movider balance: ' . $e->getMessage());
             return ['balance' => 0];
         }

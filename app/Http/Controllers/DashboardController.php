@@ -68,7 +68,7 @@ class DashboardController extends Controller
         $cancelledMessages = MessageLog::where('status', 'cancelled')->count();
 
         // Pending Messages (recipients with 'Pending' status)
-        $pendingMessages = MessageRecipient::where('sent_status', 'Pending')->count();
+        $pendingMessages = MessageLog::where('status', 'pending')->count();
 
         // Fetch Movider balance using MoviderService
         $balanceData = $this->moviderService->getBalance();
