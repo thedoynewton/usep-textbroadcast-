@@ -31,7 +31,7 @@ return new class extends Migration
             $table->unsignedBigInteger('office_id')->nullable();  // For employees
             $table->unsignedBigInteger('status_id')->nullable();  // For employees
             $table->unsignedBigInteger('type_id')->nullable();    // For employees
-            $table->enum('sent_status', ['Sent', 'Failed', 'Pending'])->default('Failed'); // Status of the message
+            $table->enum('sent_status', ['Sent', 'Failed'])->default('Failed'); // Status of the message
             $table->string('failure_reason')->nullable();
             $table->timestamps();
 
