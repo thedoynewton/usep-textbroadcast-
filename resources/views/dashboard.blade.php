@@ -118,12 +118,11 @@
                             class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <option value="">All Status</option>
                             <option value="sent" {{ request('status') == 'sent' ? 'selected' : '' }}>Sent</option>
-                            <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>
-                                Scheduled</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                                Cancelled</option>
+                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
                     </div>
+
 
                     <!-- Submit Button -->
                     <div>
@@ -189,13 +188,16 @@
                                             </td>
                                             <td>
                                                 @if ($log->status === 'pending' && $log->message_type === 'scheduled')
-                                                    <form action="{{ route('messages.cancel', $log->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this scheduled message?');">
+                                                    <form action="{{ route('messages.cancel', $log->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Are you sure you want to cancel this scheduled message?');">
                                                         @csrf
                                                         @method('PATCH') <!-- Important to specify the PATCH method -->
-                                                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-sm">Cancel</button>
                                                     </form>
                                                 @endif
-                                            </td>                                                                              
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
