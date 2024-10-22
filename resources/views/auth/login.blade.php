@@ -2,30 +2,45 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    <img src="/images/SePhi Favicon.png" alt="USeP Logo" class="w-24 h-24 mx-auto">
+    <h1 class="font-bold text-2xl text-center mt-4 text-red-700">WELCOME BACK</h1>
+    <p class="text-center text-gray-600 mt-2 mb-6">Proceed to login by selecting login options</p>
+
+    <!-- Google Login Button -->
+    <a href="{{ route('google.login') }}"
+        class="inline-flex items-center justify-center px-4 py-2 mb-4 bg-red-700 text-white font-semibold rounded-lg shadow-md w-full">
+        Continue with Google
+    </a>
+
+    <!-- Divider -->
+    <div class="flex items-center my-4">
+        <hr class="flex-grow border-gray-300">
+        <span class="mx-4 text-gray-500">or</span>
+        <hr class="flex-grow border-gray-300">
+    </div>
+
     <!-- Email Login Form -->
     <form method="POST" action="{{ route('login.email') }}">
         @csrf
-
         <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
-                autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="mb-4">
+            <label for="email" class="block text-gray-700 text-left mb-2">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your USeP email"
+                class="border rounded border-gray-500 py-2 px-3 w-full" required>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+        <!-- Email Login Button -->
+        <button type="submit" class="bg-red-700 text-white font-semibold px-4 py-2 rounded-lg w-full mb-6">
+            Continue with email
+        </button>
     </form>
 
-    <!-- Continue with Google Button -->
-    <div class="mt-6 flex items-center justify-center">
-        <a href="{{ route('google.login') }}"
-            class="inline-flex items-center px-4 py-2 bg-white text-gray-700 font-semibold text-xs uppercase tracking-widest border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
-            Continue with Google
-        </a>
+    <!-- Footer -->
+    <p class="text-gray-500 text-center text-sm">
+        Copyright © 2024. All Rights Reserved.
+    </p>
+    <div class="mt-4 text-center">
+        <a href="#" class="text-red-700 hover:underline mx-2">Terms of Use</a> |
+        <a href="#" class="text-red-700 hover:underline mx-2">Privacy Policy</a>
     </div>
 </x-guest-layout>
