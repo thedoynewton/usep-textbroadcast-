@@ -106,7 +106,7 @@ class MessagesController extends Controller
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
             'scheduled_at' => $scheduledAt,
             'sent_at' => $sendType === 'now' ? now() : null,
-            'status' => $sendType === 'now' ? 'sent' : 'pending',
+            'status' => $sendType === 'now' ? 'Sent' : 'Pending',
             'total_recipients' => $totalRecipients,
             'sent_count' => 0,
             'failed_count' => 0
@@ -122,7 +122,7 @@ class MessagesController extends Controller
         if ($sendType === 'later') {
             // Prepare the scheduled date in the user's timezone (Asia/Manila in your case)
             $scheduledAt = Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'), 'Asia/Manila');
-        
+
             // Filters for student/employee recipients
             $filters = [
                 'campus_id' => $campusId,
@@ -134,20 +134,21 @@ class MessagesController extends Controller
                 'status_id' => $statusId,
                 'type_id' => $typeId,
             ];
-        
+
             // Dispatch the job to send the message at the scheduled time
             SendScheduledMessageJob::dispatch($messageLog, $recipientType, $messageContent, $filters, $batchSize)
                 ->delay($scheduledAt); // Schedule for the specified time
-        
+
             return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
         }
-        
+
     }
 
     public function processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId, $batchSize)
     {
-        // Initialize a collection to store unique recipients
-        $recipients = collect();
+        // Initialize a collection to store unique recipients by phone number
+        $recipientsByPhone = collect();
+        $recipientDetails = collect(); // To store all the recipients, even if they share the same phone number
     
         // Process students if applicable
         if ($recipientType === 'students' || $recipientType === 'all') {
@@ -163,30 +164,35 @@ class MessagesController extends Controller
                 return $query->where('year_id', $yearId);
             })->get();
     
-            // Add students to the recipients collection with unique phone numbers
-            $students->each(function ($student) use ($recipients, $messageLog) {
+            // Add students to the recipients collection
+            $students->each(function ($student) use ($recipientsByPhone, $recipientDetails, $messageLog) {
                 $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
     
-                // Add only unique phone numbers to the recipients collection
-                if (!$recipients->contains('c_num', $formattedNumber)) {
-                    $recipients->push([
-                        'message_log_id' => $messageLog->id,
-                        'recipient_type' => 'student',
-                        'stud_id' => $student->stud_id,
-                        'fname' => $student->stud_fname,
-                        'lname' => $student->stud_lname,
-                        'mname' => $student->stud_mname,
+                // Store recipients by their unique phone number
+                if (!$recipientsByPhone->contains('c_num', $formattedNumber)) {
+                    $recipientsByPhone->push([
                         'c_num' => $formattedNumber,
-                        'email' => $student->stud_email,
-                        'campus_id' => $student->campus_id,
-                        'college_id' => $student->college_id,
-                        'program_id' => $student->program_id,
-                        'major_id' => $student->major_id,
-                        'year_id' => $student->year_id,
-                        'sent_status' => 'Pending', // Default to pending
-                        'failure_reason' => '',     // Initially blank
+                        'sent_status' => '', // Will be updated to either Sent or Failed
+                        'failure_reason' => '',
                     ]);
                 }
+    
+                // Store recipient details, to be logged later for each unique number
+                $recipientDetails->push([
+                    'message_log_id' => $messageLog->id,
+                    'recipient_type' => 'student',
+                    'stud_id' => $student->stud_id,
+                    'fname' => $student->stud_fname,
+                    'lname' => $student->stud_lname,
+                    'mname' => $student->stud_mname,
+                    'c_num' => $formattedNumber,
+                    'email' => $student->stud_email,
+                    'campus_id' => $student->campus_id,
+                    'college_id' => $student->college_id,
+                    'program_id' => $student->program_id,
+                    'major_id' => $student->major_id,
+                    'year_id' => $student->year_id,
+                ]);
             });
         }
     
@@ -202,68 +208,91 @@ class MessagesController extends Controller
                 return $query->where('type_id', $typeId);
             })->get();
     
-            // Add employees to the recipients collection with unique phone numbers
-            $employees->each(function ($employee) use ($recipients, $messageLog) {
+            // Add employees to the recipients collection
+            $employees->each(function ($employee) use ($recipientsByPhone, $recipientDetails, $messageLog) {
                 $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
     
-                // Add only unique phone numbers to the recipients collection
-                if (!$recipients->contains('c_num', $formattedNumber)) {
-                    $recipients->push([
-                        'message_log_id' => $messageLog->id,
-                        'recipient_type' => 'employee',
-                        'emp_id' => $employee->emp_id,
-                        'fname' => $employee->emp_fname,
-                        'lname' => $employee->emp_lname,
-                        'mname' => $employee->emp_mname,
+                // Store recipients by their unique phone number
+                if (!$recipientsByPhone->contains('c_num', $formattedNumber)) {
+                    $recipientsByPhone->push([
                         'c_num' => $formattedNumber,
-                        'email' => $employee->emp_email,
-                        'campus_id' => $employee->campus_id,
-                        'office_id' => $employee->office_id,
-                        'status_id' => $employee->status_id,
-                        'type_id' => $employee->type_id,
-                        'sent_status' => 'Pending', // Default to pending
-                        'failure_reason' => '',     // Initially blank
+                        'sent_status' => '', // Will be updated to either Sent or Failed
+                        'failure_reason' => '',
                     ]);
                 }
+    
+                // Store recipient details, to be logged later for each unique number
+                $recipientDetails->push([
+                    'message_log_id' => $messageLog->id,
+                    'recipient_type' => 'employee',
+                    'emp_id' => $employee->emp_id,
+                    'fname' => $employee->emp_fname,
+                    'lname' => $employee->emp_lname,
+                    'mname' => $employee->emp_mname,
+                    'c_num' => $formattedNumber,
+                    'email' => $employee->emp_email,
+                    'campus_id' => $employee->campus_id,
+                    'office_id' => $employee->office_id,
+                    'status_id' => $employee->status_id,
+                    'type_id' => $employee->type_id,
+                ]);
             });
         }
     
-        // Split unique recipients into batches according to the $batchSize
-        $batches = $recipients->chunk($batchSize);
+        // Split unique recipients by phone number into batches according to the $batchSize
+        $batches = $recipientsByPhone->chunk($batchSize);
+        $sentCount = 0;
+        $failedCount = 0;
     
         foreach ($batches as $batch) {
             foreach ($batch as $recipient) {
                 try {
-                    // Send individual SMS using Movider service for each recipient
+                    // Send individual SMS using Movider service for each unique number
                     $this->moviderService->sendBulkSMS([$recipient['c_num']], $messageContent);
     
                     // Update sent status after successful sending
                     $recipient['sent_status'] = 'Sent'; // Mark as sent
+                    $sentCount++; // Increment sent count
                 } catch (\Exception $e) {
                     // Log error and mark status as failed
                     Log::error("Failed to send SMS for Message Log ID: {$messageLog->id}. Error: " . $e->getMessage());
-    
                     $recipient['sent_status'] = 'Failed'; // Mark as failed
                     $recipient['failure_reason'] = $e->getMessage();
+                    $failedCount++; // Increment failed count
                 }
     
-                // Log each recipient into the database
-                MessageRecipient::create($recipient);
+                // Log each recipient in the MessageRecipient table (even if they share the same number)
+                $recipientDetails->where('c_num', $recipient['c_num'])->each(function ($detail) use ($recipient) {
+                    // **Fix:** Make sure to check if message sending was successful before marking as failed
+                    if ($recipient['sent_status'] === 'Sent') {
+                        $detail['sent_status'] = 'Sent';
+                        $detail['failure_reason'] = null;
+                    } else {
+                        $detail['sent_status'] = 'Failed';
+                        $detail['failure_reason'] = $recipient['failure_reason'];
+                    }
+    
+                    // Log the recipient in the database
+                    MessageRecipient::create($detail);
+                });
             }
         }
     
-        // Update sent and failed counts in message_log
+        // **Final Update:** Update sent and failed counts in message_log
         $messageLog->update([
-            'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
-            'failed_count' => $messageLog->recipients()->where('sent_status', 'Failed')->count(),
+            'sent_count' => $sentCount,
+            'failed_count' => $failedCount,
         ]);
-    }      
+
+        // Log the final sent and failed count
+        Log::info("Message Log ID: {$messageLog->id} - Sent: {$sentCount}, Failed: {$failedCount}");
+    }    
 
     public function cancel($id)
     {
         // Find the message log
         $messageLog = MessageLog::findOrFail($id);
-    
+
         // Ensure the message is still pending and scheduled
         if ($messageLog->status === 'pending' && $messageLog->message_type === 'scheduled') {
             // Mark the message as canceled and record the cancellation time
@@ -271,13 +300,13 @@ class MessagesController extends Controller
                 'status' => 'cancelled',
                 'cancelled_at' => now(), // Log the cancellation time
             ]);
-    
+
             return redirect()->back()->with('success', 'Scheduled message has been canceled.');
         }
-    
+
         // If the message is not pending or scheduled, show an error
         return redirect()->back()->with('error', 'Message cannot be canceled.');
-    }    
+    }
 
     /**
      * Format phone numbers by extracting the first 10 digits and prepending +63.
