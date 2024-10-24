@@ -146,6 +146,10 @@ class MessagesController extends Controller
 
     public function processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId, $batchSize)
     {
+        // Initialize a collection to store unique recipients
+        $recipients = collect();
+    
+        // Process students if applicable
         if ($recipientType === 'students' || $recipientType === 'all') {
             $students = Student::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
@@ -159,17 +163,13 @@ class MessagesController extends Controller
                 return $query->where('year_id', $yearId);
             })->get();
     
-            // Split students into batches
-            $batches = $students->chunk($batchSize);
+            // Add students to the recipients collection with unique phone numbers
+            $students->each(function ($student) use ($recipients, $messageLog) {
+                $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
     
-            foreach ($batches as $batch) {
-                $recipients = [];
-                $recipientDetails = [];
-    
-                foreach ($batch as $student) {
-                    $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
-                    $recipients[] = $formattedNumber;
-                    $recipientDetails[] = [
+                // Add only unique phone numbers to the recipients collection
+                if (!$recipients->contains('c_num', $formattedNumber)) {
+                    $recipients->push([
                         'message_log_id' => $messageLog->id,
                         'recipient_type' => 'student',
                         'stud_id' => $student->stud_id,
@@ -185,34 +185,12 @@ class MessagesController extends Controller
                         'year_id' => $student->year_id,
                         'sent_status' => 'Pending', // Default to pending
                         'failure_reason' => '',     // Initially blank
-                    ];
+                    ]);
                 }
-    
-                try {
-                    // Send bulk SMS using Movider service
-                    $this->moviderService->sendBulkSMS($recipients, $messageContent);
-                    
-                    // Update sent status after successful sending
-                    foreach ($recipientDetails as &$details) {
-                        $details['sent_status'] = 'Sent'; // Mark as sent
-                    }
-                } catch (\Exception $e) {
-                    // Log error and set failed status to failed
-                    Log::error("Failed to send bulk SMS for Message Log ID: {$messageLog->id}. Error: " . $e->getMessage());
-                    foreach ($recipientDetails as &$details) {
-                        $details['sent_status'] = 'Failed'; // Mark as failed
-                        $details['failure_reason'] = $e->getMessage();
-                    }
-                }
-    
-                // Log each recipient batch in the database
-                foreach ($recipientDetails as $recipientDetail) {
-                    MessageRecipient::create($recipientDetail);
-                }
-            }
+            });
         }
     
-        // Similar logic for employees
+        // Process employees if applicable
         if ($recipientType === 'employees' || $recipientType === 'all') {
             $employees = Employee::when($campusId, function ($query, $campusId) {
                 return $query->where('campus_id', $campusId);
@@ -224,17 +202,13 @@ class MessagesController extends Controller
                 return $query->where('type_id', $typeId);
             })->get();
     
-            // Split employees into batches
-            $batches = $employees->chunk($batchSize);
+            // Add employees to the recipients collection with unique phone numbers
+            $employees->each(function ($employee) use ($recipients, $messageLog) {
+                $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
     
-            foreach ($batches as $batch) {
-                $recipients = [];
-                $recipientDetails = [];
-    
-                foreach ($batch as $employee) {
-                    $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
-                    $recipients[] = $formattedNumber;
-                    $recipientDetails[] = [
+                // Add only unique phone numbers to the recipients collection
+                if (!$recipients->contains('c_num', $formattedNumber)) {
+                    $recipients->push([
                         'message_log_id' => $messageLog->id,
                         'recipient_type' => 'employee',
                         'emp_id' => $employee->emp_id,
@@ -249,39 +223,41 @@ class MessagesController extends Controller
                         'type_id' => $employee->type_id,
                         'sent_status' => 'Pending', // Default to pending
                         'failure_reason' => '',     // Initially blank
-                    ];
+                    ]);
                 }
+            });
+        }
     
+        // Split unique recipients into batches according to the $batchSize
+        $batches = $recipients->chunk($batchSize);
+    
+        foreach ($batches as $batch) {
+            foreach ($batch as $recipient) {
                 try {
-                    // Send bulk SMS using Movider service
-                    $this->moviderService->sendBulkSMS($recipients, $messageContent);
+                    // Send individual SMS using Movider service for each recipient
+                    $this->moviderService->sendBulkSMS([$recipient['c_num']], $messageContent);
     
                     // Update sent status after successful sending
-                    foreach ($recipientDetails as &$details) {
-                        $details['sent_status'] = 'Sent'; // Mark as sent
-                    }
+                    $recipient['sent_status'] = 'Sent'; // Mark as sent
                 } catch (\Exception $e) {
-                    // Log error and set faied status to failed
-                    Log::error("Failed to send bulk SMS for Message Log ID: {$messageLog->id}. Error: " . $e->getMessage());
-                    foreach ($recipientDetails as &$details) {
-                        $details['sent_status'] = 'Failed'; // Mark as failed
-                        $details['failure_reason'] = $e->getMessage();
-                    }
+                    // Log error and mark status as failed
+                    Log::error("Failed to send SMS for Message Log ID: {$messageLog->id}. Error: " . $e->getMessage());
+    
+                    $recipient['sent_status'] = 'Failed'; // Mark as failed
+                    $recipient['failure_reason'] = $e->getMessage();
                 }
     
-                // Log each recipient batch in the database
-                foreach ($recipientDetails as $recipientDetail) {
-                    MessageRecipient::create($recipientDetail);
-                }
+                // Log each recipient into the database
+                MessageRecipient::create($recipient);
             }
         }
     
-        // Update sent and failed counts
+        // Update sent and failed counts in message_log
         $messageLog->update([
             'sent_count' => $messageLog->recipients()->where('sent_status', 'Sent')->count(),
             'failed_count' => $messageLog->recipients()->where('sent_status', 'Failed')->count(),
         ]);
-    }    
+    }      
 
     public function cancel($id)
     {
