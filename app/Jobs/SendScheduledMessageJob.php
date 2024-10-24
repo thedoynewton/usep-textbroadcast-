@@ -130,7 +130,7 @@ class SendScheduledMessageJob implements ShouldQueue
                     'program_id' => $student->program_id,
                     'major_id' => $student->major_id,
                     'year_id' => $student->year_id,
-                    'sent_status' => 'Pending',
+                    'sent_status' => 'pending',
                 ]);
             });
         }
@@ -174,7 +174,7 @@ class SendScheduledMessageJob implements ShouldQueue
                     'office_id' => $employee->office_id,
                     'status_id' => $employee->status_id,
                     'type_id' => $employee->type_id,
-                    'sent_status' => 'Pending',
+                    'sent_status' => 'pending',
                 ]);
             });
         }

@@ -106,7 +106,7 @@ class MessagesController extends Controller
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
             'scheduled_at' => $scheduledAt,
             'sent_at' => $sendType === 'now' ? now() : null,
-            'status' => $sendType === 'now' ? 'Sent' : 'Pending',
+            'status' => $sendType === 'now' ? 'sent' : 'pending',
             'total_recipients' => $totalRecipients,
             'sent_count' => 0,
             'failed_count' => 0
