@@ -120,13 +120,31 @@ class MessagesController extends Controller
 
         // If sending later, schedule the job
         if ($sendType === 'later') {
+            // Prepare the scheduled date in the user's timezone (Asia/Manila in your case)
+            $scheduledAt = Carbon::createFromFormat('Y-m-d\TH:i', $request->input('send_date'), 'Asia/Manila');
+        
+            // Filters for student/employee recipients
+            $filters = [
+                'campus_id' => $campusId,
+                'college_id' => $collegeId,
+                'program_id' => $programId,
+                'major_id' => $majorId,
+                'year_id' => $yearId,
+                'office_id' => $officeId,
+                'status_id' => $statusId,
+                'type_id' => $typeId,
+            ];
+        
             // Dispatch the job to send the message at the scheduled time
-            SendScheduledMessageJob::dispatch($messageLog->id, $batchSize)->delay($scheduledAt);
+            SendScheduledMessageJob::dispatch($messageLog, $recipientType, $messageContent, $filters, $batchSize)
+                ->delay($scheduledAt); // Schedule for the specified time
+        
             return redirect()->route('messages.index')->with('success', 'Message scheduled successfully.');
         }
+        
     }
 
-    private function processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId, $batchSize)
+    public function processImmediateSending($messageLog, $recipientType, $messageContent, $campusId, $collegeId, $programId, $majorId, $yearId, $officeId, $statusId, $typeId, $batchSize)
     {
         if ($recipientType === 'students' || $recipientType === 'all') {
             $students = Student::when($campusId, function ($query, $campusId) {
@@ -179,8 +197,8 @@ class MessagesController extends Controller
                         $details['sent_status'] = 'Sent'; // Mark as sent
                     }
                 } catch (\Exception $e) {
-                    // Log error and set sent status to failed
-                    Log::error('Failed to send bulk SMS: ' . $e->getMessage());
+                    // Log error and set failed status to failed
+                    Log::error("Failed to send bulk SMS for Message Log ID: {$messageLog->id}. Error: " . $e->getMessage());
                     foreach ($recipientDetails as &$details) {
                         $details['sent_status'] = 'Failed'; // Mark as failed
                         $details['failure_reason'] = $e->getMessage();
@@ -243,8 +261,8 @@ class MessagesController extends Controller
                         $details['sent_status'] = 'Sent'; // Mark as sent
                     }
                 } catch (\Exception $e) {
-                    // Log error and set sent status to failed
-                    Log::error('Failed to send bulk SMS: ' . $e->getMessage());
+                    // Log error and set faied status to failed
+                    Log::error("Failed to send bulk SMS for Message Log ID: {$messageLog->id}. Error: " . $e->getMessage());
                     foreach ($recipientDetails as &$details) {
                         $details['sent_status'] = 'Failed'; // Mark as failed
                         $details['failure_reason'] = $e->getMessage();
