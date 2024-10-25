@@ -9,8 +9,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-semibold mb-4">Message Performance Overview</h3>
-                    
+                    <h3 class="text-lg font-semibold mb-4">Message Delivery Overview</h3>
+
                     <!-- Date range filter form -->
                     <form method="GET" action="{{ route('analytics.index') }}" class="mb-6 flex space-x-4">
                         <div>
@@ -30,15 +30,9 @@
                         </div>
                     </form>
 
-                    <!-- Chart container for Message Performance -->
-                    <div class="chart-container mb-6" style="position: relative; height:40vh; width:80vw">
-                        <canvas id="messagePerformanceChart"></canvas>
-                    </div>
-
-                    <!-- Chart container for Cost Analytics -->
-                    <h3 class="text-lg font-semibold mb-4">Cost Analytics</h3>
+                    <!-- Donut Chart container -->
                     <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-                        <canvas id="costAnalyticsChart"></canvas>
+                        <canvas id="messageDeliveryChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -46,98 +40,29 @@
     </div>
 
     <script>
-        var ctx1 = document.getElementById('messagePerformanceChart').getContext('2d');
-        var performanceChart = new Chart(ctx1, {
-            type: 'bar',
+        var ctx = document.getElementById('messageDeliveryChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'doughnut',
             data: {
-                labels: {!! json_encode($dates) !!}, // Dates for the x-axis
+                labels: {!! json_encode($statuses) !!}, // Status labels (Pending, Sent, Failed, etc.)
                 datasets: [
                     {
-                        label: 'Success',
-                        backgroundColor: 'green',
-                        data: {!! json_encode($successCounts) !!} // Success counts
-                    },
-                    {
-                        label: 'Failed',
-                        backgroundColor: 'red',
-                        data: {!! json_encode($failedCounts) !!} // Failed counts
+                        label: 'Message Status',
+                        backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'], // Add more colors if needed
+                        data: {!! json_encode($counts) !!} // Counts of each status
                     }
                 ]
             },
             options: {
                 responsive: true,
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: {
-                            autoSkip: false
-                        }
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                },
                 plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(tooltipItem) {
-                                var label = tooltipItem.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += tooltipItem.raw;
-                                return label;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Cost Analytics Chart
-        var ctx2 = document.getElementById('costAnalyticsChart').getContext('2d');
-        var costChart = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($dates) !!}, // Dates for the x-axis
-                datasets: [
-                    {
-                        label: 'Cost (USD)',
-                        backgroundColor: 'blue',
-                        borderColor: 'blue',
-                        fill: false,
-                        data: {!! json_encode($costs) !!}, // Costs calculated for each day (3 decimal places)
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: {
-                            autoSkip: false
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value.toFixed(3); // Display 3 decimal places on the y-axis
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                var label = tooltipItem.dataset.label || '';
-                                if (label) {
-                                    label += ': $';
-                                }
-                                label += tooltipItem.raw.toFixed(3); // Show 3 decimal places in tooltips
-                                return label;
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
                             }
                         }
                     }
