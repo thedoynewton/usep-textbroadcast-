@@ -39,9 +39,6 @@
         </div>
     </div>
 
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         var ctx = document.getElementById('messagePerformanceChart').getContext('2d');
         var chart = new Chart(ctx, {
