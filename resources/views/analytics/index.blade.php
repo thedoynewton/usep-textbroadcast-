@@ -15,16 +15,19 @@
                     <form method="GET" action="{{ route('analytics.index') }}" class="mb-6 flex space-x-4">
                         <div>
                             <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date:</label>
-                            <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         </div>
 
                         <div>
                             <label for="end_date" class="block text-sm font-medium text-gray-700">End Date:</label>
-                            <input type="date" id="end_date" name="end_date" value="{{ request('end_date') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <input type="date" id="end_date" name="end_date" value="{{ request('end_date') }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         </div>
 
                         <div class="self-end">
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                            <button type="submit"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
                                 Filter
                             </button>
                         </div>
@@ -37,8 +40,14 @@
 
                     <!-- Line Chart container for Message Success Rate Over Time -->
                     <h3 class="text-lg font-semibold mb-4">Message Success Rate Over Time</h3>
-                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                    <div class="chart-container mb-10" style="position: relative; height:40vh; width:80vw">
                         <canvas id="successRateChart"></canvas>
+                    </div>
+
+                    <!-- Bar Chart container for Recipient Type Analysis -->
+                    <h3 class="text-lg font-semibold mt-8 mb-4">Recipient Type Analysis</h3>
+                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                        <canvas id="recipientTypeChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -52,13 +61,11 @@
             type: 'doughnut',
             data: {
                 labels: {!! json_encode($statuses) !!}, // Status labels
-                datasets: [
-                    {
-                        label: 'Message Status',
-                        backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'], // Colors for each status
-                        data: {!! json_encode($counts) !!} // Counts of each status
-                    }
-                ]
+                datasets: [{
+                    label: 'Message Status',
+                    backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'], // Colors for each status
+                    data: {!! json_encode($counts) !!} // Counts of each status
+                }]
             },
             options: {
                 responsive: true,
@@ -76,15 +83,14 @@
                 }
             }
         });
-    
+
         // Line Chart for Message Success Rate Over Time
         var ctx2 = document.getElementById('successRateChart').getContext('2d');
         var successRateChart = new Chart(ctx2, {
             type: 'line',
             data: {
                 labels: {!! json_encode($dates) !!}, // Dates for the x-axis
-                datasets: [
-                    {
+                datasets: [{
                         label: 'Sent Count',
                         data: {!! json_encode($sentCounts) !!}, // Sent counts over time
                         borderColor: 'green',
@@ -128,6 +134,42 @@
                 }
             }
         });
+
+        // Stacked Bar Chart for Recipient Type Analysis
+        var ctx3 = document.getElementById('recipientTypeChart').getContext('2d');
+        var recipientTypeChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($recipientTypes) !!}, // Recipient Types (student, employee)
+                datasets: [{
+                        label: 'Sent',
+                        data: {!! json_encode(array_values($sentCountsByType)) !!},
+                        backgroundColor: 'green'
+                    },
+                    {
+                        label: 'Failed',
+                        data: {!! json_encode(array_values($failedCountsByType)) !!},
+                        backgroundColor: 'red'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        beginAtZero: true,
+                        stacked: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
     </script>
-     
 </x-app-layout>
