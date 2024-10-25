@@ -30,9 +30,15 @@
                         </div>
                     </form>
 
-                    <!-- Donut Chart container -->
-                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                    <!-- Donut Chart container for Message Delivery Overview -->
+                    <div class="chart-container mb-10" style="position: relative; height:40vh; width:80vw">
                         <canvas id="messageDeliveryChart"></canvas>
+                    </div>
+
+                    <!-- Line Chart container for Message Success Rate Over Time -->
+                    <h3 class="text-lg font-semibold mb-4">Message Success Rate Over Time</h3>
+                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                        <canvas id="successRateChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -40,15 +46,16 @@
     </div>
 
     <script>
-        var ctx = document.getElementById('messageDeliveryChart').getContext('2d');
-        var chart = new Chart(ctx, {
+        // Donut Chart for Message Delivery Overview
+        var ctx1 = document.getElementById('messageDeliveryChart').getContext('2d');
+        var deliveryChart = new Chart(ctx1, {
             type: 'doughnut',
             data: {
-                labels: {!! json_encode($statuses) !!}, // Status labels (Pending, Sent, Failed, etc.)
+                labels: {!! json_encode($statuses) !!}, // Status labels
                 datasets: [
                     {
                         label: 'Message Status',
-                        backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'], // Add more colors if needed
+                        backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'], // Colors for each status
                         data: {!! json_encode($counts) !!} // Counts of each status
                     }
                 ]
@@ -69,5 +76,58 @@
                 }
             }
         });
+    
+        // Line Chart for Message Success Rate Over Time
+        var ctx2 = document.getElementById('successRateChart').getContext('2d');
+        var successRateChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($dates) !!}, // Dates for the x-axis
+                datasets: [
+                    {
+                        label: 'Sent Count',
+                        data: {!! json_encode($sentCounts) !!}, // Sent counts over time
+                        borderColor: 'green',
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Failed Count',
+                        data: {!! json_encode($failedCounts) !!}, // Failed counts over time
+                        borderColor: 'red',
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time', // Sets up the x-axis to handle dates
+                        time: {
+                            unit: 'day', // Use 'day' granularity
+                            tooltipFormat: 'MMM d', // Tooltip format for date
+                            displayFormats: {
+                                day: 'MMM d' // Display format for date
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     </script>
+     
 </x-app-layout>
