@@ -43,8 +43,17 @@ class SendScheduledMessageJob implements ShouldQueue
     public function handle(MoviderService $moviderService)
     {
         try {
+            // Refresh the message log instance to get the latest status from the database
+            $this->messageLog->refresh();
+    
+            // Check if the message has been canceled
+            if ($this->messageLog->status === 'cancelled') {
+                Log::info("Scheduled message (ID: {$this->messageLog->id}) was canceled and will not be sent.");
+                return; // Exit the job without sending
+            }
+    
             DB::beginTransaction();
-
+    
             // Call the method that processes sending the message in batches
             $this->processScheduledMessageBatch(
                 $this->messageLog,
@@ -54,30 +63,30 @@ class SendScheduledMessageJob implements ShouldQueue
                 $this->batchSize,
                 $moviderService
             );
-
+    
             // Commit the transaction
             DB::commit();
-
+    
             // After sending, update the message_log status to 'Sent'
             $this->messageLog->update([
                 'status' => 'Sent',
                 'sent_at' => now(), // Record the exact time the message was sent
             ]);
-
+    
         } catch (Exception $e) {
             // Rollback transaction in case of an error
             DB::rollBack();
-
+    
             // Log the error for troubleshooting
             Log::error('Failed to send scheduled message: ' . $e->getMessage());
-
+    
             // Optionally, update the message log with a failure status
             $this->messageLog->update([
                 'status' => 'Failed',
                 'failure_reason' => $e->getMessage(),
             ]);
         }
-    }
+    }    
 
     /**
      * Process the messages in batches and send individually within each batch.
