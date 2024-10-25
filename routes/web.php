@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AppManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FilterController;
@@ -38,6 +39,8 @@ Route::middleware('auth')->group(function () {
         // Messages CRUD Routes
         Route::resource('messages', MessagesController::class);
         Route::patch('/messages/cancel/{id}', [MessagesController::class, 'cancel'])->name('messages.cancel');
+
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index')->middleware('auth');
 
         // FilterController Routes (API)
         Route::prefix('/api')->group(function () {

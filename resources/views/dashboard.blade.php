@@ -18,19 +18,19 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Total Messages Card -->
                 <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="totalMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Total Messages Sent</h3>
+                    <h3 class="text-lg font-semibold mb-2">Total Messages Delivered</h3>
                     <p class="text-2xl">{{ $totalMessages }}</p>
                 </div>
 
                 <!-- Scheduled Messages Card -->
                 <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="scheduledMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Scheduled Messages Sent</h3>
+                    <h3 class="text-lg font-semibold mb-2">Scheduled Messages Delivered</h3>
                     <p class="text-2xl">{{ $scheduledMessages }}</p>
                 </div>
 
                 <!-- Immediate Messages Card -->
                 <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="immediateMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Immediate Messages Sent</h3>
+                    <h3 class="text-lg font-semibold mb-2">Immediate Messages Delivered</h3>
                     <p class="text-2xl">{{ $immediateMessages }}</p>
                 </div>
 
