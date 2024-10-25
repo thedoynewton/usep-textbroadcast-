@@ -30,9 +30,15 @@
                         </div>
                     </form>
 
-                    <!-- Chart container -->
-                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                    <!-- Chart container for Message Performance -->
+                    <div class="chart-container mb-6" style="position: relative; height:40vh; width:80vw">
                         <canvas id="messagePerformanceChart"></canvas>
+                    </div>
+
+                    <!-- Chart container for Cost Analytics -->
+                    <h3 class="text-lg font-semibold mb-4">Cost Analytics</h3>
+                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                        <canvas id="costAnalyticsChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -40,8 +46,8 @@
     </div>
 
     <script>
-        var ctx = document.getElementById('messagePerformanceChart').getContext('2d');
-        var chart = new Chart(ctx, {
+        var ctx1 = document.getElementById('messagePerformanceChart').getContext('2d');
+        var performanceChart = new Chart(ctx1, {
             type: 'bar',
             data: {
                 labels: {!! json_encode($dates) !!}, // Dates for the x-axis
@@ -80,6 +86,57 @@
                                     label += ': ';
                                 }
                                 label += tooltipItem.raw;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Cost Analytics Chart
+        var ctx2 = document.getElementById('costAnalyticsChart').getContext('2d');
+        var costChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($dates) !!}, // Dates for the x-axis
+                datasets: [
+                    {
+                        label: 'Cost (USD)',
+                        backgroundColor: 'blue',
+                        borderColor: 'blue',
+                        fill: false,
+                        data: {!! json_encode($costs) !!}, // Costs calculated for each day (3 decimal places)
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            autoSkip: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toFixed(3); // Display 3 decimal places on the y-axis
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                var label = tooltipItem.dataset.label || '';
+                                if (label) {
+                                    label += ': $';
+                                }
+                                label += tooltipItem.raw.toFixed(3); // Show 3 decimal places in tooltips
                                 return label;
                             }
                         }
