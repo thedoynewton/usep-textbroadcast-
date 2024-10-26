@@ -48,11 +48,11 @@
                                         Employee</option>
                                 </select>
                             </div>
-                            
+
                             <!-- Campus Dropdown (Always Visible) -->
                             <div id="campusField">
                                 <label for="campus" class="block text-gray-700">Campus</label>
-                                <select name="campus"
+                                <select name="campus" id="campus" <!-- Added id="campus" here -->
                                     class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" {{ empty($campusId) ? 'selected' : '' }}>All</option>
                                     @foreach ($campuses as $campus)
@@ -68,28 +68,41 @@
                             <div id="studentFields" class="hidden flex gap-4">
                                 <div>
                                     <label for="academic_unit" class="block text-gray-700">Academic Unit</label>
-                                    <select name="academic_unit" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add academic unit options here -->
+                                    <select name="college_id" id="academic_unit"
+                                        class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Academic Unit</option>
+                                        <!-- Options will be dynamically populated by JavaScript based on campus -->
                                     </select>
                                 </div>
+
+                                <!-- Program Dropdown -->
                                 <div>
                                     <label for="program" class="block text-gray-700">Program</label>
-                                    <select name="program" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add program options here -->
+                                    <select name="program_id" id="program"
+                                        class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Program</option>
+                                        <!-- Options populated dynamically based on Academic Unit -->
                                     </select>
                                 </div>
+
+                                <!-- Major Dropdown -->
                                 <div>
                                     <label for="major" class="block text-gray-700">Major</label>
-                                    <select name="major" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add major options here -->
+                                    <select name="major_id" id="major" class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Major</option>
+                                        <!-- Options populated dynamically based on Program -->
                                     </select>
                                 </div>
+
+                                <!-- Year Dropdown -->
                                 <div>
                                     <label for="year" class="block text-gray-700">Year</label>
-                                    <select name="year" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add year options here -->
+                                    <select name="year_id" id="year" class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Year</option>
+                                        <!-- Options will be dynamically populated by JavaScript -->
                                     </select>
                                 </div>
+
                             </div>
 
                             <!-- Additional Fields for Employees -->

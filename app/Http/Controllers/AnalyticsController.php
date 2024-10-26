@@ -16,7 +16,11 @@ class AnalyticsController extends Controller
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
         $messageType = $request->input('message_type');
         $recipientType = $request->input('recipient_type');
-        $campusId = $request->input('campus'); // Capture selected campus ID
+        $campusId = $request->input('campus');
+        $collegeId = $request->input('college_id');
+        $programId = $request->input('program_id');
+        $majorId = $request->input('major_id');
+        $year = $request->input('year'); // Capture selected year as year_id
     
         // Retrieve list of campuses from the database
         $campuses = Campus::all();
@@ -31,12 +35,9 @@ class AnalyticsController extends Controller
             ->whereDate('created_at', '<=', $endDate)
             ->groupByRaw("CONVERT(DATE, created_at)");
     
+        // Apply only the message type filter to the cost query
         if ($messageType) {
             $costQuery->where('message_type', $messageType);
-        }
-    
-        if (!empty($campusId)) {
-            $costQuery->where('campus_id', $campusId); // Filter by campus if specified
         }
     
         $costData = $costQuery->get();
@@ -59,12 +60,24 @@ class AnalyticsController extends Controller
             ->whereDate('created_at', '<=', $endDate)
             ->groupByRaw("CONVERT(DATE, created_at), sent_status");
     
+        // Apply filters to the message query
         if ($recipientType) {
             $messageQuery->where('recipient_type', $recipientType);
         }
-    
         if (!empty($campusId)) {
-            $messageQuery->where('campus_id', $campusId); // Filter by campus if specified
+            $messageQuery->where('campus_id', $campusId);
+        }
+        if (!empty($collegeId)) {
+            $messageQuery->where('college_id', $collegeId);
+        }
+        if (!empty($programId)) {
+            $messageQuery->where('program_id', $programId);
+        }
+        if (!empty($majorId)) {
+            $messageQuery->where('major_id', $majorId);
+        }
+        if (!empty($year)) {
+            $messageQuery->where('year_id', $year); // Use year_id here
         }
     
         $messageData = $messageQuery->get();
@@ -91,7 +104,11 @@ class AnalyticsController extends Controller
             'messageType',
             'recipientType',
             'campuses',
-            'campusId' // Pass the selected campus ID to the view
+            'campusId',
+            'collegeId',
+            'programId',
+            'majorId',
+            'year' // Pass selected year_id to the view
         ));
     }
     
