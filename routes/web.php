@@ -51,6 +51,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/offices/{campusId}', [FilterController::class, 'getOfficesByCampus']);
             Route::get('/types/{officeId}', [FilterController::class, 'getTypes']);
             Route::get('/recipient-count', [FilterController::class, 'getRecipientCount']);
+            Route::get('/statuses', [FilterController::class, 'getStatuses']);
         });
     });
 

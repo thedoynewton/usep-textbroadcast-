@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Status;
 use App\Services\FilterService;
 use Illuminate\Http\Request;
 
@@ -43,6 +44,13 @@ class FilterController extends Controller
     {
         return response()->json($this->filterService->getYears());
     }
+
+    public function getStatuses()
+    {
+        $statuses = Status::all(); // Adjust as needed to retrieve your statuses
+        return response()->json($statuses);
+    }
+
 
     public function getRecipientCount(Request $request)
     {

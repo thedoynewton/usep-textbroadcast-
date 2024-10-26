@@ -109,23 +109,28 @@
                             <div id="employeeFields" class="hidden flex gap-4">
                                 <div>
                                     <label for="office" class="block text-gray-700">Office</label>
-                                    <select name="office" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add office options here -->
+                                    <select name="office_id" id="office"
+                                        class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Office</option>
+                                        <!-- Add office options dynamically with JavaScript or Blade here -->
                                     </select>
                                 </div>
                                 <div>
                                     <label for="type" class="block text-gray-700">Type</label>
-                                    <select name="type" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add type options here -->
+                                    <select name="type" id="type" class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Type</option>
+                                        <!-- Add type options dynamically with JavaScript or Blade here -->
                                     </select>
                                 </div>
                                 <div>
                                     <label for="status" class="block text-gray-700">Status</label>
-                                    <select name="status" class="border-gray-300 rounded-md shadow-sm">
-                                        <!-- Add status options here -->
+                                    <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Status</option>
+                                        <!-- Add status options dynamically with JavaScript or Blade here -->
                                     </select>
                                 </div>
                             </div>
+
                             <div class="mt-4">
                                 <button type="submit"
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 disabled:opacity-25 transition">
