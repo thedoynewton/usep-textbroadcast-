@@ -7,169 +7,141 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-semibold mb-4">Message Delivery Overview</h3>
 
-                    <!-- Date range filter form -->
-                    <form method="GET" action="{{ route('analytics.index') }}" class="mb-6 flex space-x-4">
-                        <div>
-                            <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date:</label>
-                            <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        </div>
-
-                        <div>
-                            <label for="end_date" class="block text-sm font-medium text-gray-700">End Date:</label>
-                            <input type="date" id="end_date" name="end_date" value="{{ request('end_date') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        </div>
-
-                        <div class="self-end">
-                            <button type="submit"
-                                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                                Filter
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Donut Chart container for Message Delivery Overview -->
-                    <div class="chart-container mb-10" style="position: relative; height:40vh; width:80vw">
-                        <canvas id="messageDeliveryChart"></canvas>
+            <!-- Date Range and Message Type Filter Form -->
+            <div class="mb-4 p-4 bg-white shadow-sm sm:rounded-lg">
+                <form method="GET" action="{{ route('analytics.index') }}" class="flex flex-wrap gap-4 items-center">
+                    <div>
+                        <label for="start_date" class="block text-gray-700">Start Date</label>
+                        <input type="date" name="start_date" value="{{ $startDate }}"
+                            class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     </div>
 
-                    <!-- Line Chart container for Message Success Rate Over Time -->
-                    <h3 class="text-lg font-semibold mb-4">Message Success Rate Over Time</h3>
-                    <div class="chart-container mb-10" style="position: relative; height:40vh; width:80vw">
-                        <canvas id="successRateChart"></canvas>
+                    <div>
+                        <label for="end_date" class="block text-gray-700">End Date</label>
+                        <input type="date" name="end_date" value="{{ $endDate }}"
+                            class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     </div>
 
-                    <!-- Bar Chart container for Recipient Type Analysis -->
-                    <h3 class="text-lg font-semibold mt-8 mb-4">Recipient Type Analysis</h3>
-                    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-                        <canvas id="recipientTypeChart"></canvas>
+                    <div>
+                        <label for="message_type" class="block text-gray-700">Message Type</label>
+                        <select name="message_type"
+                            class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <option value="">All Types</option>
+                            <option value="instant" {{ $messageType == 'instant' ? 'selected' : '' }}>Instant</option>
+                            <option value="scheduled" {{ $messageType == 'scheduled' ? 'selected' : '' }}>Scheduled
+                            </option>
+                        </select>
                     </div>
-                </div>
+
+                    <div class="mt-4">
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 disabled:opacity-25 transition">
+                            Filter
+                        </button>
+                    </div>
+                </form>
             </div>
+
+            <!-- Messages Overview Chart -->
+            <h3>Delivered Messages to Recipients</h3>
+            <canvas id="messagesOverviewChart" class="w-full h-64 mb-6"></canvas>
+
+            <!-- Costs Overview Chart -->
+            <h3>Total Costs Overview</h3>
+            <canvas id="costsChart" class="w-full h-64"></canvas>
         </div>
     </div>
 
     <script>
-        // Donut Chart for Message Delivery Overview
-        var ctx1 = document.getElementById('messageDeliveryChart').getContext('2d');
-        var deliveryChart = new Chart(ctx1, {
-            type: 'doughnut',
+        // Data from the controller for Messages Overview
+        const messageDates = @json($messageDates);
+        const successCounts = @json($successCounts);
+        const failedCounts = @json($failedCounts);
+    
+        // Messages Overview Chart (Bar)
+        const ctxMessages = document.getElementById('messagesOverviewChart').getContext('2d');
+        new Chart(ctxMessages, {
+            type: 'bar',
             data: {
-                labels: {!! json_encode($statuses) !!}, // Status labels
+                labels: messageDates,
                 datasets: [{
-                    label: 'Message Status',
-                    backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'], // Colors for each status
-                    data: {!! json_encode($counts) !!} // Counts of each status
+                        label: 'Success',
+                        data: successCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Failed',
+                        data: failedCounts,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Message Count'
+                        }
+                    }
+                }
+            }
+        });
+    
+        // Data from the controller for Costs Overview
+        const costDates = @json($costDates);
+        const costs = @json($costs); // Preserves full precision
+    
+        // Costs Overview Chart (Line)
+        const ctxCosts = document.getElementById('costsChart').getContext('2d');
+        new Chart(ctxCosts, {
+            type: 'line',
+            data: {
+                labels: costDates,
+                datasets: [{
+                    label: 'Cost ($)',
+                    data: costs, // Uses non-rounded values
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1 // Smooth curve line
                 }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Line Chart for Message Success Rate Over Time
-        var ctx2 = document.getElementById('successRateChart').getContext('2d');
-        var successRateChart = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($dates) !!}, // Dates for the x-axis
-                datasets: [{
-                        label: 'Sent Count',
-                        data: {!! json_encode($sentCounts) !!}, // Sent counts over time
-                        borderColor: 'green',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Failed Count',
-                        data: {!! json_encode($failedCounts) !!}, // Failed counts over time
-                        borderColor: 'red',
-                        fill: false,
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
                 scales: {
-                    x: {
-                        type: 'time', // Sets up the x-axis to handle dates
-                        time: {
-                            unit: 'day', // Use 'day' granularity
-                            tooltipFormat: 'MMM d', // Tooltip format for date
-                            displayFormats: {
-                                day: 'MMM d' // Display format for date
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Stacked Bar Chart for Recipient Type Analysis
-        var ctx3 = document.getElementById('recipientTypeChart').getContext('2d');
-        var recipientTypeChart = new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($recipientTypes) !!}, // Recipient Types (student, employee)
-                datasets: [{
-                        label: 'Sent',
-                        data: {!! json_encode(array_values($sentCountsByType)) !!},
-                        backgroundColor: 'green'
-                    },
-                    {
-                        label: 'Failed',
-                        data: {!! json_encode(array_values($failedCountsByType)) !!},
-                        backgroundColor: 'red'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        stacked: true
-                    },
                     y: {
                         beginAtZero: true,
-                        stacked: true
+                        title: {
+                            display: true,
+                            text: 'Cost in USD ($)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(4); // Display up to 4 decimal places on the y-axis
+                            }
+                        }
                     }
                 },
                 plugins: {
-                    legend: {
-                        position: 'bottom'
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Cost ($): ' + context.raw.toFixed(4); // Display up to 4 decimal places in the tooltip
+                            }
+                        }
                     }
                 }
             }
         });
     </script>
+    
 </x-app-layout>

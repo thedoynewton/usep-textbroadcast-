@@ -2,81 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\MessageLog;
 use App\Models\MessageRecipient;
-use Carbon\Carbon;
+use App\Models\MessageLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AnalyticsController extends Controller
 {
     public function index(Request $request)
     {
-        // Retrieve and format start and end dates
-        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : null;
-        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : null;
+        $startDate = $request->input('start_date', now()->subDays(7)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+        $messageType = $request->input('message_type');
 
-        // Query for message status counts within the date range for doughnut chart
-        $statusQuery = MessageLog::query();
-        if ($startDate && $endDate) {
-            $statusQuery->whereBetween('created_at', [$startDate, $endDate]);
+        // Define cost per SMS
+        $costPerSms = 0.0065;
+
+        // Query for costs per day from message_logs
+        $costQuery = MessageLog::selectRaw("CONVERT(DATE, created_at) as date, SUM(sent_count) as total_sent")
+            ->where('status', 'Sent')
+            ->whereDate('created_at', '>=', $startDate)
+            ->whereDate('created_at', '<=', $endDate)
+            ->groupByRaw("CONVERT(DATE, created_at)");
+
+        if ($messageType) {
+            $costQuery->where('message_type', $messageType);
         }
 
-        // Group by status and count each status for doughnut chart
-        $statusCounts = $statusQuery->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')->toArray();
+        $costData = $costQuery->get();
 
-        // Prepare data for the doughnut chart
-        $statuses = array_keys($statusCounts);
-        $counts = array_values($statusCounts);
+        // Prepare data for Costs Overview chart
+        $costDates = [];
+        $costs = [];
 
-        // Query for sent and failed counts over time for line chart
-        $timeQuery = MessageLog::query();
-        if ($startDate && $endDate) {
-            $timeQuery->whereBetween('scheduled_at', [$startDate, $endDate]);
+        foreach ($costData as $data) {
+            $costDates[] = $data->date;
+            $dailyCost = $data->total_sent * $costPerSms;
+            $costs[] = $dailyCost; // Removed rounding
+            Log::info("Cost Overview - Date: {$data->date}, Total Sent: {$data->total_sent}, Daily Cost: {$dailyCost}");
         }
 
-        // Group by date and sum sent and failed counts
-        $logs = $timeQuery->selectRaw('CAST(scheduled_at AS DATE) as date, 
-                                       SUM(sent_count) as sent_count,
-                                       SUM(failed_count) as failed_count')
-            ->groupByRaw('CAST(scheduled_at AS DATE)')
-            ->orderBy('date', 'asc')
-            ->get();
 
-        // Prepare data for the line chart
-        $dates = $logs->pluck('date')->toArray();
-        $sentCounts = $logs->pluck('sent_count')->toArray();
-        $failedCounts = $logs->pluck('failed_count')->toArray();
+        // Query for Messages Overview (Success and Failed) from message_recipients
+        $messageQuery = MessageRecipient::selectRaw("CONVERT(DATE, created_at) as date, sent_status, COUNT(*) as count")
+            ->whereIn('sent_status', ['Sent', 'Failed'])
+            ->whereDate('created_at', '>=', $startDate)
+            ->whereDate('created_at', '<=', $endDate)
+            ->groupByRaw("CONVERT(DATE, created_at), sent_status");
 
-        // Query for recipient type analysis
-        $recipientQuery = MessageRecipient::query();
-        if ($startDate && $endDate) {
-            $recipientQuery->whereBetween('created_at', [$startDate, $endDate]);
+        $messageData = $messageQuery->get();
+
+        // Prepare data for Messages Overview chart
+        $messageDates = [];
+        $successCounts = [];
+        $failedCounts = [];
+
+        foreach ($messageData->groupBy('date') as $date => $records) {
+            $messageDates[] = $date;
+            $successCounts[] = $records->firstWhere('sent_status', 'Sent')->count ?? 0;
+            $failedCounts[] = $records->firstWhere('sent_status', 'Failed')->count ?? 0;
         }
-
-        // Group by recipient_type and sent_status for stacked bar chart
-        $recipientData = $recipientQuery->selectRaw('recipient_type, sent_status, COUNT(*) as count')
-            ->groupBy('recipient_type', 'sent_status')
-            ->get();
-
-        // Prepare data for recipient type analysis
-        $recipientTypes = $recipientData->pluck('recipient_type')->unique()->values()->toArray();
-        $sentCountsByType = $recipientData->where('sent_status', 'Sent')->pluck('count', 'recipient_type')->toArray();
-        $failedCountsByType = $recipientData->where('sent_status', 'Failed')->pluck('count', 'recipient_type')->toArray();
 
         return view('analytics.index', compact(
+            'costDates',
+            'costs',
+            'messageDates',
+            'successCounts',
+            'failedCounts',
             'startDate',
             'endDate',
-            'statuses',
-            'counts',
-            'dates',
-            'sentCounts',
-            'failedCounts',
-            'recipientTypes',
-            'sentCountsByType',
-            'failedCountsByType'
+            'messageType'
         ));
     }
 

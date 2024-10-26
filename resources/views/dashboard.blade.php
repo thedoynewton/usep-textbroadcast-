@@ -14,7 +14,7 @@
                 </div>
             @endif
 
-            <!-- Cards Section -->
+            <!-- Widgets Section -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Total Messages Card -->
                 <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="totalMessagesCard">
