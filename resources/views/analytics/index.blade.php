@@ -41,7 +41,7 @@
                                 <label for="recipient_type" class="block text-gray-700">Recipient Type</label>
                                 <select name="recipient_type" id="recipient_type"
                                     class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                    <option value="" {{ empty($recipientType) ? 'selected' : '' }}>All</option>
+                                    <option value="" {{ empty($recipientType) ? 'selected' : '' }}>Both</option>
                                     <option value="Student" {{ $recipientType === 'Student' ? 'selected' : '' }}>Student
                                     </option>
                                     <option value="Employee" {{ $recipientType === 'Employee' ? 'selected' : '' }}>

@@ -63,6 +63,11 @@ class AnalyticsController extends Controller
             ->whereDate('created_at', '<=', $endDate)
             ->groupByRaw("CONVERT(DATE, created_at), sent_status");
 
+        // Apply campus filter independently
+        if (!empty($campusId)) {
+            $messageQuery->where('campus_id', $campusId);
+        }
+
         // Apply filters based on recipient type
         if ($recipientType) {
             $messageQuery->where('recipient_type', $recipientType);
