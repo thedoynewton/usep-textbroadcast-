@@ -10,92 +10,83 @@ use Illuminate\Support\Facades\Log;
 
 class AnalyticsController extends Controller
 {
+    protected $costPerSms = 0.0065;
+
     public function index(Request $request)
     {
-        $startDate = $request->input('start_date', now()->subDays(7)->format('Y-m-d'));
-        $endDate = $request->input('end_date', now()->format('Y-m-d'));
-        $messageType = $request->input('message_type');
-        $recipientType = $request->input('recipient_type');
-        $campusId = $request->input('campus');
-        $collegeId = $request->input('college_id');
-        $programId = $request->input('program_id');
-        $majorId = $request->input('major_id');
-        $year = $request->input('year'); // Capture selected year as year_id
-        $officeId = $request->input('office_id'); // Capture selected office ID
-        $type = $request->input('type'); // Capture selected type
-        $status = $request->input('status');
+        // Retrieve filter parameters with defaults
+        $filters = $this->getFilters($request);
 
-        // Retrieve list of campuses from the database
+        // Retrieve list of campuses for view
         $campuses = Campus::all();
 
-        // Define cost per SMS
-        $costPerSms = 0.0065;
+        // Get Costs Overview data
+        $costOverview = $this->getCostOverview($filters);
 
-        // Query for costs per day from message_logs
-        $costQuery = MessageLog::selectRaw("CONVERT(DATE, created_at) as date, SUM(sent_count) as total_sent")
+        // Get Messages Overview data
+        $messageOverview = $this->getMessageOverview($filters);
+
+        return view('analytics.index', array_merge(
+            $costOverview,
+            $messageOverview,
+            $filters,
+            compact('campuses')
+        ));
+    }
+
+    protected function getFilters(Request $request)
+    {
+        return [
+            'startDate' => $request->input('start_date', now()->subDays(7)->format('Y-m-d')),
+            'endDate' => $request->input('end_date', now()->format('Y-m-d')),
+            'messageType' => $request->input('message_type'),
+            'recipientType' => $request->input('recipient_type'),
+            'campusId' => $request->input('campus'),
+            'collegeId' => $request->input('college_id'),
+            'programId' => $request->input('program_id'),
+            'majorId' => $request->input('major_id'),
+            'year' => $request->input('year'),
+            'officeId' => $request->input('office_id'),
+            'type' => $request->input('type'),
+            'status' => $request->input('status')
+        ];
+    }
+
+    protected function getCostOverview($filters)
+    {
+        $costData = MessageLog::selectRaw("CONVERT(DATE, created_at) as date, SUM(sent_count) as total_sent")
             ->where('status', 'Sent')
-            ->whereDate('created_at', '>=', $startDate)
-            ->whereDate('created_at', '<=', $endDate)
-            ->groupByRaw("CONVERT(DATE, created_at)");
+            ->whereDate('created_at', '>=', $filters['startDate'])
+            ->whereDate('created_at', '<=', $filters['endDate'])
+            ->when($filters['messageType'], fn($query) => $query->where('message_type', $filters['messageType']))
+            ->groupByRaw("CONVERT(DATE, created_at)")
+            ->get();
 
-        // Apply only the message type filter to the cost query
-        if ($messageType) {
-            $costQuery->where('message_type', $messageType);
-        }
-
-        $costData = $costQuery->get();
-
-        // Prepare data for Costs Overview chart
         $costDates = [];
         $costs = [];
-
         foreach ($costData as $data) {
             $costDates[] = $data->date;
-            $dailyCost = $data->total_sent * $costPerSms;
-            $costs[] = $dailyCost;
-            Log::info("Cost Overview - Date: {$data->date}, Total Sent: {$data->total_sent}, Daily Cost: {$dailyCost}");
+            $costs[] = $data->total_sent * $this->costPerSms;
+            Log::info("Cost Overview - Date: {$data->date}, Total Sent: {$data->total_sent}, Daily Cost: " . end($costs));
         }
 
-        // Query for Messages Overview (Success and Failed) from message_recipients
-        $messageQuery = MessageRecipient::selectRaw("CONVERT(DATE, created_at) as date, sent_status, COUNT(*) as count")
+        return compact('costDates', 'costs');
+    }
+
+    protected function getMessageOverview($filters)
+    {
+        $messageData = MessageRecipient::selectRaw("CONVERT(DATE, created_at) as date, sent_status, COUNT(*) as count")
             ->whereIn('sent_status', ['Sent', 'Failed'])
-            ->whereDate('created_at', '>=', $startDate)
-            ->whereDate('created_at', '<=', $endDate)
-            ->groupByRaw("CONVERT(DATE, created_at), sent_status");
+            ->whereDate('created_at', '>=', $filters['startDate'])
+            ->whereDate('created_at', '<=', $filters['endDate'])
+            ->when($filters['campusId'], fn($query) => $query->where('campus_id', $filters['campusId']))
+            ->when($filters['recipientType'], function($query) use ($filters) {
+                $query->where('recipient_type', $filters['recipientType']);
+                $this->applyRecipientSpecificFilters($query, $filters);
+            })
+            ->groupByRaw("CONVERT(DATE, created_at), sent_status")
+            ->get();
 
-        // Apply campus filter independently
-        if (!empty($campusId)) {
-            $messageQuery->where('campus_id', $campusId);
-        }
-
-        // Apply filters based on recipient type
-        if ($recipientType) {
-            $messageQuery->where('recipient_type', $recipientType);
-
-            if ($recipientType === 'Student') {
-                if (!empty($campusId))
-                    $messageQuery->where('campus_id', $campusId);
-                if (!empty($collegeId))
-                    $messageQuery->where('college_id', $collegeId);
-                if (!empty($programId))
-                    $messageQuery->where('program_id', $programId);
-                if (!empty($majorId))
-                    $messageQuery->where('major_id', $majorId);
-                if (!empty($year))
-                    $messageQuery->where('year_id', $year);
-            } elseif ($recipientType === 'Employee') {
-                if (!empty($officeId))
-                    $messageQuery->where('office_id', $officeId);
-                if (!empty($type))
-                    $messageQuery->where('type_id', $type);
-                if (!empty($status))
-                    $messageQuery->where('status_id', $status);
-            }
-        }
-
-        $messageData = $messageQuery->get();
-
-        // Prepare data for Messages Overview chart
         $messageDates = [];
         $successCounts = [];
         $failedCounts = [];
@@ -106,26 +97,21 @@ class AnalyticsController extends Controller
             $failedCounts[] = $records->firstWhere('sent_status', 'Failed')->count ?? 0;
         }
 
-        return view('analytics.index', compact(
-            'costDates',
-            'costs',
-            'messageDates',
-            'successCounts',
-            'failedCounts',
-            'startDate',
-            'endDate',
-            'messageType',
-            'recipientType',
-            'campuses',
-            'campusId',
-            'collegeId',
-            'programId',
-            'majorId',
-            'year', // Pass selected year_id to the view
-            'officeId', // Pass selected office ID to the view
-            'type', // Pass selected type to the view
-            'status'
-        ));
+        return compact('messageDates', 'successCounts', 'failedCounts');
     }
 
+    protected function applyRecipientSpecificFilters($query, $filters)
+    {
+        if ($filters['recipientType'] === 'Student') {
+            $query->when($filters['campusId'], fn($q) => $q->where('campus_id', $filters['campusId']))
+                  ->when($filters['collegeId'], fn($q) => $q->where('college_id', $filters['collegeId']))
+                  ->when($filters['programId'], fn($q) => $q->where('program_id', $filters['programId']))
+                  ->when($filters['majorId'], fn($q) => $q->where('major_id', $filters['majorId']))
+                  ->when($filters['year'], fn($q) => $q->where('year_id', $filters['year']));
+        } elseif ($filters['recipientType'] === 'Employee') {
+            $query->when($filters['officeId'], fn($q) => $q->where('office_id', $filters['officeId']))
+                  ->when($filters['type'], fn($q) => $q->where('type_id', $filters['type']))
+                  ->when($filters['status'], fn($q) => $q->where('status_id', $filters['status']));
+        }
+    }
 }
