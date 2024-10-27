@@ -39,7 +39,7 @@ class AnalyticsController extends Controller
         return [
             'startDate' => $request->input('start_date', now()->subDays(7)->format('Y-m-d')),
             'endDate' => $request->input('end_date', now()->format('Y-m-d')),
-            'messageType' => $request->input('message_type'),
+            'messageType' => $request->input('message_type', null),
             'recipientType' => $request->input('recipient_type'),
             'campusId' => $request->input('campus'),
             'collegeId' => $request->input('college_id'),
@@ -52,26 +52,51 @@ class AnalyticsController extends Controller
         ];
     }
 
+    public function getMessageOverviewData(Request $request)
+    {
+        // Extract filters from the request
+        $filters = $this->getFilters($request);
+
+        // Fetch and return filtered message overview data
+        $messageData = $this->getMessageOverview($filters);
+
+        return response()->json($messageData);
+    }
+
+    public function getCostsOverviewData(Request $request)
+    {
+        // Only retrieve the date range filters for Costs Overview
+        $filters = [
+            'startDate' => $request->query('start_date', now()->subDays(7)->format('Y-m-d')),
+            'endDate' => $request->query('end_date', now()->format('Y-m-d'))
+        ];
+
+        // Fetch and return filtered costs overview data
+        $costData = $this->getCostOverview($filters);
+
+        return response()->json($costData);
+    }
+
     protected function getCostOverview($filters)
     {
         $costData = MessageLog::selectRaw("CONVERT(DATE, created_at) as date, SUM(sent_count) as total_sent")
             ->where('status', 'Sent')
             ->whereDate('created_at', '>=', $filters['startDate'])
             ->whereDate('created_at', '<=', $filters['endDate'])
-            ->when($filters['messageType'], fn($query) => $query->where('message_type', $filters['messageType']))
+            ->when($filters['messageType'] ?? null, fn($query) => $query->where('message_type', $filters['messageType']))
             ->groupByRaw("CONVERT(DATE, created_at)")
             ->get();
-
+    
         $costDates = [];
         $costs = [];
         foreach ($costData as $data) {
             $costDates[] = $data->date;
             $costs[] = $data->total_sent * $this->costPerSms;
-            Log::info("Cost Overview - Date: {$data->date}, Total Sent: {$data->total_sent}, Daily Cost: " . end($costs));
+            //Log::info("Cost Overview - Date: {$data->date}, Total Sent: {$data->total_sent}, Daily Cost: " . end($costs));
         }
-
+    
         return compact('costDates', 'costs');
-    }
+    }    
 
     protected function getMessageOverview($filters)
     {

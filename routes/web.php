@@ -52,6 +52,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/types/{officeId}', [FilterController::class, 'getTypes']);
             Route::get('/recipient-count', [FilterController::class, 'getRecipientCount']);
             Route::get('/statuses', [FilterController::class, 'getStatuses']);
+            Route::get('/analytics/message-overview', [AnalyticsController::class, 'getMessageOverviewData']);
+            Route::get('/analytics/costs-overview', [AnalyticsController::class, 'getCostsOverviewData']);
+
         });
     });
 
