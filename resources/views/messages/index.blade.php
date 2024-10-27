@@ -195,10 +195,12 @@
 
                     <!-- Additional Controls -->
                     <div class="grid grid-cols-4 gap-4 mt-6">
+                        
                         <div>
                             <x-input-label for="batch_size" value="Batch Size" />
-                            <x-text-input id="batch_size" name="batch_size" type="number" value="1" />
+                            <x-text-input id="batch_size" name="batch_size" type="number" value="1" min="1" step="1" />
                         </div>
+
                         <!-- Total Recipients -->
                         <div class="grid grid-cols-2 gap-4 mt-4">
                             <div>

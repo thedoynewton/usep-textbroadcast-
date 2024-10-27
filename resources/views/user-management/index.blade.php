@@ -8,10 +8,18 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-black dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
-                
+
+                <!-- Display success message -->
                 @if (session('success'))
                     <div class="bg-green-500 text-white p-4 rounded-md mb-4">
                         {{ session('success') }}
+                    </div>
+                @endif
+
+                <!-- Display error message -->
+                @if (session('error'))
+                    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+                        {{ session('error') }}
                     </div>
                 @endif
 
@@ -25,10 +33,9 @@
                             class="px-4 py-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         <button type="submit" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-black rounded">Add
                             User</button>
+                        <h3 class="text-md font-semibold mb-2 text-white dark:text-gray-100">Only Employee's USeP emails
+                            are accepted .</h3>
                     </form>
-                    @if (session('error'))
-                        <p class="mt-2 text-red-500">{{ session('error') }}</p>
-                    @endif
                 </div>
 
                 <table class="table-auto w-full border dark:border-gray-700">
