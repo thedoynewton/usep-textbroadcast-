@@ -74,7 +74,7 @@
                             </div>
 
                             <!-- Additional Fields for Students -->
-                            <div id="studentFields" class="hidden flex gap-4">
+                            <div id="studentFields" class="hidden gap-4">
                                 <div>
                                     <label for="academic_unit" class="block text-gray-700">Academic Unit</label>
                                     <select name="college_id" id="academic_unit" class="border-gray-300 rounded-md shadow-sm">
@@ -102,7 +102,7 @@
                             </div>
 
                             <!-- Additional Fields for Employees -->
-                            <div id="employeeFields" class="hidden flex gap-4">
+                            <div id="employeeFields" class="hidden gap-4">
                                 <div>
                                     <label for="office" class="block text-gray-700">Office</label>
                                     <select name="office_id" id="office" class="border-gray-300 rounded-md shadow-sm">
