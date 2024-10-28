@@ -28,13 +28,13 @@
                     <ul class="flex space-x-4">
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'contacts']) }}"
-                               class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
+                                class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
                                 Contacts
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'templates']) }}"
-                               class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
+                                class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
                                 Message Templates
                             </a>
                         </li>
@@ -65,9 +65,16 @@
                                         </option>
                                     @endforeach
                                 </select>
+                    
+                                <!-- Type Filter Dropdown (Moved beside campus dropdown) -->
+                                <select id="typeFilter" name="type" class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
+                                    <option value="">All Types</option>
+                                    <option value="Student" {{ request('type') == 'Student' ? 'selected' : '' }}>Student</option>
+                                    <option value="Employee" {{ request('type') == 'Employee' ? 'selected' : '' }}>Employee</option>
+                                </select>
                             </div>
                         </form>                                         
-                    </div>                    
+                    </div>
 
                     <!-- Include the contacts table using the partial -->
                     <div id="contactsResults">

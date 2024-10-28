@@ -17,7 +17,7 @@ class AppManagementController extends Controller
     public function index(Request $request)
     {
         // Get combined contacts
-        $contacts = $this->service->getContacts($request->search, $request->campus_id);
+        $contacts = $this->service->getContacts($request->search, $request->campus_id, $request->type);
 
         $messageTemplates = $this->service->getMessageTemplates();
         $counts = $this->service->getTotalCounts();
