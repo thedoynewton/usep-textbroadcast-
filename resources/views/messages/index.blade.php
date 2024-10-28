@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Messages') }}
         </h2>
     </x-slot>
@@ -25,7 +25,7 @@
             </div>
 
 
-            <div class="bg-black dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+            <div class="bg-black overflow-hidden shadow-xl sm:rounded-lg p-6">
 
                 <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
                 <ul class="flex border-b">
@@ -241,8 +241,8 @@
 
                             <!-- Modal Panel -->
                             <div
-                                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-3xl sm:w-full">
-                                <div class="bg-white dark:bg-gray-800 px-6 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-3xl sm:w-full">
+                                <div class="bg-white px-6 pt-5 pb-4 sm:p-6 sm:pb-4">
                                     <!-- Modal Content -->
                                     <div class="sm:flex sm:items-start">
                                         <!-- Preview Phone Mockup with Image -->
@@ -303,7 +303,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                     <x-primary-button id="confirm-send">{{ __('Send Message') }}</x-primary-button>
                                     <x-secondary-button id="close-review-modal" class="mt-3 sm:mt-0 sm:ml-3">
                                         {{ __('Edit Message') }}
