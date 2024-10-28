@@ -7,6 +7,7 @@ use App\Http\Controllers\FilterController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware; // Import your middleware
@@ -34,7 +35,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/recipients', [DashboardController::class, 'getRecipients']);
-
+        Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
+        Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
 
         // Messages CRUD Routes
         Route::resource('messages', MessagesController::class);

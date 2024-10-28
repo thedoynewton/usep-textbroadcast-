@@ -92,7 +92,8 @@
 
             <!-- Search and Filters -->
             <div class="mb-4 p-4 bg-white shadow-sm sm:rounded-lg">
-                <form id="form" method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4 items-center">
+                <form id="form" method="GET" action="{{ route('dashboard') }}"
+                    class="flex flex-wrap gap-4 items-center">
                     <!-- Search Bar -->
                     <div class="flex-grow">
                         <input type="text" name="search" id="searchInput" value="{{ request('search') }}"
@@ -118,8 +119,10 @@
                             class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                             <option value="">All Status</option>
                             <option value="sent" {{ request('status') == 'sent' ? 'selected' : '' }}>Sent</option>
-                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed
+                            </option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
+                                Cancelled</option>
                         </select>
                     </div>
 
@@ -131,7 +134,24 @@
                             Filter
                         </button>
                     </div>
+
+                    <div class="relative inline-block text-left">
+                        <!-- Main button to trigger the dropdown -->
+                        <button type="button" id="generateReportButton" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Generate Message Logs Report
+                        </button>
+                    
+                        <!-- Dropdown menu -->
+                        <div id="reportDropdown" class="hidden absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div class="py-1">
+                                <a href="#" id="downloadCsv" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download as CSV</a>
+                                <a href="#" id="downloadPdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download as PDF</a>
+                            </div>
+                        </div>
+                    </div>                                        
+
                 </form>
+
             </div>
 
             <!-- Message Logs Table -->
@@ -215,5 +235,5 @@
         </div>
     </div>
 
-    @vite(['resources/js/recipientsModal.js', 'resources/js/dashboardFilter.js'])
+    @vite(['resources/js/recipientsModal.js', 'resources/js/dashboardFilter.js', 'resources/js/generateReport.js'])
 </x-app-layout>
