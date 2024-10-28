@@ -33,4 +33,20 @@ class AppManagementController extends Controller
             'campuses' => $campuses,
         ]);
     }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $campusId = $request->input('campus_id');
+    
+        // Ensure students and employees are arrays
+        $students = $this->service->getStudents($search, $campusId, false)->toArray();
+        $employees = $this->service->getEmployees($search, $campusId, false)->toArray();
+    
+        return response()->json([
+            'students' => $students,
+            'employees' => $employees,
+        ]);
+    }
+    
 }

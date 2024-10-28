@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index')->middleware('auth');
 
+        Route::get('/app-management/search', [AppManagementController::class, 'search'])->name('app-management.search');
+        
         // FilterController Routes (API)
         Route::prefix('/api')->group(function () {
             Route::get('/colleges/{campusId}', [FilterController::class, 'getCollegesByCampus']);
