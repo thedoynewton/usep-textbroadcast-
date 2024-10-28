@@ -44,7 +44,32 @@ class AppManagementService
 
         return $paginate ? $query->paginate(10) : $query->get();
     }
-
+    public function getContacts($search = null, $campusId = null, $paginate = true)
+    {
+        $students = $this->getStudents($search, $campusId, false); // Get students without pagination
+        $employees = $this->getEmployees($search, $campusId, false); // Get employees without pagination
+    
+        // Concatenate students and employees into a single collection
+        $contacts = $students->concat($employees);
+    
+        // Sort and paginate if needed
+        if ($paginate) {
+            $perPage = 10;
+            $currentPage = request()->get('page', 1);
+            $contacts = $contacts->sortBy('stud_lname')->values();
+            $contacts = $contacts->slice(($currentPage - 1) * $perPage, $perPage)->values();
+            $contacts = new \Illuminate\Pagination\LengthAwarePaginator(
+                $contacts,
+                $students->count() + $employees->count(),
+                $perPage,
+                $currentPage,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
+        }
+    
+        return $contacts;
+    }    
+    
     public function getMessageTemplates()
     {
         return MessageTemplate::paginate(10);

@@ -1,92 +1,35 @@
-// realTimeSearch.js
-document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("searchInput");
-    const campusFilter = document.getElementById("campusFilter");
-    const filterForm = document.getElementById("filterForm");
-    const filterButton = document.getElementById("filterButton"); // Updated to use id selector
-    const studentTableBody = document.getElementById("studentTableBody");
-    const employeeTableBody = document.getElementById("employeeTableBody");
+document.addEventListener('DOMContentLoaded', function () {
+    const campusFilter = document.getElementById('campusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const contactsResults = document.getElementById('contactsResults');
 
-    // Prevent the form from submitting traditionally
-    if (filterForm) {
-        filterForm.addEventListener("submit", (event) => {
-            event.preventDefault(); // Prevent traditional form submission
-        });
-    }
+    function fetchContacts() {
+        const search = searchInput.value;
+        const campusId = campusFilter.value;
 
-    // Event listener for the "Filter" button to trigger AJAX filter
-    if (filterButton) {
-        filterButton.addEventListener("click", fetchFilteredResults);
-    }
+        // Construct the URL with query parameters for search and campus
+        const url = `/app-management?search=${encodeURIComponent(search)}&campus_id=${encodeURIComponent(campusId)}&section=contacts`;
 
-    // Debounced search input listener if searchInput exists
-    if (searchInput) {
-        searchInput.addEventListener("input", debounce(fetchFilteredResults, 300));
-    }
-
-    // Fetch and update table with filtered results
-    function fetchFilteredResults() {
-        const searchQuery = searchInput ? searchInput.value : '';
-        const campusId = campusFilter ? campusFilter.value : '';
-
-        fetch(`/app-management/search?search=${searchQuery}&campus_id=${campusId}`, {
+        // Make an AJAX request to fetch the filtered contacts
+        fetch(url, {
             headers: {
-                "X-Requested-With": "XMLHttpRequest",
-            },
+                'X-Requested-With': 'XMLHttpRequest' // Mark as an AJAX request
+            }
         })
-            .then((response) => response.json())
-            .then((data) => {
-                updateResults(data.students, data.employees, searchQuery);
-            })
-            .catch((error) => console.error("Error fetching filtered results:", error));
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text(); // Get the response as text (HTML)
+        })
+        .then(data => {
+            // Update the contactsResults div with the new HTML content
+            contactsResults.innerHTML = data;
+        })
+        .catch(error => console.error('Error fetching contacts:', error));
     }
 
-    // Update results in the table
-    function updateResults(students, employees, searchTerm) {
-        studentTableBody.innerHTML = "";
-        employeeTableBody.innerHTML = "";
+    // Trigger the search when the campus filter changes
+    campusFilter.addEventListener('change', fetchContacts);
 
-        if (!Array.isArray(students) || !Array.isArray(employees)) {
-            console.error("Invalid data format:", { students, employees });
-            return;
-        }
-
-        students.forEach((student) => {
-            studentTableBody.innerHTML += `
-                <tr class="bg-white">
-                    <td class="border dark:border-gray-700 px-4 py-2">${highlightText(student.stud_fname + ' ' + student.stud_lname, searchTerm)}</td>
-                    <td class="border dark:border-gray-700 px-4 py-2">${highlightText(student.stud_email, searchTerm)}</td>
-                    <td class="border dark:border-gray-700 px-4 py-2">${highlightText(student.stud_contact, searchTerm)}</td>
-                    <td class="border dark:border-gray-700 px-4 py-2">${student.campus ? highlightText(student.campus.campus_name, searchTerm) : 'N/A'}</td>
-                </tr>
-            `;
-        });
-
-        employees.forEach((employee) => {
-            employeeTableBody.innerHTML += `
-                <tr class="bg-white">
-                    <td class="border dark:border-gray-700 px-4 py-2">${highlightText(employee.emp_fname + ' ' + employee.emp_lname, searchTerm)}</td>
-                    <td class="border dark:border-gray-700 px-4 py-2">${highlightText(employee.emp_email, searchTerm)}</td>
-                    <td class="border dark:border-gray-700 px-4 py-2">${highlightText(employee.emp_contact, searchTerm)}</td>
-                    <td class="border dark:border-gray-700 px-4 py-2">${employee.campus ? highlightText(employee.campus.campus_name, searchTerm) : 'N/A'}</td>
-                </tr>
-            `;
-        });
-    }
-
-    // Helper function to highlight matched text
-    function highlightText(text, searchTerm) {
-        if (!searchTerm) return text;
-        const regex = new RegExp(`(${searchTerm})`, "gi");
-        return text.replace(regex, `<span style="background-color: yellow;">$1</span>`);
-    }
-
-    // Debounce function to limit rate of search calls
-    function debounce(func, delay) {
-        let debounceTimer;
-        return function (...args) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => func.apply(this, args), delay);
-        };
-    }
+    // Trigger the search on typing in the search input
+    searchInput.addEventListener('input', fetchContacts);
 });
