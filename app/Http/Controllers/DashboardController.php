@@ -21,15 +21,26 @@ class DashboardController extends Controller
         // Query logic for search and filtering
         $query = MessageLog::query();
 
-        // Apply search and filters
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('content', 'like', "%{$search}%")
-                    ->orWhereHas('user', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
+        // Apply search across multiple fields
+    if ($search = $request->input('search')) {
+        $query->where(function ($q) use ($search) {
+            $q->where('content', 'like', "%{$search}%")
+                ->orWhereHas('user', function ($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere(function ($q3) use ($search) {
+                    // Check if the search term is "All Campuses" to include null campus records
+                    if (strtolower($search) === 'all campuses') {
+                        $q3->whereNull('campus_id');
+                    } else {
+                        $q3->whereHas('campus', function ($q4) use ($search) {
+                            $q4->where('campus_name', 'like', "%{$search}%");
+                        });
+                    }
+                })
+                ->orWhere('message_type', 'like', "%{$search}%");
+        });
+    }
 
         if ($recipientType = $request->input('recipient_type')) {
             $query->where('recipient_type', $recipientType);
