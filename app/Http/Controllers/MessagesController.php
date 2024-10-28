@@ -16,7 +16,6 @@ use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Queue;
 
 class MessagesController extends Controller
 {
@@ -95,6 +94,7 @@ class MessagesController extends Controller
                 'name' => 'Custom Template ' . now()->format('Y-m-d H:i:s'),
                 'content' => $messageContent,
             ]);
+            $logContent = $newTemplate->name;  // Log the name of the newly created template
         }
 
         // Log the message in the MessageLog
