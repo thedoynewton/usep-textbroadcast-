@@ -49,31 +49,38 @@
                 @else
                     <!-- Contacts Section -->
                     <div>
-                        <form id="filterForm" method="GET" action="{{ route('app-management.index') }}" class="mb-6">
+                        <form id="filterForm" method="GET" action="{{ route('app-management.index') }}"
+                            class="mb-6">
+                            @csrf
                             <div class="flex items-center space-x-4">
                                 <!-- Search Input -->
                                 <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
-                                       placeholder="Search by email, first name, or last name"
-                                       class="border rounded px-4 py-2 dark:bg-gray-700 dark:text-gray-100" />
-                                
+                                    placeholder="Search by email, first name, or last name"
+                                    class="border rounded px-4 py-2 dark:bg-gray-700 dark:text-gray-100" />
+
                                 <!-- Campus Filter Dropdown -->
-                                <select id="campusFilter" name="campus_id" class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
+                                <select id="campusFilter" name="campus_id"
+                                    class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
                                     <option value="">All Campuses</option>
                                     @foreach ($campuses as $campus)
-                                        <option value="{{ $campus->campus_id }}" {{ request('campus_id') == $campus->campus_id ? 'selected' : '' }}>
+                                        <option value="{{ $campus->campus_id }}"
+                                            {{ request('campus_id') == $campus->campus_id ? 'selected' : '' }}>
                                             {{ $campus->campus_name }}
                                         </option>
                                     @endforeach
                                 </select>
-                    
+
                                 <!-- Type Filter Dropdown (Moved beside campus dropdown) -->
-                                <select id="typeFilter" name="type" class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
+                                <select id="typeFilter" name="type"
+                                    class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
                                     <option value="">All Types</option>
-                                    <option value="Student" {{ request('type') == 'Student' ? 'selected' : '' }}>Student</option>
-                                    <option value="Employee" {{ request('type') == 'Employee' ? 'selected' : '' }}>Employee</option>
+                                    <option value="Student" {{ request('type') == 'Student' ? 'selected' : '' }}>
+                                        Student</option>
+                                    <option value="Employee" {{ request('type') == 'Employee' ? 'selected' : '' }}>
+                                        Employee</option>
                                 </select>
                             </div>
-                        </form>                                         
+                        </form>
                     </div>
 
                     <!-- Include the contacts table using the partial -->
@@ -86,6 +93,30 @@
         </div>
     </div>
 
+<!-- Edit Contact Modal using modal.blade.php component -->
+<x-modal name="editContactModal" maxWidth="md">
+    <h2 class="text-lg font-semibold mb-4">Edit Contact Number</h2>
+    <form id="editForm">
+        @csrf
+        <input type="hidden" id="contactId" name="contact_id" />
+
+        <div class="mb-4">
+            <label for="contactName" class="block font-medium text-gray-700">Name</label>
+            <input type="text" id="contactName" name="contact_name" class="border rounded w-full px-4 py-2" readonly />
+        </div>
+
+        <div class="mb-4">
+            <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
+            <input type="text" id="contactNumber" name="contact_number" class="border rounded w-full px-4 py-2" required />
+        </div>
+
+        <div class="flex justify-end space-x-2">
+            <button type="button" class="px-4 py-2 bg-gray-300 rounded" x-on:click="$dispatch('close-modal', 'editContactModal')">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+        </div>
+    </form>
+</x-modal>
+
     <!-- Include the realTimeSearch.js script for real-time filtering -->
-    @vite(['resources/js/realTimeSearch.js'])
+    @vite(['resources/js/contactsFilter.js'])
 </x-app-layout>

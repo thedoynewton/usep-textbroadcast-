@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\Student;
 use App\Services\AppManagementService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
 
 class AppManagementController extends Controller
 {
@@ -53,4 +57,35 @@ class AppManagementController extends Controller
         ]);
     }
 
+    public function updateContactNumber(Request $request, $id)
+    {
+        $request->validate([
+            'contact_number' => 'required|string|max:15',
+            'type' => 'required|string', // Pass type as 'stud_id' or 'emp_id' to differentiate
+        ]);
+    
+        $contactNumber = $request->input('contact_number');
+        $type = $request->input('type'); // 'stud_id' or 'emp_id'
+    
+        if ($type === 'stud_id') {
+            // Update student contact
+            $contact = Student::where('stud_id', $id)->first();
+            if ($contact) {
+                $contact->stud_contact = $contactNumber; // Use stud_contact column
+                $contact->save();
+            }
+        } elseif ($type === 'emp_id') {
+            // Update employee contact
+            $contact = Employee::where('emp_id', $id)->first();
+            if ($contact) {
+                $contact->emp_contact = $contactNumber; // Use emp_contact column
+                $contact->save();
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'Invalid contact type'], 400);
+        }
+    
+        return response()->json(['success' => true, 'message' => 'Contact number updated successfully']);
+    }
+    
 }
