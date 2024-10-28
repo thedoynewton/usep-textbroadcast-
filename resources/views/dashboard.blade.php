@@ -92,7 +92,7 @@
 
             <!-- Search and Filters -->
             <div class="mb-4 p-4 bg-white shadow-sm sm:rounded-lg">
-                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4 items-center">
+                <form id="form" method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4 items-center">
                     <!-- Search Bar -->
                     <div class="flex-grow">
                         <input type="text" name="search" value="{{ request('search') }}"
@@ -162,7 +162,7 @@
                                         <th class="px-4 py-2 border">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="messageTableBody">
                                     @foreach ($messageLogs as $log)
                                         <tr>
                                             <td class="border px-4 py-2">{{ $log->user->name ?? 'Unknown' }}</td>
@@ -205,7 +205,7 @@
                         </div>
 
                         <!-- Pagination Links -->
-                        <div class="mt-4">
+                        <div id="paginationContainer" class="mt-4">
                             {{ $messageLogs->appends(request()->input())->links() }}
                             <!-- Keep filters when paginating -->
                         </div>
@@ -215,5 +215,5 @@
         </div>
     </div>
 
-    @vite(['resources/js/recipientsModal.js'])
+    @vite(['resources/js/recipientsModal.js', 'resources/js/dashboardFilter.js'])
 </x-app-layout>

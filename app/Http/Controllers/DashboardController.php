@@ -45,6 +45,14 @@ class DashboardController extends Controller
             ->paginate(10)
             ->appends($request->all());
 
+        // Check if the request is AJAX
+        if ($request->ajax()) {
+            return response()->json([
+                'messageLogs' => $messageLogs->items(),
+                'pagination' => $messageLogs->links()->render()
+            ]);
+        }
+
         // Fetch card data counts from the message_recipients table
         // Total Messages (only recipients with 'Sent' status)
         $totalMessages = MessageRecipient::where('sent_status', 'Sent')->count();
