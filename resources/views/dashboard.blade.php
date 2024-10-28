@@ -123,6 +123,8 @@
                             </option>
                             <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
                                 Cancelled</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
+                            </option>
                         </select>
                     </div>
 
