@@ -20,8 +20,38 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             messageLogsContainer.innerHTML = data.html;
             initializePaginationLinks();
+            if (search) {
+                highlightSearchTerm(search);
+            }
         })
         .catch(error => console.error('Error fetching message logs:', error));
+    }
+
+    // Highlight the search term within the message logs table
+    function highlightSearchTerm(term) {
+        const regex = new RegExp(`(${term})`, 'gi');
+        function highlightTextNodes(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const matches = node.textContent.match(regex);
+                if (matches) {
+                    const fragment = document.createDocumentFragment();
+                    node.textContent.split(regex).forEach(part => {
+                        const span = document.createElement('span');
+                        if (part.toLowerCase() === term.toLowerCase()) {
+                            span.style.backgroundColor = 'yellow';
+                            span.textContent = part;
+                        } else {
+                            span.textContent = part;
+                        }
+                        fragment.appendChild(span);
+                    });
+                    node.replaceWith(fragment);
+                }
+            } else {
+                node.childNodes.forEach(highlightTextNodes);
+            }
+        }
+        highlightTextNodes(messageLogsContainer);
     }
 
     function initializePaginationLinks() {
