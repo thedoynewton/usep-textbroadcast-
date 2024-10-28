@@ -53,7 +53,7 @@ class DashboardController extends Controller
         // Paginate the logs and append the search/filter parameters
         $messageLogs = $query->with(['user', 'campus'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10)
+            ->paginate(5)
             ->appends($request->all());
 
         // Check if the request is AJAX
