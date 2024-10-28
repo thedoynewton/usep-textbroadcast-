@@ -26,11 +26,27 @@ class AnalyticsController extends Controller
         // Get Messages Overview data
         $messageOverview = $this->getMessageOverview($filters);
 
+        // Define low balance threshold
+        $lowBalanceThreshold = 0.0140;
+
+        // Fetch the current balance using MoviderService
+        $balanceData = app('App\Services\MoviderService')->getBalance();
+        $balance = $balanceData['balance'] ?? 0;
+
+        // Determine if the balance is below the threshold
+        $lowBalance = $balance < $lowBalanceThreshold;
+
+        // Log the values for debugging
+        Log::info('Balance Data:', $balanceData);
+        Log::info('Current Balance:', ['balance' => $balance]);
+        Log::info('Low Balance Flag:', ['lowBalance' => $lowBalance]);
+
+        // Pass data to view
         return view('analytics.index', array_merge(
             $costOverview,
             $messageOverview,
             $filters,
-            compact('campuses')
+            compact('campuses', 'lowBalance', 'balance')
         ));
     }
 
@@ -86,7 +102,7 @@ class AnalyticsController extends Controller
             ->when($filters['messageType'] ?? null, fn($query) => $query->where('message_type', $filters['messageType']))
             ->groupByRaw("CONVERT(DATE, created_at)")
             ->get();
-    
+
         $costDates = [];
         $costs = [];
         foreach ($costData as $data) {
@@ -94,9 +110,9 @@ class AnalyticsController extends Controller
             $costs[] = $data->total_sent * $this->costPerSms;
             //Log::info("Cost Overview - Date: {$data->date}, Total Sent: {$data->total_sent}, Daily Cost: " . end($costs));
         }
-    
+
         return compact('costDates', 'costs');
-    }    
+    }
 
     protected function getMessageOverview($filters)
     {
@@ -105,7 +121,7 @@ class AnalyticsController extends Controller
             ->whereDate('created_at', '>=', $filters['startDate'])
             ->whereDate('created_at', '<=', $filters['endDate'])
             ->when($filters['campusId'], fn($query) => $query->where('campus_id', $filters['campusId']))
-            ->when($filters['recipientType'], function($query) use ($filters) {
+            ->when($filters['recipientType'], function ($query) use ($filters) {
                 $query->where('recipient_type', $filters['recipientType']);
                 $this->applyRecipientSpecificFilters($query, $filters);
             })
@@ -129,14 +145,14 @@ class AnalyticsController extends Controller
     {
         if ($filters['recipientType'] === 'Student') {
             $query->when($filters['campusId'], fn($q) => $q->where('campus_id', $filters['campusId']))
-                  ->when($filters['collegeId'], fn($q) => $q->where('college_id', $filters['collegeId']))
-                  ->when($filters['programId'], fn($q) => $q->where('program_id', $filters['programId']))
-                  ->when($filters['majorId'], fn($q) => $q->where('major_id', $filters['majorId']))
-                  ->when($filters['year'], fn($q) => $q->where('year_id', $filters['year']));
+                ->when($filters['collegeId'], fn($q) => $q->where('college_id', $filters['collegeId']))
+                ->when($filters['programId'], fn($q) => $q->where('program_id', $filters['programId']))
+                ->when($filters['majorId'], fn($q) => $q->where('major_id', $filters['majorId']))
+                ->when($filters['year'], fn($q) => $q->where('year_id', $filters['year']));
         } elseif ($filters['recipientType'] === 'Employee') {
             $query->when($filters['officeId'], fn($q) => $q->where('office_id', $filters['officeId']))
-                  ->when($filters['type'], fn($q) => $q->where('type_id', $filters['type']))
-                  ->when($filters['status'], fn($q) => $q->where('status_id', $filters['status']));
+                ->when($filters['type'], fn($q) => $q->where('type_id', $filters['type']))
+                ->when($filters['status'], fn($q) => $q->where('status_id', $filters['status']));
         }
     }
 }

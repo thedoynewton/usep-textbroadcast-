@@ -8,6 +8,14 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            <!-- Warning Message -->
+            @if ($lowBalance)
+                <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
+                    <h2 class="text-xl font-bold">Warning: Low SMS Balance</h2>
+                    <p>Your SMS balance is running low. Please recharge to avoid service interruption.</p>
+                </div>
+            @endif
+
             <!-- Unified Date Range Filter Form (applies to both Message and Costs Overviews) -->
             <div class="mb-4 p-4 bg-white shadow-sm sm:rounded-lg">
                 <form id="dateRangeFilterForm" class="flex flex-wrap gap-4 items-center">
@@ -52,9 +60,12 @@
                                 <label for="recipient_type" class="block text-gray-700">Recipient Type</label>
                                 <select name="recipient_type" id="recipient_type"
                                     class="border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                    <option value="" {{ empty($recipientType) ? 'selected' : '' }}>All Recipient Type</option>
-                                    <option value="Student" {{ $recipientType === 'Student' ? 'selected' : '' }}>Student</option>
-                                    <option value="Employee" {{ $recipientType === 'Employee' ? 'selected' : '' }}>Employee</option>
+                                    <option value="" {{ empty($recipientType) ? 'selected' : '' }}>All Recipient
+                                        Type</option>
+                                    <option value="Student" {{ $recipientType === 'Student' ? 'selected' : '' }}>Student
+                                    </option>
+                                    <option value="Employee" {{ $recipientType === 'Employee' ? 'selected' : '' }}>
+                                        Employee</option>
                                 </select>
                             </div>
 
@@ -77,13 +88,15 @@
                             <div id="studentFields" class="hidden gap-4">
                                 <div>
                                     <label for="academic_unit" class="block text-gray-700">Academic Unit</label>
-                                    <select name="college_id" id="academic_unit" class="border-gray-300 rounded-md shadow-sm">
+                                    <select name="college_id" id="academic_unit"
+                                        class="border-gray-300 rounded-md shadow-sm">
                                         <option value="">Select Academic Unit</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label for="program" class="block text-gray-700">Program</label>
-                                    <select name="program_id" id="program" class="border-gray-300 rounded-md shadow-sm">
+                                    <select name="program_id" id="program"
+                                        class="border-gray-300 rounded-md shadow-sm">
                                         <option value="">Select Program</option>
                                     </select>
                                 </div>
@@ -105,7 +118,8 @@
                             <div id="employeeFields" class="hidden gap-4">
                                 <div>
                                     <label for="office" class="block text-gray-700">Office</label>
-                                    <select name="office_id" id="office" class="border-gray-300 rounded-md shadow-sm">
+                                    <select name="office_id" id="office"
+                                        class="border-gray-300 rounded-md shadow-sm">
                                         <option value="">Select Office</option>
                                     </select>
                                 </div>
