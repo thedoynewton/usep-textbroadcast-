@@ -48,8 +48,9 @@ class AuthenticatedSessionController extends Controller
         ]);
     
         if ($validator->fails()) {
-            Log::error('Email format validation failed', ['errors' => $validator->errors()]);
-            return redirect()->back()->withErrors($validator)->withInput();
+            //Log::error('Email format validation failed', ['errors' => $validator->errors()]);
+            return redirect()->back()->with('error', 'Email format validation failed');
+
         }
     
         // Extract the domain from the email
@@ -60,8 +61,9 @@ class AuthenticatedSessionController extends Controller
     
         // Check if the email domain is 'usep.edu.ph'
         if ($domain !== 'usep.edu.ph') {
-            Log::warning('Access denied: Non-USeP email used for login', ['email' => $email]);
-            return redirect('/')->with('error', 'Access denied. You must use your USeP email.');
+            //Log::warning('Access denied: Non-USeP email used for login', ['email' => $email]);
+            return redirect()->back()->with('error', 'Access denied. You must use your USeP email.');
+
         }
     
         // Check if the email exists in the users table
@@ -72,8 +74,8 @@ class AuthenticatedSessionController extends Controller
     
             // Deny access if user doesn't have a role
             if (is_null($user->role)) {
-                Log::warning('Access denied: User has no role.', ['email' => $user->email]);
-                return redirect('/')->with('error', 'Access denied. You do not have the required permissions.');
+                //Log::warning('Access denied: User has no role.', ['email' => $user->email]);
+                return redirect()->back()->with('error', 'Access denied. You do not have the required permissions.');
             }
     
             // Log the user in
@@ -91,8 +93,9 @@ class AuthenticatedSessionController extends Controller
                 return redirect()->intended('/dashboard');
             }
         } else {
-            Log::error('User not found for email: ' . $email);
+            //Log::error('User not found for email: ' . $email);
             return redirect()->back()->with('error', 'Login failed. Please try again.');
+            
         }
     }    
 

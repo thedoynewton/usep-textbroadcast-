@@ -26,7 +26,7 @@ class GoogleController extends Controller
          try {
              $user = Socialite::driver('google')->user();
          } catch (\Exception $e) {
-             return redirect('/')->with('error', 'Login cancelled or failed. Please try again.');
+             return redirect('/login')->with('error', 'Login cancelled or failed. Please try again.');
          }
      
          $email = $user->getEmail();
@@ -36,7 +36,7 @@ class GoogleController extends Controller
              // Deny access if user doesn't have a role
              if (is_null($existingUser->role)) {
                  Log::warning('Access denied: User has no role.', ['email' => $email]);
-                 return redirect('/')->with('error', 'Access denied. You do not have the required permissions.');
+                 return redirect('/login')->with('error', 'Access denied. You do not have the required permissions.');
              }
      
              $existingUser->update([
@@ -52,10 +52,7 @@ class GoogleController extends Controller
              return redirect()->intended('/dashboard');
          }
      
-         return redirect('/')->with('error', 'Access denied. You do not have the required permissions.');
+         return redirect('/login')->with('error', 'Access denied. You must use your USeP email.');
      }
-     
-     
-     
 
 }

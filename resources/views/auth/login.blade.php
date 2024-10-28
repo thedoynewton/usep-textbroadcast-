@@ -1,6 +1,14 @@
 <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
+    <!-- Display Session Error Message -->
+    @if(session('error'))
+        <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
+            <h2 class="font-bold">Error</h2>
+            <p>{{ session('error') }}</p>
+        </div>
+    @endif
+    
 
     <img src="/images/SePhi Favicon.png" alt="USeP Logo" class="w-24 h-24 mx-auto">
     <h1 class="font-bold text-2xl text-center mt-4 text-red-700">WELCOME BACK</h1>
