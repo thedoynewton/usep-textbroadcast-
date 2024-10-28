@@ -126,29 +126,24 @@
                         </select>
                     </div>
 
-
-                    <!-- Submit Button -->
-                    <div>
-                        <button type="submit"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 disabled:opacity-25 transition">
-                            Filter
-                        </button>
-                    </div>
-
                     <div class="relative inline-block text-left">
                         <!-- Main button to trigger the dropdown -->
-                        <button type="button" id="generateReportButton" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="button" id="generateReportButton"
+                            class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Generate Message Logs Report
                         </button>
-                    
+
                         <!-- Dropdown menu -->
-                        <div id="reportDropdown" class="hidden absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                        <div id="reportDropdown"
+                            class="hidden absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                             <div class="py-1">
-                                <a href="#" id="downloadCsv" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download as CSV</a>
-                                <a href="#" id="downloadPdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download as PDF</a>
+                                <a href="#" id="downloadCsv"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download as CSV</a>
+                                <a href="#" id="downloadPdf"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Download as PDF</a>
                             </div>
                         </div>
-                    </div>                                        
+                    </div>
 
                 </form>
 
@@ -157,79 +152,10 @@
             <!-- Message Logs Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-semibold mb-4">Recent Messages</h3>
-
-                    @if ($messageLogs->isEmpty())
-                        <p>No messages have been logged yet.</p>
-                    @else
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full bg-white border border-gray-200 table-auto">
-                                <thead>
-                                    <tr>
-                                        <th class="px-4 py-2 border">User</th>
-                                        <th class="px-4 py-2 border">Campus</th>
-                                        <th class="px-4 py-2 border">Recipient Type</th>
-                                        <th class="px-4 py-2 border">Message</th>
-                                        <th class="px-4 py-2 border">Message Type</th>
-                                        <th class="px-4 py-2 border">Total Recipients</th>
-                                        <th class="px-4 py-2 border">Sent Count</th>
-                                        <th class="px-4 py-2 border">Failed Count</th>
-                                        <th class="px-4 py-2 border">Status</th>
-                                        <th class="px-4 py-2 border">Created At</th>
-                                        <th class="px-4 py-2 border">Sent At</th>
-                                        <th class="px-4 py-2 border">Scheduled At</th>
-                                        <th class="px-4 py-2 border">Cancelled At</th>
-                                        <th class="px-4 py-2 border">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="messageTableBody">
-                                    @foreach ($messageLogs as $log)
-                                        <tr>
-                                            <td class="border px-4 py-2">{{ $log->user->name ?? 'Unknown' }}</td>
-                                            <td class="border px-4 py-2">
-                                                {{ $log->campus->campus_name ?? 'All Campuses' }}</td>
-                                            <td class="border px-4 py-2">{{ ucfirst($log->recipient_type) }}</td>
-                                            <td class="border px-4 py-2">{{ $log->content ?? 'No Content' }}</td>
-                                            <td class="border px-4 py-2">{{ ucfirst($log->message_type) }}</td>
-                                            <td class="border px-4 py-2">{{ $log->total_recipients ?? 'N/A' }}</td>
-                                            <td class="border px-4 py-2">{{ $log->sent_count ?? 0 }}</td>
-                                            <td class="border px-4 py-2">{{ $log->failed_count ?? 0 }}</td>
-                                            <td class="border px-4 py-2">{{ ucfirst($log->status) }}</td>
-                                            <td class="border px-4 py-2">
-                                                {{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d H:i') }}</td>
-                                            <td class="border px-4 py-2">
-                                                {{ isset($log->sent_at) ? \Carbon\Carbon::parse($log->sent_at)->format('Y-m-d H:i') : 'N/A' }}
-                                            </td>
-                                            <td class="border px-4 py-2">
-                                                {{ isset($log->scheduled_at) ? \Carbon\Carbon::parse($log->scheduled_at)->format('Y-m-d H:i') : 'N/A' }}
-                                            </td>
-                                            <td class="border px-4 py-2">
-                                                {{ isset($log->cancelled_at) ? \Carbon\Carbon::parse($log->cancelled_at)->format('Y-m-d H:i') : 'N/A' }}
-                                            </td>
-                                            <td>
-                                                @if ($log->status === 'pending' && $log->message_type === 'scheduled')
-                                                    <form action="{{ route('messages.cancel', $log->id) }}"
-                                                        method="POST"
-                                                        onsubmit="return confirm('Are you sure you want to cancel this scheduled message?');">
-                                                        @csrf
-                                                        @method('PATCH') <!-- Important to specify the PATCH method -->
-                                                        <button type="submit"
-                                                            class="btn btn-danger btn-sm">Cancel</button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination Links -->
-                        <div id="paginationContainer" class="mt-4">
-                            {{ $messageLogs->appends(request()->input())->links() }}
-                            <!-- Keep filters when paginating -->
-                        </div>
-                    @endif
+                    <!-- Message Logs Table (AJAX-loaded content) -->
+                    <div id="messageLogsContainer">
+                        @include('partials.message-logs-content', ['messageLogs' => $messageLogs])
+                    </div>
                 </div>
             </div>
         </div>

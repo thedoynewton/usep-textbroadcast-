@@ -18,81 +18,68 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        // Query logic for search and filtering
         $query = MessageLog::query();
-
-        // Apply search across multiple fields
-    if ($search = $request->input('search')) {
-        $query->where(function ($q) use ($search) {
-            $q->where('content', 'like', "%{$search}%")
-                ->orWhereHas('user', function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%");
-                })
-                ->orWhere(function ($q3) use ($search) {
-                    // Check if the search term is "All Campuses" to include null campus records
-                    if (strtolower($search) === 'all campuses') {
-                        $q3->whereNull('campus_id');
-                    } else {
-                        $q3->whereHas('campus', function ($q4) use ($search) {
-                            $q4->where('campus_name', 'like', "%{$search}%");
-                        });
-                    }
-                })
-                ->orWhere('message_type', 'like', "%{$search}%");
-        });
-    }
-
+    
+        // Apply search filter
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere(function ($q3) use ($search) {
+                        if (strtolower($search) === 'all campuses') {
+                            $q3->whereNull('campus_id');
+                        } else {
+                            $q3->whereHas('campus', function ($q4) use ($search) {
+                                $q4->where('campus_name', 'like', "%{$search}%");
+                            });
+                        }
+                    })
+                    ->orWhere('message_type', 'like', "%{$search}%");
+            });
+        }
+    
+        // Apply recipient type filter
         if ($recipientType = $request->input('recipient_type')) {
             $query->where('recipient_type', $recipientType);
         }
-
+    
+        // Apply status filter
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
-
-        // Paginate the logs and append the search/filter parameters
+    
+        // Paginate the results
         $messageLogs = $query->with(['user', 'campus'])
             ->orderBy('created_at', 'desc')
             ->paginate(5)
             ->appends($request->all());
-
+    
         // Check if the request is AJAX
         if ($request->ajax()) {
             return response()->json([
-                'messageLogs' => $messageLogs->items(),
-                'pagination' => $messageLogs->links()->render()
+                'html' => view('partials.message-logs-content', compact('messageLogs'))->render(),
             ]);
         }
-
-        // Fetch card data counts from the message_recipients table
-        // Total Messages (only recipients with 'Sent' status)
+    
+        // Fetch additional data for non-AJAX requests
         $totalMessages = MessageRecipient::where('sent_status', 'Sent')->count();
-
-        // Scheduled Messages (recipients with 'Sent' status linked to 'scheduled' message type)
         $scheduledMessages = MessageRecipient::where('sent_status', 'Sent')
             ->whereHas('messageLog', function ($q) {
                 $q->where('message_type', 'scheduled');
             })->count();
-
-        // Immediate Messages (recipients with 'Sent' status linked to 'instant' message type)
         $immediateMessages = MessageRecipient::where('sent_status', 'Sent')
             ->whereHas('messageLog', function ($q) {
                 $q->where('message_type', 'instant');
             })->count();
-
-        // Failed Messages (recipients with 'Failed' status)
         $failedMessages = MessageRecipient::where('sent_status', 'Failed')->count();
-
-        // Cancelled Messages (messages in the message_logs table with a 'cancelled' status)
         $cancelledMessages = MessageLog::where('status', 'cancelled')->count();
-
-        // Pending Messages (recipients with 'Pending' status)
         $pendingMessages = MessageLog::where('status', 'pending')->count();
-
-        // Fetch Movider balance using MoviderService
+    
         $balanceData = $this->moviderService->getBalance();
         $balance = $balanceData['balance'] ?? 0;
-
+    
         return view('dashboard', compact(
             'messageLogs',
             'totalMessages',
@@ -103,8 +90,8 @@ class DashboardController extends Controller
             'pendingMessages',
             'balance'
         ));
-    }
-
+    }      
+    
     public function getRecipients(Request $request)
     {
         $type = $request->query('type');
