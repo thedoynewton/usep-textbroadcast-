@@ -10,7 +10,7 @@
     @endif
     
 
-    <img src="/images/SePhi Favicon.png" alt="USeP Logo" class="w-24 h-24 mx-auto">
+    <img src="/images/SePhi Favicon.png" alt="USeP Logo" class="w-26 h-24 mx-auto">
     <h1 class="font-bold text-2xl text-center mt-4 text-red-700">WELCOME BACK</h1>
     <p class="text-center text-gray-600 mt-2 mb-6">Proceed to login by selecting login options</p>
 
