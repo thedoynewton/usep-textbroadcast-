@@ -28,19 +28,19 @@
                     <ul class="flex space-x-4">
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'contacts']) }}"
-                                class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
+                                class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-black dark:text-gray-300' }}">
                                 Contacts
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'templates']) }}"
-                                class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
+                                class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-black dark:text-gray-300' }}">
                                 Message Templates
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'db-connection']) }}"
-                                class="{{ request('section') == 'db-connection' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
+                                class="{{ request('section') == 'db-connection' ? 'text-blue-500 font-bold' : 'text-black dark:text-gray-300' }}">
                                 DB Connection
                             </a>
                         </li>
