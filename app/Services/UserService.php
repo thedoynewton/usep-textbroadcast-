@@ -16,7 +16,7 @@ class UserService
             'name' => 'New User',
             'email' => $email,
             'google_id' => null,
-            'avatar' => 'default-avatar.png',
+            'avatar' => '/images/profile-user.png',
         ]);
     }
 
