@@ -10,6 +10,16 @@ class Major extends Model
     use HasFactory;
     protected $primaryKey = 'major_id';
 
+    protected $fillable = [
+        'major_id',
+        'campus_id',
+        'college_id',
+        'program_id',
+        'major_name',
+        'created_at',
+        'updated_at',
+    ];
+
     public function campus()
     {
         return $this->belongsTo(Campus::class, 'campus_id');

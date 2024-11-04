@@ -38,6 +38,12 @@
                                 Message Templates
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('app-management.index', ['section' => 'db-connection']) }}"
+                                class="{{ request('section') == 'db-connection' ? 'text-blue-500 font-bold' : 'text-white dark:text-gray-300' }}">
+                                DB Connection
+                            </a>
+                        </li>
                     </ul>
                 </nav>
 
@@ -46,6 +52,74 @@
                     <!-- Message Templates Section -->
                     <x-message-template-table :messageTemplates="$messageTemplates" />
                     <x-create-message-template-modal />
+                @elseif (request('section') == 'db-connection')
+                    <!-- DB Connection Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Database Connection Settings</h3>
+
+                        <!-- Card with Obrero Name -->
+                        <div class="bg-gray-100 border border-gray-300 rounded-lg p-6 shadow-md max-w-md cursor-pointer"
+                            id="obreroCard">
+                            <h4 class="text-xl font-semibold mb-2 text-gray-800">Obrero</h4>
+                            <p class="text-gray-600">Click to learn more about Obrero.</p>
+                        </div>
+                    </div>
+
+                    <!-- Obrero Modal -->
+                    <div id="obreroModal"
+                        class="fixed inset-0 items-center justify-center bg-black bg-opacity-50 hidden">
+                        <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto">
+                            <h3 class="text-2xl font-bold mb-4">Obrero</h3>
+                            <p class="text-gray-700 mb-4">This is additional information about Obrero.</p>
+
+                            <!-- Import Buttons -->
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <!-- Import College Button -->
+                                <form method="POST" action="{{ route('import.college') }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        Import College
+                                    </button>
+                                </form>
+
+                                <!-- Import Program Button -->
+                                <form method="POST" action="{{ route('import.programs') }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                                        Import Program
+                                    </button>
+                                </form>
+
+                                <!-- Import Major Button inside Modal -->
+                                <form method="POST" action="{{ route('import.majors') }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                                        Import Major
+                                    </button>
+                                </form>
+
+                                <!-- Import Years Button inside Modal -->
+                                <form method="POST" action="{{ route('import.years') }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                                        Import Years
+                                    </button>
+                                </form>
+
+                            </div>
+
+                            <div class="flex justify-end mt-4">
+                                <button id="closeObreroModal"
+                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <!-- Contacts Section -->
                     <div>
@@ -93,30 +167,33 @@
         </div>
     </div>
 
-<!-- Edit Contact Modal using modal.blade.php component -->
-<x-modal name="editContactModal" maxWidth="md">
-    <h2 class="text-lg font-semibold mb-4">Edit Contact Number</h2>
-    <form id="editForm">
-        @csrf
-        <input type="hidden" id="contactId" name="contact_id" />
+    <!-- Edit Contact Modal using modal.blade.php component -->
+    <x-modal name="editContactModal" maxWidth="md">
+        <h2 class="text-lg font-semibold mb-4">Edit Contact Number</h2>
+        <form id="editForm">
+            @csrf
+            <input type="hidden" id="contactId" name="contact_id" />
 
-        <div class="mb-4">
-            <label for="contactName" class="block font-medium text-gray-700">Name</label>
-            <input type="text" id="contactName" name="contact_name" class="border rounded w-full px-4 py-2" readonly />
-        </div>
+            <div class="mb-4">
+                <label for="contactName" class="block font-medium text-gray-700">Name</label>
+                <input type="text" id="contactName" name="contact_name" class="border rounded w-full px-4 py-2"
+                    readonly />
+            </div>
 
-        <div class="mb-4">
-            <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
-            <input type="text" id="contactNumber" name="contact_number" class="border rounded w-full px-4 py-2" required />
-        </div>
+            <div class="mb-4">
+                <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
+                <input type="text" id="contactNumber" name="contact_number" class="border rounded w-full px-4 py-2"
+                    required />
+            </div>
 
-        <div class="flex justify-end space-x-2">
-            <button type="button" class="px-4 py-2 bg-gray-300 rounded" x-on:click="$dispatch('close-modal', 'editContactModal')">Cancel</button>
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
-        </div>
-    </form>
-</x-modal>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                    x-on:click="$dispatch('close-modal', 'editContactModal')">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+            </div>
+        </form>
+    </x-modal>
 
     <!-- Include the realTimeSearch.js script for real-time filtering -->
-    @vite(['resources/js/contactsFilter.js'])
+    @vite(['resources/js/contactsFilter.js', 'resources/js/dbConnection.js'])
 </x-app-layout>

@@ -10,6 +10,15 @@ class Program extends Model
     use HasFactory;
     protected $primaryKey = 'program_id';
 
+    protected $fillable = [
+        'program_id',
+        'campus_id',
+        'college_id',
+        'program_name',
+        'created_at',
+        'updated_at',
+    ];
+
     public function campus()
     {
         return $this->belongsTo(Campus::class, 'campus_id');

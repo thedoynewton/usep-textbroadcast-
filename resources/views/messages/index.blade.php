@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             @if (session('success'))
@@ -25,21 +25,21 @@
             </div>
 
 
-            <div class="bg-black overflow-hidden shadow-xl sm:rounded-lg p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
 
                 <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
                 <ul class="flex border-b">
-                    <li class="-mb-px mr-1">
+                    <li class="border-gray-300">
                         <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}"
-                            class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-red-500' : '' }}">ALL</a>
+                            class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">ALL</a>
                     </li>
-                    <li class="-mb-px mr-1">
+                    <li class="border-gray-300">
                         <a href="{{ route('messages.index', ['tab' => 'students', 'campus' => request('campus')]) }}"
-                            class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-red-500' : '' }}">STUDENTS</a>
+                            class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">STUDENTS</a>
                     </li>
-                    <li class="-mb-px mr-1">
+                    <li class="border-gray-300">
                         <a href="{{ route('messages.index', ['tab' => 'employees', 'campus' => request('campus')]) }}"
-                            class="bg-white inline-block py-2 px-4 text-blue-700 font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-red-500' : '' }}">EMPLOYEES</a>
+                            class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">EMPLOYEES</a>
                     </li>
                 </ul>
 
@@ -184,41 +184,39 @@
                     <div class="mt-6">
                         <x-input-label for="message" value="Message" />
                         <textarea id="message" name="message" rows="4"
-                            class="mt-1 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
+                            class="block w-full mt-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-indigo-300 p-2 text-sm overflow-y-auto resize-none"
                             placeholder="Enter your message here..."></textarea>
                     </div>
 
                     <!-- Character count display -->
-                    <div class="text-right mt-2 text-sm text-white  ">
+                    <div class="mt-1 text-sm text-gray-500 pb-10 pt-2">
                         <span id="char-count">0</span>/160 characters
                     </div>
 
                     <!-- Additional Controls -->
-                    <div class="grid grid-cols-4 gap-4 mt-6">
-                        
+                    <div class="mb-6 flex items-center space-x-8">
+
+                        <!-- Batch Size -->
                         <div>
                             <x-input-label for="batch_size" value="Batch Size" />
-                            <x-text-input id="batch_size" name="batch_size" type="number" value="1" min="1" step="1" />
+                            <x-text-input id="batch_size" name="batch_size" type="number" value="1"
+                                min="1" step="1" />
                         </div>
 
                         <!-- Total Recipients -->
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <x-input-label for="total_recipients" value="Total Recipients" />
-                                <x-text-input id="total_recipients" name="total_recipients" type="number"
-                                    value="{{ $totalRecipients ?? 0 }}" readonly />
-                            </div>
+                        <div>
+                            <x-input-label for="total_recipients" value="Total Recipients" />
+                            <x-text-input id="total_recipients" name="total_recipients" type="number"
+                                value="{{ $totalRecipients ?? 0 }}" readonly />
                         </div>
 
-                        <div class="flex items-center mt-6">
-                            <label class="text-sm font-medium text-white">Send Message:</label>
-                            <div class="ml-4">
-                                <input type="radio" id="send_now" name="send_message" value="now"
-                                    class="mr-2" checked />
-                                <label for="send_now" class="text-sm font-medium text-white">Now</label>
-                                <input type="radio" id="send_later" name="send_message" value="later"
-                                    class="ml-4 mr-2" />
-                                <label for="send_later" class="text-sm font-medium text-white">Send Later</label>
+                        <div>
+                            <label class="block text-sm font-medium">Send Message:</label>
+                            <div class="p-1 flex items-center space-x-2">
+                                <input type="radio" id="send_now" name="send_message" value="now" checked />
+                                <label for="send_now">Now</label>
+                                <input type="radio" id="send_later" name="send_message" value="later" />
+                                <label for="send_later">Send Later</label>
                             </div>
                         </div>
                         <div>
@@ -228,7 +226,7 @@
                     </div>
 
                     <!-- Review Button -->
-                    <div class="flex justify-end mt-6">
+                    <div class="flex justify-end">
                         <x-primary-button id="open-review-modal">{{ __('Review Message') }}</x-primary-button>
                     </div>
 
@@ -320,6 +318,6 @@
         </div>
     </div>
 
-    @vite(['resources/js/progressBar.js','resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js'])
+    @vite(['resources/js/progressBar.js', 'resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js'])
 
 </x-app-layout>

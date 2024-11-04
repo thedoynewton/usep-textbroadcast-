@@ -91,7 +91,7 @@ class MessagesController extends Controller
         } else {
             $logContent = $messageContent;
             $newTemplate = MessageTemplate::create([
-                'name' => 'Custom Template ' . now()->format('Y-m-d H:i:s'),
+                'name' => 'CT' . now()->format('Y-m-d'),
                 'content' => $messageContent,
             ]);
             $logContent = $newTemplate->name;  // Log the name of the newly created template

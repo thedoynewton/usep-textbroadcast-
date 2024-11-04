@@ -112,6 +112,22 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        // Secondary SQL Server connection for ES_Obrero
+        'es_obrero' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_ES_OBRERO', '172.16.210.20'),
+            'port' => env('DB_PORT_ES_OBRERO', '1433'),
+            'database' => env('DB_DATABASE_ES_OBRERO', 'ES_Obrero'),
+            'username' => env('DB_USERNAME_ES_OBRERO', 'useptextblast'),
+            'password' => env('DB_PASSWORD_ES_OBRERO', 'US3Pt3xtb@st'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // Uncomment and configure if needed for encryption
+            // 'encrypt' => env('DB_ENCRYPT_ES_OBRERO', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_OBRERO', 'false'),
+        ],
+
     ],
 
     /*
@@ -147,7 +163,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

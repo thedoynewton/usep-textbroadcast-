@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AppManagementController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataImportController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\MessageTemplateController;
@@ -79,6 +80,11 @@ Route::middleware('auth')->group(function () {
 
         // Message Templates CRUD Routes
         Route::resource('message-templates', MessageTemplateController::class);
+        Route::get('/data-import', [DataImportController::class, 'showImportForm'])->name('data-import.form');
+        Route::post('/import-college', [DataImportController::class, 'importCollegeData'])->name('import.college');
+        Route::post('/import-programs', [DataImportController::class, 'importProgramData'])->name('import.programs');
+        Route::post('/import-majors', [DataImportController::class, 'importMajorData'])->name('import.majors');
+        Route::post('/import-years', [DataImportController::class, 'importYearData'])->name('import.years');
     });
 });
 

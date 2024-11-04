@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="container mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8 transition-transform duration-200 hover:scale-101">
 
             @if (session('error'))
                 <div class="bg-red-500 text-white font-bold py-2 px-4 rounded mb-4">
@@ -15,49 +15,56 @@
             @endif
 
             <!-- Widgets Section -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Total Messages Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="totalMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Total Messages Delivered</h3>
-                    <p class="text-2xl">{{ $totalMessages }}</p>
+                <div class="bg-red-50 p-4 border-l-4 border-[#d50600] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                    id="totalMessagesCard">
+                    <h3 class="text-xl font-bold text-[#d50600]">Total Messages Delivered</h3>
+                    <p class="text-2xl font-semibold text-[#d50600]">{{ $totalMessages }}</p>
                 </div>
 
                 <!-- Scheduled Messages Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="scheduledMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Scheduled Messages Delivered</h3>
-                    <p class="text-2xl">{{ $scheduledMessages }}</p>
+                <div class="bg-red-100 p-4 border-l-4 border-[#b10000] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                    id="scheduledMessagesCard">
+                    <h3 class="text-xl font-bold text-[#b10000]">Scheduled Messages Delivered</h3>
+                    <p class="text-2xl font-semibold text-[#b10000]">{{ $scheduledMessages }}</p>
                 </div>
 
                 <!-- Immediate Messages Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="immediateMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Immediate Messages Delivered</h3>
-                    <p class="text-2xl">{{ $immediateMessages }}</p>
+                <div class="bg-yellow-100 p-4 border-l-4 border-[#d1a700] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                    id="immediateMessagesCard">
+                    <h3 class="text-xl font-bold text-[#d1a700]">Immediate Messages Delivered</h3>
+                    <p class="text-2xl font-semibold text-[#d1a700]">{{ $immediateMessages }}</p>
                 </div>
 
                 <!-- Failed Messages Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" id="failedMessagesCard">
-                    <h3 class="text-lg font-semibold mb-2">Failed Messages Sent</h3>
-                    <p class="text-2xl">{{ $failedMessages }}</p>
+                <div class="bg-red-200 p-4 border-l-4 border-[#990000] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                    id="failedMessagesCard">
+                    <h3 class="text-xl font-bold text-[#990000]">Failed Messages Sent</h3>
+                    <p class="text-2xl font-semibold text-[#990000]">{{ $failedMessages }}</p>
                 </div>
 
                 <!-- Cancelled Messages Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold mb-2">Cancelled Scheduled Messages</h3>
-                    <p class="text-2xl">{{ $cancelledMessages }}</p>
+                <div
+                    class="bg-gray-200 p-4 border-l-4 border-[#6b7280] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
+                    <h3 class="text-xl font-bold text-[#6b7280]">Cancelled Scheduled Messages</h3>
+                    <p class="text-2xl font-semibold text-[#6b7280]">{{ $cancelledMessages }}</p>
                 </div>
 
                 <!-- Pending Messages Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-semibold mb-2">Pending Scheduled Messages</h3>
-                    <p class="text-2xl">{{ $pendingMessages }}</p>
+                <div
+                    class="bg-orange-100 p-4 border-l-4 border-[#e07b00] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
+                    <h3 class="text-xl font-bold text-[#e07b00]">Pending Scheduled Messages</h3>
+                    <p class="text-2xl font-semibold text-[#e07b00]">{{ $pendingMessages }}</p>
                 </div>
 
                 <!-- Movider Balance Card -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <div class="text-gray-800 font-bold text-lg">
-                        SMS Balance
+                <div
+                    class="bg-purple-100 p-4 border-l-4 border-[#7e57c2] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
+                    <div class="text-xl font-bold text-[#7e57c2]">
+                        Remaining Account Balance
                     </div>
-                    <div class="text-2xl mt-2">
+                    <div class="text-2xl font-semibold text-[#7e57c2]">
                         ${{ number_format($balance, 4) }} <!-- Display the balance with 4 decimals -->
                     </div>
                 </div>
@@ -98,7 +105,7 @@
                     <div class="flex-grow">
                         <input type="text" name="search" id="searchInput" value="{{ request('search') }}"
                             class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            placeholder="Search by Message, User, Campus, or Message Type...">
+                            placeholder="Search logs...">
                     </div>
 
                     <!-- Recipient Type Filter -->
@@ -152,8 +159,8 @@
             </div>
 
             <!-- Message Logs Table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="overflow-x-auto max-h-[450px] rounded-lg shadow-md border border-gray-300">
+                <div>
                     <!-- Message Logs Table (AJAX-loaded content) -->
                     <div id="messageLogsContainer">
                         @include('partials.message-logs-content', ['messageLogs' => $messageLogs])

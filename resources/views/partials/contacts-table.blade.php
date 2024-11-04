@@ -1,21 +1,27 @@
 <!-- Partial view: resources/views/partials/contacts-table.blade.php -->
 
 <div id="contactsResults">
-    <h3 class="text-lg font-semibold mb-4 text-white">Contacts (Total: {{ $contacts->total() }})</h3>
-    <table class="table-auto w-full border dark:border-gray-700">
-        <thead>
+    <h3 class="text-lg font-semibold mb-4 text-black">Contacts (Total: {{ $contacts->total() }})</h3>
+    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+        <thead class="bg-gray-50 sticky top-0 z-10">
             <tr class="bg-gray-200 text-left">
-                <th class="px-4 py-2 border dark:border-gray-600">Name</th>
-                <th class="px-4 py-2 border dark:border-gray-600">Email</th>
-                <th class="px-4 py-2 border dark:border-gray-600">Contact Number</th>
-                <th class="px-4 py-2 border dark:border-gray-600">Campus</th>
-                <th class="px-4 py-2 border dark:border-gray-600">Type</th>
-                <th class="px-4 py-2 border dark:border-gray-600">Actions</th>
+                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+                </th>
+                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email
+                </th>
+                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact Number</th>
+                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Campus</th>
+                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type
+                </th>
+                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($contacts as $contact)
-                <tr class="bg-white">
+                <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
                     <td class="border dark:border-gray-700 px-4 py-2">
                         {{ $contact->stud_fname ?? $contact->emp_fname }}
                         {{ $contact->stud_lname ?? $contact->emp_lname }}
