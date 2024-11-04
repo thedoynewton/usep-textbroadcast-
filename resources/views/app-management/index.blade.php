@@ -110,6 +110,15 @@
                                     </button>
                                 </form>
 
+                                <!-- Import Students Button inside Modal -->
+                                <form method="POST" action="{{ route('import.students') }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
+                                        Import Students
+                                    </button>
+                                </form>
+
                             </div>
 
                             <div class="flex justify-end mt-4">
@@ -119,6 +128,26 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+                    <!-- Display Campus Data in a Table -->
+                    <div class="mt-8">
+                        <h4 class="text-lg font-semibold mb-4">Campuses</h4>
+                        <table class="min-w-full bg-white border">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b">Campus ID</th>
+                                    <th class="py-2 px-4 border-b">Campus Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($campuses as $campus)
+                                    <tr>
+                                        <td class="py-2 px-4 border-b">{{ $campus->campus_id }}</td>
+                                        <td class="py-2 px-4 border-b">{{ $campus->campus_name }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 @else
                     <!-- Contacts Section -->
@@ -182,8 +211,8 @@
 
             <div class="mb-4">
                 <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
-                <input type="text" id="contactNumber" name="contact_number" class="border rounded w-full px-4 py-2"
-                    required />
+                <input type="text" id="contactNumber" name="contact_number"
+                    class="border rounded w-full px-4 py-2" required />
             </div>
 
             <div class="flex justify-end space-x-2">

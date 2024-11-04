@@ -85,6 +85,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/import-programs', [DataImportController::class, 'importProgramData'])->name('import.programs');
         Route::post('/import-majors', [DataImportController::class, 'importMajorData'])->name('import.majors');
         Route::post('/import-years', [DataImportController::class, 'importYearData'])->name('import.years');
+        Route::post('/import-students', [DataImportController::class, 'importStudentData'])->name('import.students');
+        Route::get('/app-management/db-connection', [DataImportController::class, 'showDBConnection'])->name('app-management.db-connection');
+
     });
 });
 

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Campus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\College;
 use App\Models\Major;
 use App\Models\Program;
+use App\Models\Student;
 use Illuminate\Support\Facades\Log;
 
 class DataImportController extends Controller
@@ -19,6 +21,14 @@ class DataImportController extends Controller
     public function showImportForm()
     {
         return view('data-import.simple');
+    }
+
+    public function showDBConnection()
+    {
+        // Fetch all campuses from the database
+        $campuses = Campus::all();
+
+        return view('app-management.index', compact('campuses'));
     }
 
     /**
@@ -137,4 +147,87 @@ class DataImportController extends Controller
         return redirect()->back()->with('success', 'Years imported successfully!');
     }
     
+    public function importStudentData()
+    {
+        // Fetch data from ES_Obrero database's vw_Students_TB view
+        $esObreroStudents = DB::connection('es_obrero')->table('vw_Students_TB')->get();
+    
+        // Insert or update data in the usep-tbc database's students table
+        foreach ($esObreroStudents as $student) {
+            // Check for foreign key existence and non-empty email
+            $collegeExists = DB::table('colleges')->where('college_id', $student->CollegeID)->exists();
+            $programExists = DB::table('programs')->where('program_id', $student->ProgID)->exists();
+            $majorExists = DB::table('majors')->where('major_id', $student->MajorID)->exists();
+            $yearExists = DB::table('years')->where('year_id', $student->YearLevelID)->exists();
+            
+            if ($collegeExists && $programExists && $majorExists && $yearExists && !empty($student->Email)) {
+                // Insert or update the student if all foreign keys are valid and email is present
+                Student::updateOrCreate(
+                    ['stud_id' => $student->StudentNo], // Match on StudentNo as unique identifier
+                    [
+                        'stud_fname' => $student->FirstName,
+                        'stud_lname' => $student->LastName,
+                        'stud_contact' => $student->MobileNo,
+                        'stud_email' => $student->Email,
+                        'campus_id' => 1,
+                        'college_id' => $student->CollegeID,
+                        'program_id' => $student->ProgID,
+                        'major_id' => $student->MajorID,
+                        'year_id' => $student->YearLevelID,
+                        'enrollment_stat' => 'Enrolled', // Set a default value; adjust as needed
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            } else {
+                // Log missing foreign keys or email
+                Log::warning("Student '{$student->FirstName} {$student->LastName}' skipped due to missing college_id '{$student->CollegeID}', program_id '{$student->ProgID}', major_id '{$student->MajorID}', year_id '{$student->YearLevelID}', or email.");
+            }
+        }
+    
+        return redirect()->back()->with('success', 'Students imported successfully!');
+    }
+    
+    // If you want to include students without emails but avoid duplicate entries, you can check for duplicate emails before inserting:
+//     public function importStudentData()
+// {
+//     // Fetch data from ES_Obrero database's vw_Students_TB view
+//     $esObreroStudents = DB::connection('es_obrero')->table('vw_Students_TB')->get();
+
+//     // Insert or update data in the usep-tbc database's students table
+//     foreach ($esObreroStudents as $student) {
+//         $collegeExists = DB::table('colleges')->where('college_id', $student->CollegeID)->exists();
+//         $programExists = DB::table('programs')->where('program_id', $student->ProgID)->exists();
+//         $majorExists = DB::table('majors')->where('major_id', $student->MajorID)->exists();
+//         $yearExists = DB::table('years')->where('year_id', $student->YearLevelID)->exists();
+
+//         // Check for duplicate email if email is provided
+//         $duplicateEmail = !empty($student->Email) && DB::table('students')->where('stud_email', $student->Email)->exists();
+
+//         if ($collegeExists && $programExists && $majorExists && $yearExists && !$duplicateEmail) {
+//             \App\Models\Student::updateOrCreate(
+//                 ['stud_id' => $student->StudentNo],
+//                 [
+//                     'stud_fname' => $student->FirstName,
+//                     'stud_lname' => $student->LastName,
+//                     'stud_contact' => $student->MobileNo,
+//                     'stud_email' => $student->Email,
+//                     'campus_id' => 1,
+//                     'college_id' => $student->CollegeID,
+//                     'program_id' => $student->ProgID,
+//                     'major_id' => $student->MajorID,
+//                     'year_id' => $student->YearLevelID,
+//                     'enrollment_stat' => 'Enrolled',
+//                     'created_at' => now(),
+//                     'updated_at' => now(),
+//                 ]
+//             );
+//         } else {
+//             \Log::warning("Student '{$student->FirstName} {$student->LastName}' skipped due to missing foreign keys or duplicate email '{$student->Email}'.");
+//         }
+//     }
+
+//     return redirect()->back()->with('success', 'Students imported successfully!');
+// }
+
 }

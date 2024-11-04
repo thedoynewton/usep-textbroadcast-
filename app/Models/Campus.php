@@ -10,6 +10,11 @@ class Campus extends Model
     use HasFactory;
     protected $primaryKey = 'campus_id';
 
+    protected $fillable = [
+        'campus_id',
+        'campus_name',
+    ];
+
     public function colleges()
     {
         return $this->hasMany(College::class, 'campus_id');
