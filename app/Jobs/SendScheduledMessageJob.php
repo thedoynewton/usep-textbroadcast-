@@ -113,6 +113,11 @@ class SendScheduledMessageJob implements ShouldQueue
 
             // Add students to the recipients collection
             $students->each(function ($student) use ($recipientsByPhone, $recipientDetails, $messageLog) {
+                if (empty($student->stud_contact)) {
+                    // Skip if contact number is empty
+                    return;
+                }
+                
                 $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
 
                 // Store recipients by their unique phone number
@@ -158,6 +163,11 @@ class SendScheduledMessageJob implements ShouldQueue
 
             // Add employees to the recipients collection
             $employees->each(function ($employee) use ($recipientsByPhone, $recipientDetails, $messageLog) {
+                if (empty($employee->emp_contact)) {
+                    // Skip if contact number is empty
+                    return;
+                }
+                
                 $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
 
                 // Store recipients by their unique phone number
