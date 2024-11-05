@@ -89,6 +89,9 @@ class FilterService
                 $studentsQuery->where('year_id', $yearId);
             }
 
+            // Exclude students without contact numbers
+            $studentsQuery->whereNotNull('stud_contact')->where('stud_contact', '!=', '');
+
             return $studentsQuery->count();
         }
 
@@ -105,10 +108,16 @@ class FilterService
                 $employeesQuery->where('status_id', $statusId);
             }
 
+            // Exclude employees without contact numbers
+            $employeesQuery->whereNotNull('emp_contact')->where('emp_contact', '!=', '');
+
             return $employeesQuery->count();
         }
 
-        // For the "all" tab, sum the students and employees count
+        // For the "all" tab, include both students and employees
+        $studentsQuery->whereNotNull('stud_contact')->where('stud_contact', '!=', '');
+        $employeesQuery->whereNotNull('emp_contact')->where('emp_contact', '!=', '');
+
         return $studentsQuery->count() + $employeesQuery->count();
     }
 }

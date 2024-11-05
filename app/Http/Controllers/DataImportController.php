@@ -233,7 +233,7 @@ class DataImportController extends Controller
 public function addCampus(Request $request)
 {
     $request->validate([
-        'campus_name' => 'required|string|max:255'
+        'campus_name' => 'required|string|max:100'
     ]);
 
     $campus = Campus::create([
@@ -247,7 +247,7 @@ public function updateCampus(Request $request)
 {
     $request->validate([
         'campus_id' => 'required|exists:campuses,campus_id',
-        'campus_name' => 'required|string|max:255'
+        'campus_name' => 'required|string|max:100'
     ]);
 
     $campus = Campus::find($request->campus_id);
