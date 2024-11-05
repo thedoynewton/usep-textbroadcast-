@@ -60,7 +60,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/statuses', [FilterController::class, 'getStatuses']);
             Route::get('/analytics/message-overview', [AnalyticsController::class, 'getMessageOverviewData']);
             Route::get('/analytics/costs-overview', [AnalyticsController::class, 'getCostsOverviewData']);
-
         });
     });
 
@@ -78,6 +77,10 @@ Route::middleware('auth')->group(function () {
         // App Management Routes
         Route::resource('app-management', AppManagementController::class);
 
+        Route::post('/campuses/add', [DataImportController::class, 'addCampus'])->name('campuses.add');
+        Route::post('/campuses/update', [DataImportController::class, 'updateCampus'])->name('campuses.update');
+
+
         // Message Templates CRUD Routes
         Route::resource('message-templates', MessageTemplateController::class);
         Route::get('/data-import', [DataImportController::class, 'showImportForm'])->name('data-import.form');
@@ -87,7 +90,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/import-years', [DataImportController::class, 'importYearData'])->name('import.years');
         Route::post('/import-students', [DataImportController::class, 'importStudentData'])->name('import.students');
         Route::get('/app-management/db-connection', [DataImportController::class, 'showDBConnection'])->name('app-management.db-connection');
-
     });
 });
 

@@ -230,4 +230,31 @@ class DataImportController extends Controller
 //     return redirect()->back()->with('success', 'Students imported successfully!');
 // }
 
+public function addCampus(Request $request)
+{
+    $request->validate([
+        'campus_name' => 'required|string|max:255'
+    ]);
+
+    $campus = Campus::create([
+        'campus_name' => $request->campus_name
+    ]);
+
+    return response()->json(['campus' => $campus], 201);
+}
+
+public function updateCampus(Request $request)
+{
+    $request->validate([
+        'campus_id' => 'required|exists:campuses,campus_id',
+        'campus_name' => 'required|string|max:255'
+    ]);
+
+    $campus = Campus::find($request->campus_id);
+    $campus->update(['campus_name' => $request->campus_name]);
+
+    return response()->json(['campus' => $campus], 200);
+}
+
+
 }

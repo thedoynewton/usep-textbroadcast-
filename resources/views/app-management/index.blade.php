@@ -131,7 +131,56 @@
                     </div>
                     <!-- Display Campus Data in a Table -->
                     <div class="mt-8">
-                        <h4 class="text-lg font-semibold mb-4">Campuses</h4>
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold">Campuses</h4>
+                            <!-- Add Campus Button -->
+                            <button id="addCampusButton"
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                Add Campus
+                            </button>
+                        </div>
+
+                        <!-- Add Campus Modal -->
+                        <x-modal name="addCampusModal" maxWidth="md">
+                            <h2 class="text-lg font-semibold mb-4">Add Campus</h2>
+                            <form id="addCampusForm">
+                                @csrf
+                                <div class="mb-4">
+                                    <label for="campusName" class="block font-medium text-gray-700">Campus Name</label>
+                                    <input type="text" id="campusName" name="campus_name"
+                                        class="border rounded w-full px-4 py-2" required />
+                                </div>
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                                        x-on:click="$dispatch('close-modal', 'addCampusModal')">Cancel</button>
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                </div>
+                            </form>
+                        </x-modal>
+
+                        <!-- Edit Campus Modal -->
+                        <x-modal name="editCampusModal" maxWidth="md">
+                            <h2 class="text-lg font-semibold mb-4">Edit Campus</h2>
+                            <form id="editCampusForm">
+                                @csrf
+                                <input type="hidden" id="editCampusId" name="campus_id" />
+                                <div class="mb-4">
+                                    <label for="editCampusName" class="block font-medium text-gray-700">Campus
+                                        Name</label>
+                                    <input type="text" id="editCampusName" name="campus_name"
+                                        class="border rounded w-full px-4 py-2" required />
+                                </div>
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                                        x-on:click="$dispatch('close-modal', 'editCampusModal')">Cancel</button>
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
+                                </div>
+                            </form>
+                        </x-modal>
+
+
                         <table class="min-w-full bg-white border">
                             <thead>
                                 <tr>
@@ -144,9 +193,12 @@
                                     <tr>
                                         <td class="py-2 px-4 border-b">{{ $campus->campus_id }}</td>
                                         <td class="py-2 px-4 border-b">{{ $campus->campus_name }}</td>
+                                        <td class="py-2 px-4 border-b text-center">
+                                            <button data-campus-id="{{ $campus->campus_id }}" data-campus-name="{{ $campus->campus_name }}" class="edit-campus-btn text-blue-500">Edit</button>
+                                        </td>
                                     </tr>
                                 @endforeach
-                            </tbody>
+                            </tbody>                            
                         </table>
                     </div>
                 @else
@@ -157,7 +209,8 @@
                             @csrf
                             <div class="flex items-center space-x-4">
                                 <!-- Search Input -->
-                                <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
+                                <input type="text" id="searchInput" name="search"
+                                    value="{{ request('search') }}"
                                     placeholder="Search by email, first name, or last name"
                                     class="border rounded px-4 py-2 dark:bg-gray-700 dark:text-gray-100" />
 
@@ -224,5 +277,5 @@
     </x-modal>
 
     <!-- Include the realTimeSearch.js script for real-time filtering -->
-    @vite(['resources/js/contactsFilter.js', 'resources/js/dbConnection.js'])
+    @vite(['resources/js/contactsFilter.js', 'resources/js/dbConnection.js', 'resources/js/campusFunctions.js'])
 </x-app-layout>
