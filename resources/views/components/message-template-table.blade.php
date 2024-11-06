@@ -2,7 +2,7 @@
     <h3 class="text-lg font-semibold mb-4 text-black">Message Templates</h3>
 
     <!-- Button to Open Create Modal -->
-    <button class="bg-blue-500 text-white px-4 py-2 rounded mb-4" x-data
+    <button class="bg-[#9d1e18] text-white px-4 py-2 rounded mb-4" x-data
         @click="$dispatch('open-modal', 'create-message-template')">
         Create New Template
     </button>
@@ -10,12 +10,12 @@
     <!-- Message Templates Table -->
     <table class="min-w-full bg-white border border-gray-300 rounded-lg">
         <thead class="bg-gray-50">
-            <tr class="bg-gray-200 text-left">
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title
+            <tr class="dark:bg-gray-700 text-center">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Title
                 </th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                     Content</th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                     Actions</th>
             </tr>
         </thead>

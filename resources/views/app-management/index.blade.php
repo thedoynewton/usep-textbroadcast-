@@ -28,19 +28,19 @@
                     <ul class="flex space-x-4">
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'contacts']) }}"
-                                class="{{ request('section') == 'contacts' ? 'text-blue-500 font-bold' : 'text-black dark:text-gray-300' }}">
+                                class="{{ request('section') == 'contacts' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
                                 Contacts
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'templates']) }}"
-                                class="{{ request('section') == 'templates' ? 'text-blue-500 font-bold' : 'text-black dark:text-gray-300' }}">
+                                class="{{ request('section') == 'templates' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
                                 Message Templates
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'db-connection']) }}"
-                                class="{{ request('section') == 'db-connection' ? 'text-blue-500 font-bold' : 'text-black dark:text-gray-300' }}">
+                                class="{{ request('section') == 'db-connection' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
                                 DB Connection
                             </a>
                         </li>
@@ -78,7 +78,7 @@
                                 <form method="POST" action="{{ route('import.college') }}" style="display: inline;">
                                     @csrf
                                     <button type="submit"
-                                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        class="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                                         Import College
                                     </button>
                                 </form>
@@ -87,7 +87,7 @@
                                 <form method="POST" action="{{ route('import.programs') }}" style="display: inline;">
                                     @csrf
                                     <button type="submit"
-                                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                                        class="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                                         Import Program
                                     </button>
                                 </form>
@@ -96,7 +96,7 @@
                                 <form method="POST" action="{{ route('import.majors') }}" style="display: inline;">
                                     @csrf
                                     <button type="submit"
-                                        class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                                        class="w-full px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
                                         Import Major
                                     </button>
                                 </form>
@@ -105,7 +105,7 @@
                                 <form method="POST" action="{{ route('import.years') }}" style="display: inline;">
                                     @csrf
                                     <button type="submit"
-                                        class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                                        class="w-full px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
                                         Import Years
                                     </button>
                                 </form>
@@ -114,12 +114,12 @@
                                 <form method="POST" action="{{ route('import.students') }}" style="display: inline;">
                                     @csrf
                                     <button type="submit"
-                                        class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
+                                        class="w-full px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
                                         Import Students
                                     </button>
                                 </form>
-
                             </div>
+
 
                             <div class="flex justify-end mt-4">
                                 <button id="closeObreroModal"
@@ -142,64 +142,73 @@
 
                         <!-- Add Campus Modal -->
                         <x-modal name="addCampusModal" maxWidth="md">
-                            <h2 class="text-lg font-semibold mb-4">Add Campus</h2>
-                            <form id="addCampusForm">
-                                @csrf
-                                <div class="mb-4">
-                                    <label for="campusName" class="block font-medium text-gray-700">Campus Name</label>
-                                    <input type="text" id="campusName" name="campus_name"
-                                        class="border rounded w-full px-4 py-2" required />
-                                </div>
-                                <div class="flex justify-end space-x-2">
-                                    <button type="button" class="px-4 py-2 bg-gray-300 rounded"
-                                        x-on:click="$dispatch('close-modal', 'addCampusModal')">Cancel</button>
-                                    <button type="submit"
-                                        class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
-                                </div>
-                            </form>
+                            <div class="mx-5 my-5">
+                                <h2 class="text-lg font-semibold mb-4">Add Campus</h2>
+                                <form id="addCampusForm">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <label for="campusName" class="block font-medium text-gray-700">Campus
+                                            Name</label>
+                                        <input type="text" id="campusName" name="campus_name"
+                                            class="border rounded w-full px-4 py-2" required />
+                                    </div>
+                                    <div class="flex justify-end space-x-2">
+                                        <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                                            x-on:click="$dispatch('close-modal', 'addCampusModal')">Cancel</button>
+                                        <button type="submit"
+                                            class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                    </div>
+                                </form>
+                            </div>
                         </x-modal>
 
                         <!-- Edit Campus Modal -->
                         <x-modal name="editCampusModal" maxWidth="md">
-                            <h2 class="text-lg font-semibold mb-4">Edit Campus</h2>
-                            <form id="editCampusForm">
-                                @csrf
-                                <input type="hidden" id="editCampusId" name="campus_id" />
-                                <div class="mb-4">
-                                    <label for="editCampusName" class="block font-medium text-gray-700">Campus
-                                        Name</label>
-                                    <input type="text" id="editCampusName" name="campus_name"
-                                        class="border rounded w-full px-4 py-2" required />
-                                </div>
-                                <div class="flex justify-end space-x-2">
-                                    <button type="button" class="px-4 py-2 bg-gray-300 rounded"
-                                        x-on:click="$dispatch('close-modal', 'editCampusModal')">Cancel</button>
-                                    <button type="submit"
-                                        class="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
-                                </div>
-                            </form>
+                            <div class="mx-5 my-5">
+                                <h2 class="text-lg font-semibold mb-4">Edit Campus</h2>
+                                <form id="editCampusForm">
+                                    @csrf
+                                    <input type="hidden" id="editCampusId" name="campus_id" />
+                                    <div class="mb-4">
+                                        <label for="editCampusName" class="block font-medium text-gray-700">Campus
+                                            Name</label>
+                                        <input type="text" id="editCampusName" name="campus_name"
+                                            class="border rounded w-full px-4 py-2" required />
+                                    </div>
+                                    <div class="flex justify-end space-x-2">
+                                        <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                                            x-on:click="$dispatch('close-modal', 'editCampusModal')">Cancel</button>
+                                        <button type="submit"
+                                            class="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
+                                    </div>
+                                </form>
+                            </div>
                         </x-modal>
 
 
-                        <table class="min-w-full bg-white border">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b">Campus ID</th>
-                                    <th class="py-2 px-4 border-b">Campus Name</th>
+                        <table class="min-w-full border border-gray-500">
+                            <thead class="dark:bg-gray-700 text-white">
+                                <tr class="border border-gray-500">
+                                    <th class="py-2 px-4 ">Campus ID</th>
+                                    <th class="py-2 px-4 ">Campus Name</th>
+                                    <th class="py-2 px-4 ">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($campuses as $campus)
-                                    <tr>
-                                        <td class="py-2 px-4 border-b">{{ $campus->campus_id }}</td>
-                                        <td class="py-2 px-4 border-b">{{ $campus->campus_name }}</td>
-                                        <td class="py-2 px-4 border-b text-center">
-                                            <button data-campus-id="{{ $campus->campus_id }}" data-campus-name="{{ $campus->campus_name }}" class="edit-campus-btn text-blue-500">Edit</button>
+                                    <tr class="text-center border border-gray-500">
+                                        <td class="py-2 px-4 border border-gray-500">{{ $campus->campus_id }}</td>
+                                        <td class="py-2 px-4 border border-gray-500">{{ $campus->campus_name }}</td>
+                                        <td class="py-2 px-4 text-center border border-gray-500">
+                                            <button data-campus-id="{{ $campus->campus_id }}"
+                                                data-campus-name="{{ $campus->campus_name }}"
+                                                class="edit-campus-btn text-white bg-blue-500 px-3 py-1 rounded-lg">Edit</button>
                                         </td>
                                     </tr>
                                 @endforeach
-                            </tbody>                            
+                            </tbody>
                         </table>
+
                     </div>
                 @else
                     <!-- Contacts Section -->
@@ -211,12 +220,12 @@
                                 <!-- Search Input -->
                                 <input type="text" id="searchInput" name="search"
                                     value="{{ request('search') }}"
-                                    placeholder="Search by email, first name, or last name"
-                                    class="border rounded px-4 py-2 dark:bg-gray-700 dark:text-gray-100" />
+                                    placeholder="Search by email, first name, last name, or contact number"
+                                    class="border rounded px-4 py-2 text-gray-700 w-full" />
 
                                 <!-- Campus Filter Dropdown -->
                                 <select id="campusFilter" name="campus_id"
-                                    class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
+                                    class="border rounded dark:bg-white dark:text-gray-700">
                                     <option value="">All Campuses</option>
                                     @foreach ($campuses as $campus)
                                         <option value="{{ $campus->campus_id }}"
@@ -228,7 +237,7 @@
 
                                 <!-- Type Filter Dropdown (Moved beside campus dropdown) -->
                                 <select id="typeFilter" name="type"
-                                    class="border rounded px-8 py-2 dark:bg-gray-700 dark:text-gray-100">
+                                    class="border rounded dark:bg-white dark:text-gray-700">
                                     <option value="">All Types</option>
                                     <option value="Student" {{ request('type') == 'Student' ? 'selected' : '' }}>
                                         Student</option>
@@ -251,29 +260,29 @@
 
     <!-- Edit Contact Modal using modal.blade.php component -->
     <x-modal name="editContactModal" maxWidth="md">
-        <h2 class="text-lg font-semibold mb-4">Edit Contact Number</h2>
-        <form id="editForm">
-            @csrf
-            <input type="hidden" id="contactId" name="contact_id" />
+        <div class="px-5 py-5" <h2 class="text-lg font-semibold my-5">Edit Contact Number</h2>
+            <form id="editForm">
+                @csrf
+                <input type="hidden" id="contactId" name="contact_id" />
 
-            <div class="mb-4">
-                <label for="contactName" class="block font-medium text-gray-700">Name</label>
-                <input type="text" id="contactName" name="contact_name" class="border rounded w-full px-4 py-2"
-                    readonly />
-            </div>
+                <div class="my-5">
+                    <label for="contactName" class="block font-medium text-gray-700">Name</label>
+                    <input type="text" id="contactName" name="contact_name"
+                        class="border rounded w-full px-4 py-2" readonly />
+                </div>
 
-            <div class="mb-4">
-                <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
-                <input type="text" id="contactNumber" name="contact_number"
-                    class="border rounded w-full px-4 py-2" required />
-            </div>
+                <div class="my-5">
+                    <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
+                    <input type="text" id="contactNumber" name="contact_number"
+                        class="border rounded w-full px-4 py-2" required />
+                </div>
 
-            <div class="flex justify-end space-x-2">
-                <button type="button" class="px-4 py-2 bg-gray-300 rounded"
-                    x-on:click="$dispatch('close-modal', 'editContactModal')">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
-            </div>
-        </form>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                        x-on:click="$dispatch('close-modal', 'editContactModal')">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                </div>
+            </form>
     </x-modal>
 
     <!-- Include the realTimeSearch.js script for real-time filtering -->

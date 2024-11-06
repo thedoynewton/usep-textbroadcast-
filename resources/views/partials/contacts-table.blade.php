@@ -4,18 +4,18 @@
     <h3 class="text-lg font-semibold mb-4 text-black">Contacts (Total: {{ $contacts->total() }})</h3>
     <table class="min-w-full bg-white border border-gray-300 rounded-lg">
         <thead class="bg-gray-50 sticky top-0 z-10">
-            <tr class="bg-gray-200 text-left">
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+            <tr class="dark:bg-gray-700 text-center">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Name
                 </th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Email
                 </th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                     Contact Number</th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                     Campus</th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Type
                 </th>
-                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                     Actions</th>
             </tr>
         </thead>
@@ -34,7 +34,7 @@
                     <td class="border dark:border-gray-700 px-4 py-2">
                         {{ $contact instanceof \App\Models\Student ? 'Student' : 'Employee' }}</td>
                     <td class="border dark:border-gray-700 px-4 py-2">
-                        <button type="button" class="edit-btn text-blue-500"
+                        <button type="button" class="edit-btn text-white bg-blue-500 px-3 py-1 rounded-lg"
                             data-id="{{ $contact->stud_id ?? $contact->emp_id }}"
                             data-id-type="{{ $contact instanceof \App\Models\Student ? 'stud_id' : 'emp_id' }}"
                             data-name="{{ $contact->stud_fname ?? $contact->emp_fname }} {{ $contact->stud_lname ?? $contact->emp_lname }}"
