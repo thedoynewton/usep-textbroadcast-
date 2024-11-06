@@ -20,12 +20,12 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="flex flex-col sm:flex-row min-h-screen bg-gray-100">
+    <div class="flex h-screen">
         <!-- Sidebar (Navigation) -->
         @include('layouts.navigation')
 
         <!-- Main Content Area -->
-        <div class="bg-gray-200 relative flex-1 ml-73 overflow-auto z-0">
+        <div class="bg-gray-200 flex-1 ml-72 overflow-auto z-0">
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white shadow">
@@ -39,6 +39,7 @@
             <main class="relative z-10 p-8">
                 {{ $slot }}
             </main>
+
             <!-- Wave Effect -->
             <img id="waveEffect" src="/images/wave.png" alt="Wave Effect"
                 class="absolute bottom-0 left-0 w-full h-auto z-0">
