@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('years', function (Blueprint $table) {
-            $table->id('year_id'); // Primary key
+            $table->unsignedBigInteger('year_id')->primary(); // Primary key
             $table->string('year_name');
             $table->timestamps();
         });

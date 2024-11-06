@@ -220,7 +220,7 @@
                                 <!-- Search Input -->
                                 <input type="text" id="searchInput" name="search"
                                     value="{{ request('search') }}"
-                                    placeholder="Search by email, first name, last name, or contact number"
+                                    placeholder="Search contacts..."
                                     class="border rounded px-4 py-2 text-gray-700 w-full" />
 
                                 <!-- Campus Filter Dropdown -->
