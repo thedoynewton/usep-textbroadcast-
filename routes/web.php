@@ -79,10 +79,12 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/campuses/add', [DataImportController::class, 'addCampus'])->name('campuses.add');
         Route::post('/campuses/update', [DataImportController::class, 'updateCampus'])->name('campuses.update');
-
+        Route::post('/app-management/update-credit-balance', [AppManagementController::class, 'updateCreditBalance'])->name('update-credit-balance');
 
         // Message Templates CRUD Routes
         Route::resource('message-templates', MessageTemplateController::class);
+
+        //DB Connection
         Route::get('/data-import', [DataImportController::class, 'showImportForm'])->name('data-import.form');
         Route::post('/import-college', [DataImportController::class, 'importCollegeData'])->name('import.college');
         Route::post('/import-programs', [DataImportController::class, 'importProgramData'])->name('import.programs');

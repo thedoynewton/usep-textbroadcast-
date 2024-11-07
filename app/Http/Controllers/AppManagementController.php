@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\Student;
 use App\Services\AppManagementService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
@@ -32,6 +33,10 @@ class AppManagementController extends Controller
             return view('partials.contacts-table', compact('contacts'))->render();
         }
 
+        // Fetch the current credit balance from cache or database
+        $creditBalance = Cache::get('credit_balance', 0); // Default initial balance
+
+
         // Pass contacts to the view
         return view('app-management.index', [
             'contacts' => $contacts,
@@ -39,7 +44,22 @@ class AppManagementController extends Controller
             'totalStudents' => $counts['totalStudents'],
             'totalEmployees' => $counts['totalEmployees'],
             'campuses' => $campuses,
+            'creditBalance' => $creditBalance 
         ]);
+    }
+
+    public function updateCreditBalance(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'credit_balance' => 'required|integer|min:0',
+        ]);
+
+        // Update the credit balance in cache (you can store it in a database if preferred)
+        Cache::put('credit_balance', $request->input('credit_balance'));
+
+        return redirect()->route('app-management.index', ['section' => 'credit-balance'])
+                         ->with('success', 'Credit balance updated successfully.');
     }
 
     public function search(Request $request)
@@ -63,10 +83,10 @@ class AppManagementController extends Controller
             'contact_number' => 'required|string|max:15',
             'type' => 'required|string', // Pass type as 'stud_id' or 'emp_id' to differentiate
         ]);
-    
+
         $contactNumber = $request->input('contact_number');
         $type = $request->input('type'); // 'stud_id' or 'emp_id'
-    
+
         if ($type === 'stud_id') {
             // Update student contact
             $contact = Student::where('stud_id', $id)->first();
@@ -84,8 +104,8 @@ class AppManagementController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Invalid contact type'], 400);
         }
-    
+
         return response()->json(['success' => true, 'message' => 'Contact number updated successfully']);
     }
-    
+
 }

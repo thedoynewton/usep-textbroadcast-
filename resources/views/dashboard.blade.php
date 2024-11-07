@@ -62,10 +62,10 @@
                 <div
                     class="bg-purple-100 p-4 border-l-4 border-[#7e57c2] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
                     <div class="text-xl font-bold text-[#7e57c2]">
-                        Remaining Account Balance
+                        Remaining Credit Balance
                     </div>
                     <div class="text-2xl font-semibold text-[#7e57c2]">
-                        ${{ number_format($balance, 4) }} <!-- Display the balance with 4 decimals -->
+                        {{ number_format($creditBalance) }} <!-- Display the credit balance with formatting -->
                     </div>
                 </div>
             </div>

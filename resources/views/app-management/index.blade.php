@@ -44,6 +44,12 @@
                                 DB Connection
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('app-management.index', ['section' => 'credit-balance']) }}"
+                                class="{{ request('section') == 'credit-balance' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
+                                Credit Balance
+                            </a>
+                        </li>
                     </ul>
                 </nav>
 
@@ -210,6 +216,24 @@
                         </table>
 
                     </div>
+                @elseif (request('section') == 'credit-balance')
+                    <!-- Credit Balance Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Edit Credit Balance</h3>
+
+                        <form method="POST" action="{{ route('update-credit-balance') }}">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="creditBalance" class="block font-medium text-gray-700">Current Credit
+                                    Balance</label>
+                                <input type="number" id="creditBalance" name="credit_balance"
+                                    value="{{ $creditBalance }}" class="border rounded w-full px-4 py-2" required />
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                            </div>
+                        </form>
+                    </div>
                 @else
                     <!-- Contacts Section -->
                     <div>
@@ -219,8 +243,7 @@
                             <div class="flex items-center space-x-4">
                                 <!-- Search Input -->
                                 <input type="text" id="searchInput" name="search"
-                                    value="{{ request('search') }}"
-                                    placeholder="Search contacts..."
+                                    value="{{ request('search') }}" placeholder="Search contacts..."
                                     class="border rounded px-4 py-2 text-gray-700 w-full" />
 
                                 <!-- Campus Filter Dropdown -->
@@ -269,12 +292,12 @@
                     <label for="contactName" class="block font-medium text-gray-700">Name</label>
                     <input type="text" id="contactName" name="contact_name"
                         class="border rounded w-full px-4 py-2" readonly />
-                </div>
+                </div>  
 
                 <div class="my-5">
                     <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
                     <input type="text" id="contactNumber" name="contact_number"
-                        class="border rounded w-full px-4 py-2" required />
+                        class="border rounded w-full px-4 py-2" pattern="\d{11}" maxlength="11" title="Please enter a valid 11-digit number" required />
                 </div>
 
                 <div class="flex justify-end space-x-2">

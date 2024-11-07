@@ -12,6 +12,11 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <!-- Standard favicon -->
+    <link rel="icon" href="/images/SePhi Favicon.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/images/SePhi Favicon.png" type="image/png" sizes="64x64">
+    <link rel="icon" href="/images/SePhi Favicon.png" type="image/png" sizes="128x128">
+    
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

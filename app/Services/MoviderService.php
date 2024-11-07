@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 
 class MoviderService
 {
@@ -42,7 +43,7 @@ class MoviderService
                 'api_secret' => $this->apiSecret,
                 'to' => implode(',', $recipients),
                 'text' => $message,
-                'from' => 'USeP' // Replace with your app name or sender name
+                'from' => 'USeP' // Replace with the app name or sender name
             ]
         ];
 
@@ -78,26 +79,10 @@ class MoviderService
      */
     public function getBalance()
     {
-        try {
+        // Retrieve cached credit balance or default to 0 if not set
+        $balance = Cache::get('credit_balance', 0);
 
-            $response = $this->client->post('balance', [
-                'form_params' => [
-                    'api_key' => config('services.movider.api_key'),
-                    'api_secret' => config('services.movider.api_secret'),
-                ]
-            ]);
-
-            $data = json_decode($response->getBody()->getContents(), true);
-
-            //Log::info('Movider Balance Response:', $data);
-
-            $balance = $data['amount'] ?? 0;
-
-            return ['balance' => $balance];
-        } catch (Exception $e) {
-            Log::error('Error fetching Movider balance: ' . $e->getMessage());
-            return ['balance' => 0];
-        }
+        return ['balance' => $balance];
     }
 
 }
