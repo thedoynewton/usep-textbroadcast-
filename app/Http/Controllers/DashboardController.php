@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CreditBalance;
 use App\Models\MessageLog;
 use App\Models\MessageRecipient;
 use App\Services\MoviderService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -81,8 +81,8 @@ class DashboardController extends Controller
         $balanceData = $this->moviderService->getBalance();
         $balance = $balanceData['balance'] ?? 0;
 
-        // Retrieve the credit balance from cache or set a default
-        $creditBalance = Cache::get('credit_balance', 47599); // Adjust default as needed
+        // Retrieve the credit balance from the CreditBalance model
+        $creditBalance = CreditBalance::first()->balance ?? 0;
 
 
         return view('dashboard', compact(

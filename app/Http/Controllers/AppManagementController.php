@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CreditBalance;
 use App\Models\Employee;
 use App\Models\Student;
 use App\Services\AppManagementService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
 
 class AppManagementController extends Controller
 {
@@ -33,9 +31,8 @@ class AppManagementController extends Controller
             return view('partials.contacts-table', compact('contacts'))->render();
         }
 
-        // Fetch the current credit balance from cache or database
-        $creditBalance = Cache::get('credit_balance', 0); // Default initial balance
-
+        // Fetch the latest credit balance from the database
+        $creditBalance = CreditBalance::first()->balance ?? 0;
 
         // Pass contacts to the view
         return view('app-management.index', [
@@ -44,24 +41,9 @@ class AppManagementController extends Controller
             'totalStudents' => $counts['totalStudents'],
             'totalEmployees' => $counts['totalEmployees'],
             'campuses' => $campuses,
-            'creditBalance' => $creditBalance 
+            'creditBalance' => $creditBalance,
         ]);
     }
-
-    public function updateCreditBalance(Request $request)
-    {
-        // Validate input
-        $request->validate([
-            'credit_balance' => 'required|integer|min:0',
-        ]);
-
-        // Update the credit balance in cache (you can store it in a database if preferred)
-        Cache::put('credit_balance', $request->input('credit_balance'));
-
-        return redirect()->route('app-management.index', ['section' => 'credit-balance'])
-                         ->with('success', 'Credit balance updated successfully.');
-    }
-
     public function search(Request $request)
     {
         $search = $request->input('search');

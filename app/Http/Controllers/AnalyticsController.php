@@ -39,7 +39,7 @@ class AnalyticsController extends Controller
         // Log the values for debugging
         Log::info('Balance Data:', $balanceData);
         Log::info('Current Balance:', ['balance' => $balance]);
-        Log::info('Low Balance Flag:', ['lowBalance' => $lowBalance]);
+        //Log::info('Low Balance Flag:', ['lowBalance' => $lowBalance]);
 
         // Pass data to view
         return view('analytics.index', array_merge(

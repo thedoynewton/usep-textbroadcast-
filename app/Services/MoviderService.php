@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\CreditBalance;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
@@ -55,6 +56,20 @@ class MoviderService
             // Log success message
             Log::info('Bulk SMS sent successfully to recipients.', ['response' => $result]);
 
+            // Check if the remaining credit for PH is in the response
+            if (isset($result['remaining_credit']['PH'])) {
+                $remainingCreditPH = $result['remaining_credit']['PH'];
+
+                // Update the credit balance in the database
+                CreditBalance::updateOrCreate(
+                    ['id' => 1], // Assuming a single record in this table
+                    ['balance' => $remainingCreditPH]
+                );
+
+                // Log the credit balance update
+                Log::info('Credit balance updated to ' . $remainingCreditPH);
+            }
+
             return $result;
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
@@ -79,8 +94,8 @@ class MoviderService
      */
     public function getBalance()
     {
-        // Retrieve cached credit balance or default to 0 if not set
-        $balance = Cache::get('credit_balance', 0);
+        // Retrieve the credit balance from the database, default to 0 if not set
+        $balance = CreditBalance::first()->balance ?? 0;
 
         return ['balance' => $balance];
     }

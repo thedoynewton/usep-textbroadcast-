@@ -221,7 +221,7 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Edit Credit Balance</h3>
 
-                        <form method="POST" action="{{ route('update-credit-balance') }}">
+                        <form method="POST" action="{{ route('credit-balance.update') }}">
                             @csrf
                             <div class="mb-4">
                                 <label for="creditBalance" class="block font-medium text-gray-700">Current Credit
@@ -233,6 +233,7 @@
                                 <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
                             </div>
                         </form>
+
                     </div>
                 @else
                     <!-- Contacts Section -->
@@ -292,12 +293,13 @@
                     <label for="contactName" class="block font-medium text-gray-700">Name</label>
                     <input type="text" id="contactName" name="contact_name"
                         class="border rounded w-full px-4 py-2" readonly />
-                </div>  
+                </div>
 
                 <div class="my-5">
                     <label for="contactNumber" class="block font-medium text-gray-700">Contact Number</label>
                     <input type="text" id="contactNumber" name="contact_number"
-                        class="border rounded w-full px-4 py-2" pattern="\d{11}" maxlength="11" title="Please enter a valid 11-digit number" required />
+                        class="border rounded w-full px-4 py-2" pattern="\d{11}" maxlength="11"
+                        title="Please enter a valid 11-digit number" required />
                 </div>
 
                 <div class="flex justify-end space-x-2">
@@ -309,5 +311,5 @@
     </x-modal>
 
     <!-- Include the realTimeSearch.js script for real-time filtering -->
-    @vite(['resources/js/contactsFilter.js', 'resources/js/dbConnection.js', 'resources/js/campusFunctions.js'])
+    @vite(['resources/js/contactsFilter.js', 'resources/js/dbConnection.js', 'resources/js/campusFunctions.js', 'resources/js/creditBalance.js'])
 </x-app-layout>
