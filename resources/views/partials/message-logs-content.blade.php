@@ -1,9 +1,11 @@
 @if ($messageLogs->isEmpty())
-    <p>No messages have been logged yet.</p>
+    <p class="flex items-center justify-center text-gray-600 text-sm mt-6 bg-gray-100 py-3 px-4 rounded-lg">
+        No messages have been logged yet.
+    </p>
 @else
-    <div>
-        <table class="min-w-full bg-white divide-y divide-gray-200 rounded-lg">
-            <thead class="dark:bg-gray-700">
+    <div class="table-container max-h-96 overflow-y-auto relative bg-white border rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
                 <tr>
                     @foreach (['User', 'Campus', 'Recipient Type', 'Message', 'Message Type', 'Total Recipients', 'Sent Count', 'Failed Count', 'Status', 'Created At', 'Sent At', 'Scheduled At', 'Cancelled At', 'Action'] as $header)
                         <th
@@ -20,7 +22,8 @@
                         </td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">
                             {{ $log->campus->campus_name ?? 'All Campuses' }}</td>
-                        <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">{{ ucfirst($log->recipient_type) }}
+                        <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">
+                            {{ ucfirst($log->recipient_type) }}
                         </td>
                         <td class="py-2 px-4 text-xs text-gray-700">{{ $log->content ?? 'No Content' }}</td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">{{ ucfirst($log->message_type) }}
@@ -58,7 +61,7 @@
     </div>
 
     <!-- Pagination Links -->
-    <div id="paginationContainer" class="mt-4">
+    <div id="paginationContainer" class="sticky bottom-0 bg-white p-4 shadow-md border-t">
         {{ $messageLogs->links() }}
     </div>
 @endif

@@ -5,7 +5,7 @@
         <div class="flex flex-col items-center mt-6">
             <a href="{{ route('dashboard') }}">
                 <x-application-logo class="w-16 h-auto" />
-                <h1 style="font-size: 20px;" class="mt-2 text-2xl font-bold text-red-700">SePhi</h1>
+                <h1 style="font-size: 20px;" class="mt-2 text-2xl font-bold text-red-700">USeP</h1>
                 <p style="font-size: 12px;" class="text-gray-600">Text Broadcast</p>
             </a>
         </div>
