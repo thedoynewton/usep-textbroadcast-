@@ -188,7 +188,7 @@
 
                         <table class="min-w-full border border-gray-500">
                             <thead class="dark:bg-gray-700 text-white">
-                                <tr class="border border-gray-500">
+                                <tr class="dark:bg-gray-700 border border-gray-500">
                                     <th class="py-2 px-4 ">Campus ID</th>
                                     <th class="py-2 px-4 ">Campus Name</th>
                                     <th class="py-2 px-4 ">Action</th>

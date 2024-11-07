@@ -66,7 +66,7 @@
 
                 <table
                     class="min-w-full bg-white border rounded-md overflow-hidden shadow-sm transition-shadow duration-300 hover:shadow-md">
-                    <thead class="bg-gray-50">
+                    <thead class="dark:bg-gray-700">
                         <tr class=" dark:bg-gray-700 text-left">
                             <th
                                 class="py-2 px-4 border-b text-left text-xs font-medium text-white uppercase tracking-wider">

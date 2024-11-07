@@ -239,33 +239,76 @@
 
                             <!-- Modal Panel -->
                             <div
-                                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-3xl sm:w-full">
+                                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-4xl sm:w-full">
                                 <div class="bg-white px-6 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                    <!-- Modal Content -->
+                                    <!-- Modal Content: Flex Container for Inline Layout -->
                                     <div class="sm:flex sm:items-start">
+
                                         <!-- Preview Phone Mockup with Image -->
                                         <div
-                                            class="flex-shrink-0 flex items-center justify-center w-full sm:w-1/3 mb-4 sm:mb-0">
-                                            <!-- iPhone Mockup Image -->
+                                            class="flex-shrink-0 flex items-center justify-center w-full sm:w-1/2 mb-4 sm:mb-0">
                                             <div class="relative">
+                                                <!-- iPhone Mockup Background -->
                                                 <img src="{{ asset('images/iPhone15Mockup.png') }}"
                                                     alt="iPhone Mockup" class="w-64 h-auto mx-auto">
-                                                <!-- Message preview inside the phone mockup -->
+
+                                                <!-- Centered User Profile Info -->
                                                 <div
-                                                    class="absolute inset-0 top-20 p-4 w-48 h-96 mx-auto overflow-auto bg-transparent">
-                                                    <p class="text-sm text-gray-800" id="preview-message">
+                                                    class="absolute top-[10%] left-[50%] transform -translate-x-1/2 w-[80%] flex flex-col items-center space-y-1">
+                                                    <!-- User Icon -->
+                                                    <img src="{{ asset('images/profile-user.png') }}" alt="User Icon"
+                                                        class="w-6 h-6">
+                                                    <!-- User Name -->
+                                                    <span class="font-regular text-gray-900 mt-1"
+                                                        style="font-size: 9px;">USeP</span>
+                                                </div>
+
+                                                <!-- Message Preview Area -->
+                                                <div
+                                                    class="absolute top-[20%] left-[14%] w-[70%] h-auto mx-auto overflow-y-auto bg-gray-200 border rounded-lg shadow-sm p-3 mt-2">
+                                                    <p class="text-xs text-gray-800" id="preview-message">
                                                         <!-- Message Preview Here -->
+                                                        Your message content will appear here.
                                                     </p>
+                                                </div>
+
+                                                <!-- Delivered Status, Checkmark, and Timestamp outside the message preview -->
+                                                <div
+                                                    class="absolute top-[47%] left-[14%] w-[70%] flex justify-end items-center text-gray-600 text-[10px] mt-2">
+                                                    <svg class="w-3 h-3 text-green-600 mr-1" fill="currentColor"
+                                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 010 1.414L8 15.414l-4.707-4.707a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    <span>Delivered</span>
+                                                    <!-- Dynamic Timestamp -->
+                                                    <span>• <span id="delivery-time"></span></span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="mt-3 text-center sm:mt-0 sm:ml-6 sm:text-left w-full sm:w-2/3">
+                                        <!-- JavaScript to Set Dynamic Time -->
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                function getCurrentTime() {
+                                                    const now = new Date();
+                                                    let hours = now.getHours();
+                                                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                                                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                                                    hours = hours % 12 || 12; // Convert to 12-hour format
+                                                    return `${hours}:${minutes} ${ampm}`;
+                                                }
+                                                document.getElementById('delivery-time').textContent = getCurrentTime();
+                                            });
+                                        </script>
+
+                                        <!-- Review Message Section, aligned with the mockup -->
+                                        <div class="mt-3 sm:mt-0 sm:ml-6 sm:text-left w-full sm:w-1/2">
                                             <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                                Review Message
-                                            </h3>
-                                            <div class="mt-2">
-                                                <h2>Selected:</h2>
+                                                Review Message</h3>
+                                            <div class="mt-2 space-y-2">
+                                                <h2 class="font-semibold">Selected:</h2>
                                                 <p class="text-sm text-gray-500">Campus: <span
                                                         id="selected-campus"></span></p>
 
@@ -296,11 +339,13 @@
 
                                                 <!-- Show Date and Time when "Send Later" is selected -->
                                                 <p id="selected-send-datetime" class="text-sm text-gray-500 hidden">
-                                                    Send Date & Time: <span id="send-datetime"></span></p>
+                                                    Send Date & Time: <span id="send-datetime"></span>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                     <x-primary-button id="confirm-send">{{ __('Send Message') }}</x-primary-button>
                                     <x-secondary-button id="close-review-modal" class="mt-3 sm:mt-0 sm:ml-3">
@@ -310,6 +355,7 @@
                             </div>
                         </div>
                     </div>
+
                     <!-- End of Modal -->
 
                 </form>

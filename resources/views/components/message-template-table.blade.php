@@ -9,7 +9,7 @@
 
     <!-- Message Templates Table -->
     <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-        <thead class="bg-gray-50">
+        <thead class="dark:bg-gray-700">
             <tr class="dark:bg-gray-700 text-center">
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Title
                 </th>

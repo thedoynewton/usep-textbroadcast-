@@ -3,7 +3,7 @@
 @else
     <div>
         <table class="min-w-full bg-white divide-y divide-gray-200 rounded-lg">
-            <thead class="bg-gray-50">
+            <thead class="dark:bg-gray-700">
                 <tr>
                     @foreach (['User', 'Campus', 'Recipient Type', 'Message', 'Message Type', 'Total Recipients', 'Sent Count', 'Failed Count', 'Status', 'Created At', 'Sent At', 'Scheduled At', 'Cancelled At', 'Action'] as $header)
                         <th

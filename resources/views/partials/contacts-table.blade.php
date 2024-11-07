@@ -3,8 +3,8 @@
 <div id="contactsResults">
     <h3 class="text-lg font-semibold mb-4 text-black">Contacts (Total: {{ $contacts->total() }})</h3>
     <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-        <thead class="bg-gray-50 sticky top-0 z-10">
-            <tr class="dark:bg-gray-700 text-center">
+        <thead class="dark:bg-gray-700 sticky top-0 z-10">
+            <tr class= "dark:bg-gray-700 text-center">
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Name
                 </th>
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Email
