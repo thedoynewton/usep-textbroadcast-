@@ -239,7 +239,7 @@
 
                             <!-- Modal Panel -->
                             <div
-                                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-3xl sm:w-full">
+                                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle lg:max-w-4xl sm:w-full">
                                 <div class="bg-white px-6 pt-5 pb-4 sm:p-6 sm:pb-4">
                                     <!-- Modal Content -->
                                     <div class="sm:flex sm:items-start">
@@ -250,13 +250,44 @@
                                             <div class="relative">
                                                 <img src="{{ asset('images/iPhone15Mockup.png') }}"
                                                     alt="iPhone Mockup" class="w-64 h-auto mx-auto">
+                                                <!-- Centered User Profile Info -->
+                                                <div
+                                                    class="absolute top-[10%] left-[50%] transform -translate-x-1/2 w-[80%] flex flex-col items-center space-y-1">
+                                                    <!-- User Icon -->
+                                                    <img src="{{ asset('images/profile-user.png') }}" alt="User Icon"
+                                                        class="w-6 h-6">
+                                                    <!-- User Name -->
+                                                    <span class="font-regular text-gray-900 mt-1"
+                                                        style="font-size: 9px;">USeP</span>
+                                                </div>
                                                 <!-- Message preview inside the phone mockup -->
                                                 <div
-                                                    class="absolute inset-0 top-20 p-4 w-48 h-96 mx-auto overflow-auto bg-transparent">
-                                                    <p class="text-sm text-gray-800" id="preview-message">
+                                                    class="absolute top-[20%] left-[14%] w-[70%] h-auto mx-auto overflow-y-auto bg-gray-200 border rounded-lg shadow-sm p-3 mt-2">
+                                                    <p class="text-xs text-gray-800" id="preview-message">
                                                         <!-- Message Preview Here -->
                                                     </p>
+
+                                                    <!-- Delivered Status, Checkmark, and Timestamp -->
+                                                    <div class="flex justify-between items-center mt-1">
+                                                        <!-- Checkmark Icon for Delivered Status -->
+                                                        <div class="flex items-center space-x-1">
+                                                            <svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                                                                viewBox="0 0 20 20"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M16.707 5.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 11.586l6.293-6.293a1 1 0 011.414 0z"
+                                                                    clip-rule="evenodd"></path>
+                                                            </svg>
+                                                            <span class="text-xs text-gray-600">Delivered</span>
+                                                        </div>
+
+                                                        <!-- Dynamic Timestamp -->
+                                                        <span class="text-xs text-gray-500" id="message-timestamp">
+                                                            <!-- JS will dynamically update this -->
+                                                        </span>
+                                                    </div>
                                                 </div>
+
                                             </div>
                                         </div>
 
@@ -318,6 +349,6 @@
         </div>
     </div>
 
-    @vite(['resources/js/progressBar.js', 'resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js'])
+    @vite(['resources/js/progressBar.js', 'resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js',  'resources/js/messagePreview.js'])
 
 </x-app-layout>
