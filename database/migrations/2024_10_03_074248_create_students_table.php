@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('stud_lname');
             $table->string('stud_mname')->nullable();
             $table->string('stud_contact');
-            $table->string('stud_email')->unique();
+            $table->string('stud_email')->unique()->nullable();
             $table->unsignedBigInteger('campus_id')->nullable(); // Make it nullable
             $table->unsignedBigInteger('college_id')->nullable(); // Make it nullable
             $table->unsignedBigInteger('program_id')->nullable(); // Make it nullable

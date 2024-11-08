@@ -65,11 +65,11 @@ class DataImportController extends Controller
             $programId = in_array($major->ProgID, $programIds) ? $major->ProgID : null;
 
             if (!$programId) {
-                $this->logMissingForeignKey('Major', $major->MajorDiscID, 'program_id', $major->ProgID);
+                $this->logMissingForeignKey('Major', $major->IndexID, 'program_id', $major->ProgID);
             }
 
             Major::updateOrCreate(
-                ['major_id' => $major->MajorDiscID],
+                ['major_id' => $major->IndexID],
                 [
                     'campus_id' => 1,
                     'college_id' => $major->CollegeID,
@@ -97,60 +97,61 @@ class DataImportController extends Controller
 
     public function importStudentData()
     {
+        // Retrieve students data from the es_obrero database
         $esObreroStudents = DB::connection('es_obrero')->table('vw_Students_TB')->get();
-        $existingIds = $this->fetchExistingIds();
-
+    
+        // Retrieve major mappings from vw_ProgramMajors_TB to match MajorID with IndexID
+        $majorsMapping = DB::connection('es_obrero')
+            ->table('vw_ProgramMajors_TB')
+            ->pluck('IndexID', 'MajorDiscID') // Creates a map with MajorDiscID as key and IndexID as value
+            ->toArray();
+    
+        // Retrieve program IDs from your main database for validation
+        $programIds = Program::pluck('program_id')->toArray();
+    
         foreach ($esObreroStudents as $student) {
-            if ($this->isValidStudentData($student, $existingIds)) {
-                Student::updateOrCreate(
-                    ['stud_id' => $student->StudentNo],
-                    [
-                        'stud_fname' => $student->FirstName,
-                        'stud_lname' => $student->LastName,
-                        'stud_contact' => $student->MobileNo,
-                        'stud_email' => $student->Email,
-                        'campus_id' => 1,
-                        'college_id' => $student->CollegeID,
-                        'program_id' => $student->ProgID,
-                        'major_id' => $student->MajorID,
-                        'year_id' => $student->YearLevelID,
-                        'enrollment_stat' => 'Enrolled'
-                    ]
-                );
-            } else {
-                $this->logMissingStudentData($student);
+            // Use a unique placeholder email if email is missing
+            $email = !empty($student->Email) ? $student->Email : "noEmail{$student->StudentNo}@usep.edu.ph";
+    
+            // Get the correct major_id based on MajorDiscID from the mapping
+            $majorId = isset($majorsMapping[$student->MajorID]) ? $majorsMapping[$student->MajorID] : null;
+    
+            // Check if the student's program exists
+            $programId = in_array($student->ProgID, $programIds) ? $student->ProgID : null;
+    
+            // Log missing foreign keys if major_id or program_id is null
+            if (is_null($majorId)) {
+                $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
             }
+            if (is_null($programId)) {
+                $this->logMissingForeignKey('Student', $student->StudentNo, 'program_id', $student->ProgID);
+            }
+    
+            // Insert or update student data in the students table
+            Student::updateOrCreate(
+                ['stud_id' => $student->StudentNo],
+                [
+                    'stud_lname' => $student->LastName,
+                    'stud_fname' => $student->FirstName,
+                    'stud_mname' => null, // Or assign actual middle name if provided
+                    'stud_contact' => $student->MobileNo,
+                    'stud_email' => $email, // Use placeholder if missing
+                    'college_id' => $student->CollegeID,
+                    'program_id' => $programId,
+                    'major_id' => $majorId, // Set to null if not found, avoiding foreign key conflict
+                    'year_id' => $student->YearLevelID,
+                    'campus_id' => 1, // Assuming a campus_id of 1, update as needed
+                    'enrollment_stat' => 'active',
+                ]
+            );
         }
+    
         return redirect()->back()->with('success', 'Students imported successfully!');
     }
-
-    private function fetchExistingIds()
-    {
-        return [
-            'colleges' => College::pluck('college_id')->toArray(),
-            'programs' => Program::pluck('program_id')->toArray(),
-            'majors' => Major::pluck('major_id')->toArray(),
-            'years' => Year::pluck('year_id')->toArray(),
-        ];
-    }
-
-    private function isValidStudentData($student, $existingIds)
-    {
-        return in_array($student->CollegeID, $existingIds['colleges']) &&
-               in_array($student->ProgID, $existingIds['programs']) &&
-               in_array($student->MajorID, $existingIds['majors']) &&
-               in_array($student->YearLevelID, $existingIds['years']) &&
-               !empty($student->Email);
-    }
-
+    
     private function logMissingForeignKey($entity, $entityId, $missingKey, $missingId)
     {
         Log::warning("$entity with ID '$entityId' added with NULL $missingKey due to missing $missingKey '$missingId' in related table.");
-    }
-
-    private function logMissingStudentData($student)
-    {
-        Log::warning("Student '{$student->FirstName} {$student->LastName}' skipped due to missing related data (college_id '{$student->CollegeID}', program_id '{$student->ProgID}', major_id '{$student->MajorID}', year_id '{$student->YearLevelID}', or email).");
     }
 
     public function addCampus(Request $request)
