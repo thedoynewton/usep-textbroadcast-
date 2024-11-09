@@ -183,7 +183,7 @@
                     <!-- Message Input -->
                     <div class="mt-6">
                         <x-input-label for="message" value="Message" />
-                        <textarea id="message" name="message" rows="4"
+                        <textarea id="message" name="message" rows="4" maxlength="160"
                             class="block w-full mt-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-indigo-300 p-2 text-sm overflow-y-auto resize-none"
                             placeholder="Enter your message here..."></textarea>
                     </div>

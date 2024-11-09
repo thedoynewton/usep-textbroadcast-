@@ -9,8 +9,8 @@
             </div>
             <div class="mb-4">
                 <x-input-label for="content" value="Message Content" />
-                <textarea id="content" name="content" class="block w-full mt-1" rows="5" required></textarea>
-            </div>
+                <textarea id="content" name="content" class="block w-full mt-1" rows="5" required maxlength="160"></textarea>
+            </div>            
             <div class="flex justify-end">
                 <x-primary-button>Create</x-primary-button>
             </div>

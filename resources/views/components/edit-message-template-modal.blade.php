@@ -11,8 +11,8 @@
             </div>
             <div class="mb-4">
                 <x-input-label for="content" value="Message Content" />
-                <textarea id="content" name="content" class="block w-full mt-1" rows="5" required>{{ $template->content }}</textarea>
-            </div>
+                <textarea id="content" name="content" class="block w-full mt-1" rows="5" required maxlength="160">{{ $template->content }}</textarea>
+            </div>            
             <div class="flex justify-end">
                 <x-primary-button>Update</x-primary-button>
             </div>

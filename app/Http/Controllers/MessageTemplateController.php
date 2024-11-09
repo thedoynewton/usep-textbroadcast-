@@ -28,8 +28,8 @@ class MessageTemplateController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|max:255',
-            'content' => 'required',
+            'name' => 'required|max:100',
+            'content' => 'required|max:160',
         ]);
 
         MessageTemplate::create($validated);
@@ -53,8 +53,8 @@ class MessageTemplateController extends Controller
     public function update(Request $request, MessageTemplate $messageTemplate)
     {
         $validated = $request->validate([
-            'name' => 'required|max:255',
-            'content' => 'required',
+            'name' => 'required|max:100',
+            'content' => 'required|max:160',
         ]);
 
         $messageTemplate->update($validated);

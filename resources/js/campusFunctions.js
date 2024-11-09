@@ -1,30 +1,34 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Open Add Campus Modal
     const addCampusButton = document.getElementById("addCampusButton");
-    addCampusButton.addEventListener("click", () => {
-        window.dispatchEvent(new CustomEvent("open-modal", { detail: "addCampusModal" }));
-    });
+    if (addCampusButton) {
+        addCampusButton.addEventListener("click", () => {
+            window.dispatchEvent(new CustomEvent("open-modal", { detail: "addCampusModal" }));
+        });
+    }
 
     // Handle Add Campus Form Submission
     const addCampusForm = document.getElementById("addCampusForm");
-    addCampusForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(addCampusForm);
+    if (addCampusForm) {
+        addCampusForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(addCampusForm);
 
-        try {
-            const response = await fetch("/campuses/add", {
-                method: "POST",
-                headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content },
-                body: formData,
-            });
-            const data = await response.json();
-            addCampusToTable(data.campus);
-            addCampusForm.reset();
-            window.dispatchEvent(new CustomEvent("close-modal", { detail: "addCampusModal" }));
-        } catch (error) {
-            console.error("Error adding campus:", error);
-        }
-    });
+            try {
+                const response = await fetch("/campuses/add", {
+                    method: "POST",
+                    headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content },
+                    body: formData,
+                });
+                const data = await response.json();
+                addCampusToTable(data.campus);
+                addCampusForm.reset();
+                window.dispatchEvent(new CustomEvent("close-modal", { detail: "addCampusModal" }));
+            } catch (error) {
+                console.error("Error adding campus:", error);
+            }
+        });
+    }
 
     // Handle Edit Campus
     document.querySelectorAll(".edit-campus-btn").forEach((button) => {
@@ -39,23 +43,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle Edit Campus Form Submission
     const editCampusForm = document.getElementById("editCampusForm");
-    editCampusForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(editCampusForm);
+    if (editCampusForm) {
+        editCampusForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(editCampusForm);
 
-        try {
-            const response = await fetch("/campuses/update", {
-                method: "POST",
-                headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content },
-                body: formData,
-            });
-            const data = await response.json();
-            updateCampusInTable(data.campus);
-            window.dispatchEvent(new CustomEvent("close-modal", { detail: "editCampusModal" }));
-        } catch (error) {
-            console.error("Error updating campus:", error);
-        }
-    });
+            try {
+                const response = await fetch("/campuses/update", {
+                    method: "POST",
+                    headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content },
+                    body: formData,
+                });
+                const data = await response.json();
+                updateCampusInTable(data.campus);
+                window.dispatchEvent(new CustomEvent("close-modal", { detail: "editCampusModal" }));
+            } catch (error) {
+                console.error("Error updating campus:", error);
+            }
+        });
+    }
 
     function addCampusToTable(campus) {
         const tableBody = document.querySelector("table tbody");
