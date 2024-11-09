@@ -193,7 +193,7 @@
 
 
                         <table class="min-w-full border border-gray-500">
-                            <thead class="dark:bg-gray-700 text-white">
+                            <thead class="bg-gray-700 text-white">
                                 <tr class="border border-gray-500">
                                     <th class="py-2 px-4 ">Campus ID</th>
                                     <th class="py-2 px-4 ">Campus Name</th>
@@ -202,7 +202,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($campuses as $campus)
-                                    <tr class="text-center border border-gray-500">
+                                    <tr class="hover:bg-red-100 text-center border border-gray-500">
                                         <td class="py-2 px-4 border border-gray-500">{{ $campus->campus_id }}</td>
                                         <td class="py-2 px-4 border border-gray-500">{{ $campus->campus_name }}</td>
                                         <td class="py-2 px-4 text-center border border-gray-500">

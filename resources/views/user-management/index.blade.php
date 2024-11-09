@@ -64,34 +64,33 @@
                     List of Users
                 </h2>
 
-                <table
-                    class="min-w-full bg-white border rounded-md overflow-hidden shadow-sm transition-shadow duration-300 hover:shadow-md">
-                    <thead class="dark:bg-gray-700">
-                        <tr class=" dark:bg-gray-700 text-left">
+                <table class="text-center min-w-full bg-white border rounded-md overflow-hidden shadow-sm transition-shadow duration-300 hover:shadow-md">
+                    <thead>
+                        <tr class=" bg-gray-700">
                             <th
-                                class="py-2 px-4 border-b text-left text-xs font-medium text-white uppercase tracking-wider">
+                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Name</th>
                             <th
-                                class="py-2 px-4 border-b text-left text-xs font-medium text-white uppercase tracking-wider">
+                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Email</th>
                             <th
-                                class="py-2 px-4 border-b text-left text-xs font-medium text-white uppercase tracking-wider">
+                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Role</th>
                             <th
-                                class="py-2 px-4 border-b text-left text-xs font-medium text-white uppercase tracking-wider">
+                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($users as $user)
-                            <tr class="hover:bg-gray-100 transition-colors duration-300">
+                            <tr class="hover:bg-red-100 transition-colors duration-300">
                                 <td class="py-2 px-4 text-xs text-gray-700">
                                     {{ $user->name }}</td>
                                 <td class="py-2 px-4 text-xs text-gray-700">
                                     {{ $user->email }}</td>
                                 <td class="py-2 px-4 text-xs text-gray-700">
                                     {{ $user->role ?? 'None' }}</td>
-                                <td class="border dark:border-gray-700 px-4 py-2">
+                                <td class="border border-gray-700 px-4 py-2">
                                     <form action="{{ route('user-management.updateRole', $user->id) }}" method="POST"
                                         class="inline-block">
                                         @csrf

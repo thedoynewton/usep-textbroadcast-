@@ -8,9 +8,9 @@
     </button>
 
     <!-- Message Templates Table -->
-    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-        <thead class="dark:bg-gray-700">
-            <tr class="dark:bg-gray-700 text-center">
+    <table class="min-w-full bg-white border border-gray-300 rounded-lg text-center">
+        <thead class="bg-gray-700">
+            <tr class="bg-gray-700 text-center">
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Title
                 </th>
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
@@ -21,7 +21,7 @@
         </thead>
         <tbody>
             @forelse ($messageTemplates as $template)
-                <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                <tr class="hover:bg-red-100 transition duration-150 ease-in-out">
                     <td class="border dark:border-gray-700 px-4 py-2">{{ $template->name }}</td>
                     <td class="border dark:border-gray-700 px-4 py-2">
                         <!-- Display short content with "Read More" link if content exceeds 30 characters -->
@@ -64,7 +64,7 @@
                 @empty
                 <!-- Display this row when there are no templates -->
                 <tr>
-                    <td colspan="3" class="text-center py-8">
+                    <td colspan="3" class="py-8">
                         <div class="flex flex-col items-center justify-center">
                             <img src="{{ asset('svg/msgTemplate.svg') }}" alt="No Templates" class="h-40 w-40 mb-4">
                             <p class="text-gray-500">No message templates found</p>

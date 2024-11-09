@@ -2,9 +2,9 @@
 
 <div id="contactsResults">
     <h3 class="text-lg font-semibold mb-4 text-black">Contacts (Total: {{ $contacts->total() }})</h3>
-    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-        <thead class="dark:bg-gray-700 sticky top-0 z-10">
-            <tr class= "dark:bg-gray-700 text-center">
+    <table class="min-w-full bg-white border border-gray-300 rounded-lg text-center">
+        <thead>
+            <tr class= "bg-gray-700 text-center">
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Name
                 </th>
                 <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Email
@@ -21,7 +21,7 @@
         </thead>
         <tbody>
             @foreach ($contacts as $contact)
-                <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                <tr class="hover:bg-red-100 transition duration-150 ease-in-out">
                     <td class="border dark:border-gray-700 px-4 py-2">
                         {{ $contact->stud_fname ?? $contact->emp_fname }}
                         {{ $contact->stud_lname ?? $contact->emp_lname }}

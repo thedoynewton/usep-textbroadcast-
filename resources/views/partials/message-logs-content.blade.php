@@ -4,12 +4,12 @@
     </p>
 @else
     <div class="table-container max-h-96 overflow-y-auto relative bg-white border rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
+        <table class="min-w-full">
+            <thead>
+                <tr class="bg-gray-700">
                     @foreach (['User', 'Campus', 'Recipient Type', 'Message', 'Message Type', 'Total Recipients', 'Sent Count', 'Failed Count', 'Status', 'Created At', 'Sent At', 'Scheduled At', 'Cancelled At', 'Action'] as $header)
                         <th
-                            class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                             {{ $header }}
                         </th>
                     @endforeach
@@ -17,7 +17,7 @@
             </thead>
             <tbody id="messageTableBody" class="bg-white divide-y divide-gray-200 text-sm">
                 @foreach ($messageLogs as $log)
-                    <tr class="hover:bg-red-100 transition duration-150 ease-in-out">
+                    <tr class="hover:bg-red-100 transition duration-150 ease-in-out text-center">
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">{{ $log->user->name ?? 'Unknown' }}
                         </td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">
@@ -28,10 +28,10 @@
                         <td class="py-2 px-4 text-xs text-gray-700">{{ $log->content ?? 'No Content' }}</td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">{{ ucfirst($log->message_type) }}
                         </td>
-                        <td class="py-2 px-4 text-xs text-gray-700 text-center">{{ $log->total_recipients ?? 'N/A' }}
+                        <td class="py-2 px-4 text-xs text-gray-700">{{ $log->total_recipients ?? 'N/A' }}
                         </td>
-                        <td class="py-2 px-4 text-xs text-gray-700 text-center">{{ $log->sent_count ?? 0 }}</td>
-                        <td class="py-2 px-4 text-xs text-gray-700 text-center">{{ $log->failed_count ?? 0 }}</td>
+                        <td class="py-2 px-4 text-xs text-gray-700">{{ $log->sent_count ?? 0 }}</td>
+                        <td class="py-2 px-4 text-xs text-gray-700">{{ $log->failed_count ?? 0 }}</td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">{{ ucfirst($log->status) }}</td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">
                             {{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d H:i') }}</td>
