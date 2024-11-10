@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class MessageTemplate extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'content'];
+    protected $fillable = ['category_id', 'name', 'content'];
+
+    public function category()
+    {
+        return $this->belongsTo(MessageCategory::class);
+    }
 }

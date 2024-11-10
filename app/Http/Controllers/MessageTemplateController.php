@@ -28,6 +28,7 @@ class MessageTemplateController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'category_id' => 'required|exists:message_categories,id',
             'name' => 'required|max:100',
             'content' => 'required|max:160',
         ]);
@@ -53,6 +54,7 @@ class MessageTemplateController extends Controller
     public function update(Request $request, MessageTemplate $messageTemplate)
     {
         $validated = $request->validate([
+            'category_id' => 'required|exists:message_categories,id',
             'name' => 'required|max:100',
             'content' => 'required|max:160',
         ]);

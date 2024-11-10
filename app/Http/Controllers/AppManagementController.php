@@ -23,6 +23,8 @@ class AppManagementController extends Controller
         $contacts = $this->service->getContacts($request->search, $request->campus_id, $request->type);
 
         $messageTemplates = $this->service->getMessageTemplates();
+        $messageCategories = $this->service->getMessageCategories();
+
         $counts = $this->service->getTotalCounts();
         $campuses = $this->service->getCampuses();
 
@@ -38,6 +40,7 @@ class AppManagementController extends Controller
         return view('app-management.index', [
             'contacts' => $contacts,
             'messageTemplates' => $messageTemplates,
+            'messageCategories' => $messageCategories,
             'totalStudents' => $counts['totalStudents'],
             'totalEmployees' => $counts['totalEmployees'],
             'campuses' => $campuses,

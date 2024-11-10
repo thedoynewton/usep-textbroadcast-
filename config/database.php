@@ -97,6 +97,7 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        //primary/main database "usep-tbc"
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
@@ -112,7 +113,7 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
-        // Secondary SQL Server connection for ES_Obrero
+        // Obrero Campus Database Connection
         'es_obrero' => [
             'driver' => 'sqlsrv',
             'host' => env('DB_HOST_ES_OBRERO', '172.16.210.20'),
@@ -126,6 +127,54 @@ return [
             // Uncomment and configure if needed for encryption
             // 'encrypt' => env('DB_ENCRYPT_ES_OBRERO', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_OBRERO', 'false'),
+        ],
+
+        // Mintal Campus Database Connection
+        'es_mintal' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_ES_MINTAL', '172.16.210.20'),
+            'port' => env('DB_PORT_ES_MINTAL', '1433'),
+            'database' => env('DB_DATABASE_ES_MINTAL', 'es_mintal_new'),
+            'username' => env('DB_USERNAME_ES_MINTAL', 'useptextblast'),
+            'password' => env('DB_PASSWORD_ES_MINTAL', 'US3Pt3xtb@st'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // Uncomment and configure if needed for encryption
+            // 'encrypt' => env('DB_ENCRYPT_ES_MINTAL', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MINTAL', 'false'),
+        ],
+
+        // Tagum Campus Database Connection
+        'es_tagum' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_ES_TAGUM', '172.16.210.20'),
+            'port' => env('DB_PORT_ES_TAGUM', '1433'),
+            'database' => env('DB_DATABASE_ES_TAGUM', 'es_tagum'),
+            'username' => env('DB_USERNAME_ES_TAGUM', 'useptextblast'),
+            'password' => env('DB_PASSWORD_ES_TAGUM', 'US3Pt3xtb@st'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // Uncomment and configure if needed for encryption
+            // 'encrypt' => env('DB_ENCRYPT_ES_TAGUM', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_TAGUM', 'false'),
+        ],
+
+        // Mabini Campus Database Connection
+        'es_mabini' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST_ES_MABINI', '172.16.210.20'),
+            'port' => env('DB_PORT_ES_MABINI', '1433'),
+            'database' => env('DB_DATABASE_ES_MABINI', 'es_mabini'),
+            'username' => env('DB_USERNAME_ES_MABINI', 'useptextblast'),
+            'password' => env('DB_PASSWORD_ES_MABINI', 'US3Pt3xtb@st'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // Uncomment and configure if needed for encryption
+            // 'encrypt' => env('DB_ENCRYPT_ES_MABINI', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MABINI', 'false'),
         ],
 
     ],

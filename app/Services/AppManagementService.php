@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\Employee;
 use App\Models\MessageTemplate;
 use App\Models\Campus;
+use App\Models\MessageCategory;
 
 class AppManagementService
 {
@@ -80,6 +81,10 @@ class AppManagementService
     public function getMessageTemplates()
     {
         return MessageTemplate::paginate(10);
+    }
+    public function getMessageCategories()
+    {
+        return MessageCategory::paginate(10);
     }
 
     public function getTotalCounts()

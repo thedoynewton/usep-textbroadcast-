@@ -56,7 +56,9 @@ class MessagesController extends Controller
         $balanceData = $this->moviderService->getBalance();
         $remainingBalance = $balanceData['balance'] ?? 0;
 
-        $costPerSms = 0.0065; // Assume cost per SMS is $0.0065
+        $costPerSms = 1; // cost per SMS is 1 Credit coin in PH
+        // $costPerSms = 0.0065; // cost per SMS is $0.0065 in USD
+        
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
         $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
         $programId = $request->input('program') === 'all' ? null : $request->input('program');

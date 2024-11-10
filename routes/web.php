@@ -6,6 +6,7 @@ use App\Http\Controllers\CreditBalanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataImportController;
 use App\Http\Controllers\FilterController;
+use App\Http\Controllers\MessageCategoryController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ProfileController;
@@ -37,6 +38,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/recipients', [DashboardController::class, 'getRecipients']);
+        Route::get('/recipients/{message_log_id}', [DashboardController::class, 'getRecipientsByMessageLog'])->name('recipients.byMessageLog');
+        
         Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
         Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
 
@@ -88,6 +91,7 @@ Route::middleware('auth')->group(function () {
 
         // Message Templates CRUD Routes
         Route::resource('message-templates', MessageTemplateController::class);
+        Route::resource('message-categories', MessageCategoryController::class);
 
         //DB Connection
         Route::get('/data-import', [DataImportController::class, 'showImportForm'])->name('data-import.form');

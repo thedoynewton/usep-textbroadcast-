@@ -11,17 +11,16 @@
     <table class="min-w-full bg-white border border-gray-300 rounded-lg text-center">
         <thead class="bg-gray-700">
             <tr class="bg-gray-700 text-center">
-                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Title
-                </th>
-                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
-                    Content</th>
-                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
-                    Actions</th>
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Category</th>
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Title</th>
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Content</th>
+                <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($messageTemplates as $template)
                 <tr class="hover:bg-red-100 transition duration-150 ease-in-out">
+                    <td class="border dark:border-gray-700 px-4 py-2">{{ $template->category->name ?? 'Uncategorized' }}</td>
                     <td class="border dark:border-gray-700 px-4 py-2">{{ $template->name }}</td>
                     <td class="border dark:border-gray-700 px-4 py-2">
                         <!-- Display short content with "Read More" link if content exceeds 30 characters -->
@@ -43,7 +42,7 @@
                                 style="filter: brightness(0) invert(1);">
                         </button>
 
-                        <!-- Form to Delete Template -->
+                        {{-- <!-- Form to Delete Template -->
                         <form action="{{ route('message-templates.destroy', $template) }}" method="POST"
                             class="inline-block">
                             @csrf
@@ -53,18 +52,18 @@
                                 <img src="{{ asset('images/delete.png') }}" alt="Delete" class="h-5 w-5"
                                     style="filter: brightness(0) invert(1);">
                             </button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
 
-                <!-- Include the modal components for Read More and Edit -->
+                <!-- Include the modal components for Read More and Edit, passing messageCategories to the Edit Modal -->
                 <x-read-more-modal :template="$template" />
-                <x-edit-message-template-modal :template="$template" />
+                <x-edit-message-template-modal :template="$template" :messageCategories="$messageCategories" />
                 
-                @empty
+            @empty
                 <!-- Display this row when there are no templates -->
                 <tr>
-                    <td colspan="3" class="py-8">
+                    <td colspan="4" class="py-8">
                         <div class="flex flex-col items-center justify-center">
                             <img src="{{ asset('svg/msgTemplate.svg') }}" alt="No Templates" class="h-40 w-40 mb-4">
                             <p class="text-gray-500">No message templates found</p>
