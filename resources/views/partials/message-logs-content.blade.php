@@ -25,7 +25,7 @@
                             {{ $log->campus->campus_name ?? 'All Campuses' }}</td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">
                             {{ ucfirst($log->recipient_type) }}</td>
-                        <td class="py-2 px-4 text-xs text-gray-700">{{ $log->content ?? 'No Content' }}</td>
+                        <td class="py-2 px-4 text-xs text-gray-700">{{ $log->template_name ?? 'No Template Name'}}</td>
                         <td class="py-2 px-4 text-xs text-gray-700 whitespace-nowrap">{{ ucfirst($log->message_type) }}
                         </td>
                         <td class="py-2 px-4 text-xs text-gray-700">{{ $log->total_recipients ?? 'N/A' }}</td>
@@ -57,8 +57,8 @@
                     <!-- Toggle Row for Extra Information -->
                     <tr class="hidden bg-gray-100" id="toggle-row-{{ $log->id }}">
                         <td colspan="14" class="p-4 text-gray-700">
-                            <div><strong>Message Title:</strong> {{ $log->content ?? 'N/A' }}</div>
-                            <div><strong>Message Content:</strong> {{ $log->title ?? 'N/A' }}</div>
+                            <div><strong>Message Title:</strong> {{ $log->template_name ?? 'N/A' }}</div>
+                            <div><strong>Message Content:</strong> {{ $log->content ?? 'N/A' }}</div>
                             <div>
                                 <strong>Total Recipients:</strong> {{ $log->total_recipients ?? 'N/A' }}
                                 <a href="javascript:void(0);" class="text-blue-500 hover:underline ml-2 show-recipients"

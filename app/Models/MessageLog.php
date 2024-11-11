@@ -13,6 +13,7 @@ class MessageLog extends Model
         'user_id',
         'campus_id',
         'recipient_type',
+        'template_name',
         'content',
         'message_type',
         'scheduled_at',

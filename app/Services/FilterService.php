@@ -24,27 +24,47 @@ class FilterService
 
     public function getCollegesByCampus($campusId)
     {
-        return $campusId === null ? College::all() : $this->fetchDataByField(College::class, 'campus_id', $campusId);
+        $colleges = $campusId === null 
+            ? College::all() 
+            : $this->fetchDataByField(College::class, 'campus_id', $campusId);
+    
+        return $colleges->sortBy('college_name')->values();
     }
 
     public function getProgramsByCollege($collegeId)
     {
-        return $collegeId === null ? Program::all() : $this->fetchDataByField(Program::class, 'college_id', $collegeId);
+        $programs = $collegeId === null
+        ? Program::all()
+        : $this->fetchDataByField(Program::class, 'college_id', $collegeId);
+
+        return $programs->sortBy('program_name')->values();
     }
 
     public function getMajorsByProgram($programId)
     {
-        return $programId === null ? Major::all() : $this->fetchDataByField(Major::class, 'program_id', $programId);
+        $majors = $programId === null
+        ? Major::all()
+        : $this->fetchDataByField(Major::class, 'program_id', $programId);
+
+        return $majors->sortBy('major_name')->values();
     }
 
     public function getOfficesByCampus($campusId)
     {
-        return $campusId === null ? Office::all() : $this->fetchDataByField(Office::class, 'campus_id', $campusId);
+        $offices = $campusId === null 
+            ? Office::all() 
+            : $this->fetchDataByField(Office::class, 'campus_id', $campusId);
+    
+        return $offices->sortBy('office_name')->values();
     }
 
     public function getTypesByOffice($officeId)
     {
-        return $officeId === null ? Type::all() : $this->fetchDataByField(Type::class, 'office_id', $officeId);
+        $types = $officeId === null 
+            ? Type::all() 
+            : $this->fetchDataByField(Type::class, 'office_id', $officeId);
+    
+        return $types->sortBy('type_name')->values();
     }
 
     public function getYears()

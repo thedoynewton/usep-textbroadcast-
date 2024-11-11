@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('campus_id')->nullable(); // Add campus_id field
             $table->string('recipient_type');
+            $table->string('template_name');
             $table->text('content');
             $table->string('message_type');
             $table->timestamp('scheduled_at')->nullable();

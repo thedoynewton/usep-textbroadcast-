@@ -27,7 +27,7 @@ class AnalyticsController extends Controller
         $messageOverview = $this->getMessageOverview($filters);
 
         // Define low balance threshold
-        $lowBalanceThreshold = 0.0140;
+        $lowBalanceThreshold = 10000;
 
         // Fetch the current balance using MoviderService
         $balanceData = app('App\Services\MoviderService')->getBalance();

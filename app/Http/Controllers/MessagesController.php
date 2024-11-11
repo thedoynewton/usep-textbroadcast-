@@ -58,7 +58,7 @@ class MessagesController extends Controller
 
         $costPerSms = 1; // cost per SMS is 1 Credit coin in PH
         // $costPerSms = 0.0065; // cost per SMS is $0.0065 in USD
-        
+
         $campusId = $request->input('campus') === 'all' ? null : $request->input('campus');
         $collegeId = $request->input('academic_unit') === 'all' ? null : $request->input('academic_unit');
         $programId = $request->input('program') === 'all' ? null : $request->input('program');
@@ -88,15 +88,18 @@ class MessagesController extends Controller
         // Determine if a message template was selected
         $templateId = $request->input('template');
         if ($templateId) {
+            // Retrieve existing template's name and content
             $template = MessageTemplate::find($templateId);
-            $logContent = $template->name;
+            $logName = $template->name;
+            $logContent = $template->content;
         } else {
-            $logContent = $messageContent;
+            // Create a new template with default name and content
             $newTemplate = MessageTemplate::create([
                 'name' => 'CT' . now()->format('Y-m-d'),
                 'content' => $messageContent,
             ]);
-            $logContent = $newTemplate->name;  // Log the name of the newly created template
+            $logName = $newTemplate->name;
+            $logContent = $newTemplate->content;
         }
 
         // Log the message in the MessageLog
@@ -105,6 +108,7 @@ class MessagesController extends Controller
             'campus_id' => $campusId,
             'recipient_type' => $recipientType,
             'content' => $logContent,
+            'template_name' => $logName,
             'message_type' => $sendType === 'now' ? 'instant' : 'scheduled',
             'scheduled_at' => $scheduledAt,
             'sent_at' => $sendType === 'now' ? now() : null,
@@ -151,7 +155,7 @@ class MessagesController extends Controller
         // Initialize a collection to store unique recipients by phone number
         $recipientsByPhone = collect();
         $recipientDetails = collect(); // To store all the recipients, even if they share the same phone number
-    
+
         // Process students if applicable
         if ($recipientType === 'students' || $recipientType === 'all') {
             $students = Student::when($campusId, function ($query, $campusId) {
@@ -165,16 +169,16 @@ class MessagesController extends Controller
             })->when($yearId, function ($query, $yearId) {
                 return $query->where('year_id', $yearId);
             })->get();
-    
+
             // Add students to the recipients collection
             $students->each(function ($student) use ($recipientsByPhone, $recipientDetails, $messageLog) {
                 if (empty($student->stud_contact)) {
                     // Skip if contact number is empty
                     return;
                 }
-                
+
                 $formattedNumber = $this->formatPhoneNumber($student->stud_contact);
-    
+
                 // Store recipients by their unique phone number
                 if (!$recipientsByPhone->contains('c_num', $formattedNumber)) {
                     $recipientsByPhone->push([
@@ -183,7 +187,7 @@ class MessagesController extends Controller
                         'failure_reason' => '',
                     ]);
                 }
-    
+
                 // Store recipient details, to be logged later for each unique number
                 $recipientDetails->push([
                     'message_log_id' => $messageLog->id,
@@ -202,7 +206,7 @@ class MessagesController extends Controller
                 ]);
             });
         }
-    
+
         // Process employees if applicable
         if ($recipientType === 'employees' || $recipientType === 'all') {
             $employees = Employee::when($campusId, function ($query, $campusId) {
@@ -214,7 +218,7 @@ class MessagesController extends Controller
             })->when($typeId, function ($query, $typeId) {
                 return $query->where('type_id', $typeId);
             })->get();
-    
+
             // Add employees to the recipients collection
             $employees->each(function ($employee) use ($recipientsByPhone, $recipientDetails, $messageLog) {
                 if (empty($employee->emp_contact)) {
@@ -223,7 +227,7 @@ class MessagesController extends Controller
                 }
 
                 $formattedNumber = $this->formatPhoneNumber($employee->emp_contact);
-    
+
                 // Store recipients by their unique phone number
                 if (!$recipientsByPhone->contains('c_num', $formattedNumber)) {
                     $recipientsByPhone->push([
@@ -232,7 +236,7 @@ class MessagesController extends Controller
                         'failure_reason' => '',
                     ]);
                 }
-    
+
                 // Store recipient details, to be logged later for each unique number
                 $recipientDetails->push([
                     'message_log_id' => $messageLog->id,
@@ -250,18 +254,18 @@ class MessagesController extends Controller
                 ]);
             });
         }
-    
+
         // Split unique recipients by phone number into batches according to the $batchSize
         $batches = $recipientsByPhone->chunk($batchSize);
         $sentCount = 0;
         $failedCount = 0;
-    
+
         foreach ($batches as $batch) {
             foreach ($batch as $recipient) {
                 try {
                     // Send individual SMS using Movider service for each unique number
                     $this->moviderService->sendBulkSMS([$recipient['c_num']], $messageContent);
-    
+
                     // Update sent status after successful sending
                     $recipient['sent_status'] = 'Sent'; // Mark as sent
                     $sentCount++; // Increment sent count
@@ -272,7 +276,7 @@ class MessagesController extends Controller
                     $recipient['failure_reason'] = $e->getMessage();
                     $failedCount++; // Increment failed count
                 }
-    
+
                 // Log each recipient in the MessageRecipient table (even if they share the same number)
                 $recipientDetails->where('c_num', $recipient['c_num'])->each(function ($detail) use ($recipient) {
                     // **Fix:** Make sure to check if message sending was successful before marking as failed
@@ -283,13 +287,13 @@ class MessagesController extends Controller
                         $detail['sent_status'] = 'Failed';
                         $detail['failure_reason'] = $recipient['failure_reason'];
                     }
-    
+
                     // Log the recipient in the database
                     MessageRecipient::create($detail);
                 });
             }
         }
-    
+
         // **Final Update:** Update sent and failed counts in message_log
         $messageLog->update([
             'sent_count' => $sentCount,
@@ -298,7 +302,7 @@ class MessagesController extends Controller
 
         // Log the final sent and failed count
         Log::info("Message Log ID: {$messageLog->id} - Sent: {$sentCount}, Failed: {$failedCount}");
-    }    
+    }
 
     public function cancel($id)
     {

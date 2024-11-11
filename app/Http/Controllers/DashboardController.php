@@ -65,8 +65,16 @@ class DashboardController extends Controller
         }
     
         // Fetch unique message data for the widgets
-        $totalMessages = MessageLog::count();
-        $scheduledMessages = MessageLog::where('message_type', 'scheduled')->count();
+        $totalMessages = MessageLog::where(function ($q) {
+            $q->where('message_type', 'instant')
+              ->orWhere(function ($q2) {
+                  $q2->where('message_type', 'scheduled')
+                     ->where('status', 'sent'); // Only count sent scheduled messages
+              });
+        })->count();
+        $scheduledMessages = MessageLog::where('message_type', 'scheduled')
+                                    ->where('status', 'sent') // Only count delivered scheduled messages
+                                    ->count();
         $immediateMessages = MessageLog::where('message_type', 'instant')->count();
         $failedMessages = MessageRecipient::where('sent_status', 'Failed')->count();
         $cancelledMessages = MessageLog::where('status', 'cancelled')->count();
