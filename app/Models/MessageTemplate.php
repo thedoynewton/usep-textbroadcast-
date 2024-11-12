@@ -10,8 +10,10 @@ class MessageTemplate extends Model
     use HasFactory;
     protected $fillable = ['category_id', 'name', 'content'];
 
-    public function category()
-    {
-        return $this->belongsTo(MessageCategory::class);
-    }
+    public function getTemplatesByCategory($categoryId)
+{
+    $templates = MessageTemplate::where('category_id', $categoryId)->get(['id', 'name', 'content']);
+    return response()->json($templates);
+}
+
 }

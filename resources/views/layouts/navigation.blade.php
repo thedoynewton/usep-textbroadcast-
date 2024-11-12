@@ -2,9 +2,11 @@
     <!-- Primary Navigation Menu -->
     <div class="py-4">
         <!-- Logo Section -->
-        <div class="flex flex-col items-center mt-6">
+        <div class="flex items-center justify-center text-center mt-6">
             <a href="{{ route('dashboard') }}">
-                <x-application-logo class="w-16 h-auto" />
+                <div class="pl-12">
+                <x-application-logo class="w-16 h-auto"/>
+                </div>
                 <h1 style="font-size: 20px;" class="mt-2 text-2xl font-bold text-red-700">U-TEXT</h1>
                 <p style="font-size: 12px;" class="text-gray-600">USeP Text Broadcast System</p>
             </a>
@@ -64,7 +66,7 @@
         <ul class="mt-5">
             <li
                 class="{{ request()->routeIs('dashboard') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
-                <a href="{{ route('dashboard') }}" class="px-10 py-3 flex items-center w-full h-full text-lg">
+                <a href="{{ route('dashboard') }}" class="px-10 py-3 flex items-center w-full h-full text-lg hover:bg-[#f8f9fa]">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
                         <path d="M10 3H3V10H10V3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -83,7 +85,7 @@
             @if (Auth::user()->role === 'admin' || Auth::user()->role === 'subadmin')
                 <li
                     class="{{ request()->routeIs('messages.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
-                    <a href="{{ route('messages.index') }}" class="px-10 py-3 flex items-center w-full h-full text-lg">
+                    <a href="{{ route('messages.index') }}" class="px-10 py-3 flex items-center w-full h-full text-lg hover:bg-[#f8f9fa]">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
                             <path d="M22 12H16L14 15H10L8 12H2" stroke="currentColor" stroke-width="2"
@@ -99,7 +101,7 @@
                 <li
                     class="{{ request()->routeIs('analytics.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
                     <a href="{{ route('analytics.index') }}"
-                        class="px-10 py-3 flex items-center w-full h-full text-lg">
+                        class="px-10 py-3 flex items-center w-full h-full text-lg hover:bg-[#f8f9fa]">
                         <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
                             xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
                             <g clip-path="url(#clip0_1460_227)">
@@ -127,7 +129,7 @@
                 <li
                     class="{{ request()->routeIs('user-management') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
                     <a href="{{ route('user-management') }}"
-                        class="px-10 py-3 flex items-center w-full h-full text-lg">
+                        class="px-10 py-3 flex items-center w-full h-full text-lg hover:bg-[#f8f9fa]">
                         <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
                             xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
                             <g clip-path="url(#clip0_1460_192)">
@@ -161,7 +163,7 @@
                 <li
                     class="{{ request()->routeIs('app-management.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
                     <a href="{{ route('app-management.index') }}"
-                        class="px-10 py-3 flex items-center w-full h-full text-lg">
+                        class="px-10 py-3 flex items-center w-full h-full text-lg hover:bg-[#f8f9fa]">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
                             <path d="M4 21V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"

@@ -5,24 +5,29 @@
         </h2>
     </x-slot>
 
-    <div x-data="{ activeTab: 'widgets' }" class="container mx-auto">
-        <!-- Tabs Navigation -->
-        <div class="border-b border-gray-200 mb-6 flex justify-center">
-            <nav class="flex space-x-4" aria-label="Tabs">
-                <button @click="activeTab = 'widgets'"
-                    :class="{ 'text-blue-600 font-bold border-b-2 border-blue-600': activeTab === 'widgets', 'text-gray-600': activeTab !== 'widgets' }"
-                    class="px-3 py-2 font-medium focus:outline-none">
-                    Widgets
-                </button>
-                <button @click="activeTab = 'logs'"
-                    :class="{ 'text-blue-600 font-bold border-b-2 border-blue-600': activeTab === 'logs', 'text-gray-600': activeTab !== 'logs' }"
-                    class="px-3 py-2 font-medium focus:outline-none">
-                    Logs
-                </button>
-            </nav>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-8 transition-transform duration-200 hover:scale-101">
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8 transition-transform duration-200 hover:scale-101">
+        <div x-data="{ activeTab: 'widgets' }" class="container mx-auto">
+            <!-- Tabs Navigation (Left-aligned) -->
+            <div class="border-b border-gray-200 mb-6 flex justify-start pl-6">
+                <nav class="flex space-x-4" aria-label="Tabs">
+                    <button @click="activeTab = 'widgets'"
+                        :class="{
+                            'text-blue-600 font-semibold border-b-2 border-blue-600': activeTab === 'widgets',
+                            'text-black font-semibold hover:text-blue-500 hover:border-blue-500': activeTab !== 'widgets'
+                        }"
+                        class="px-3 py-2 font-medium focus:outline-none border-b-2 border-transparent transition duration-200">
+                        SUMMARY
+                    </button>
+                    <button @click="activeTab = 'logs'"
+                        :class="{
+                            'text-blue-600 font-semibold border-b-2 border-blue-600': activeTab === 'logs',
+                            'text-black font-semibold hover:text-blue-500 hover:border-blue-500': activeTab !== 'logs'
+                        }"
+                        class="px-3 py-2 font-medium focus:outline-none border-b-2 border-transparent transition duration-200">
+                        MESSAGE LOGS
+                    </button>
+                </nav>
+            </div>
 
             @if (session('error'))
                 <div class="bg-red-500 text-white font-bold py-2 px-4 rounded mb-4">
@@ -52,7 +57,7 @@
                 {{-- id="immediateMessagesCard" --}}
                 <div class="bg-yellow-100 p-4 border-l-4 border-[#d1a700] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
                     >
-                    <h3 class="text-xl font-bold text-[#d1a700]">Immediate Messages Delivered</h3>
+                    <h3 class="text-xl font-bold text-[#d1a700]">Instant Messages Delivered</h3>
                     <p class="text-2xl font-semibold text-[#d1a700]">{{ $immediateMessages }}</p>
                 </div>
 
@@ -190,6 +195,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 

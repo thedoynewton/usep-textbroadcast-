@@ -12,6 +12,7 @@ use App\Services\MoviderService;
 use Illuminate\Http\Request;
 use App\Models\Campus;
 use App\Models\MessageTemplate;
+use App\Models\MessageCategory;
 use App\Models\Status;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -25,18 +26,19 @@ class MessagesController extends Controller
     {
         $this->moviderService = $moviderService;
     }
+
     public function index(Request $request)
     {
-        $tab = $request->get('tab', 'all'); // Default to 'all' if no tab is selected
-        $campusId = $request->get('campus'); // Get the selected campus
-
-        $campuses = Campus::all(); // Fetch all campuses from the database
-        $messageTemplates = MessageTemplate::all(); // Fetch all message templates
-        $years = Year::all(); // Fetch all years to populate the year dropdown
-        $statuses = Status::all(); // Fetch all statuses to populate the status dropdown
-
-        // Return the view with the necessary data for rendering the page
-        return view('messages.index', compact('campuses', 'campusId', 'messageTemplates', 'years', 'statuses'));
+        $tab = $request->get('tab', 'all'); 
+        $campusId = $request->get('campus'); 
+    
+        $campuses = Campus::all();
+        $messageTemplates = MessageTemplate::all(); 
+        $years = Year::all();
+        $statuses = Status::all();
+        $messageCategories = MessageCategory::all();
+    
+        return view('messages.index', compact('campuses', 'campusId', 'messageTemplates', 'years', 'statuses', 'messageCategories'));
     }
     public function store(Request $request)
     {

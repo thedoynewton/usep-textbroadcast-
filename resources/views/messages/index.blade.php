@@ -67,18 +67,33 @@
                             </select>
                         </div>
 
+                        <!-- Category Dropdown -->
+                        <div>
+                            <x-input-label for="category" value="Select Category" />
+                            <select id="category" name="category"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
+                                <option value="" disabled selected>Select a Category</option>
+                                @foreach ($messageCategories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Template Dropdown -->
                         <div>
                             <x-input-label for="template" value="Select Template" />
                             <select id="template" name="template"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                 <option value="" disabled selected>Select a Template</option>
-                                <!-- Default option disabled and selected -->
                                 @foreach ($messageTemplates as $template)
-                                    <option value="{{ $template->id }}" data-content="{{ $template->content }}">
-                                        {{ $template->name }}</option>
+                                    <option value="{{ $template->id }}" data-category="{{ $template->category_id }}"
+                                        data-content="{{ $template->content }}">
+                                        {{ $template->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
+
 
                     </div>
 
@@ -349,6 +364,6 @@
         </div>
     </div>
 
-    @vite(['resources/js/progressBar.js', 'resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js',  'resources/js/messagePreview.js'])
+    @vite(['resources/js/progressBar.js', 'resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js', 'resources/js/messagePreview.js'])
 
 </x-app-layout>
