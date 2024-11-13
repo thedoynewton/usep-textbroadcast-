@@ -12,7 +12,7 @@
 
     <img src="/images/SePhi Favicon.png" alt="USeP Logo" class="w-26 h-24 mx-auto">
     <h1 class="font-bold text-2xl text-center mt-4 text-red-700">WELCOME BACK</h1>
-    <p class="text-center text-gray-600 mt-2 mb-6">Proceed to login by selecting login options</p>
+    <p class="text-center text-gray-600 mt-2 mb-6">Log in using your account on:</p>
 
     <!-- Google Login Button -->
     <a href="{{ route('google.login') }}"
@@ -20,7 +20,7 @@
         Continue with Google
     </a>
 
-    <!-- Divider -->
+    {{-- <!-- Divider -->
     <div class="flex items-center my-4">
         <hr class="flex-grow border-gray-300">
         <span class="mx-4 text-gray-500">or</span>
@@ -41,7 +41,7 @@
         <button type="submit" class="bg-red-700 text-white font-semibold px-4 py-2 rounded-lg w-full mb-6">
             Continue with email
         </button>
-    </form>
+    </form> --}}
 
     <!-- Footer -->
     <p class="text-gray-500 text-center text-sm">

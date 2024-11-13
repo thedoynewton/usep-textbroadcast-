@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Reference to the loading screen element
+    const loadingScreen = document.getElementById("loadingScreen");
+
     // Open Add Campus Modal
     const addCampusButton = document.getElementById("addCampusButton");
     if (addCampusButton) {
@@ -15,6 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
         addCampusForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const formData = new FormData(addCampusForm);
+
+            // Show loading screen
+            loadingScreen.classList.remove("hidden");
 
             try {
                 const response = await fetch("/campuses/add", {
@@ -39,16 +45,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     addCampusToTable(data.campus); // Add new campus row to table
                 }
 
-                // Reset the form and close the modal
+                // Reset the form but do not close the modal
                 addCampusForm.reset();
-                window.dispatchEvent(
-                    new CustomEvent("close-modal", { detail: "addCampusModal" })
-                );
             } catch (error) {
                 console.error("Error adding campus:", error);
-                alert(
-                    "There was an error adding the campus. Please try again."
-                );
+                alert("There was an error adding the campus. Please try again.");
+            } finally {
+                // Hide loading screen
+                loadingScreen.classList.add("hidden");
             }
         });
     }
@@ -92,40 +96,70 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle displaying the Import Modal with dynamic content
     const importModal = document.getElementById("importModal");
     const importModalTitle = document.getElementById("importModalTitle");
-    const modalCampusId = document.getElementById("modalCampusId"); // Hidden input for campus_id
     const closeImportModalButton = document.getElementById("closeImportModal");
 
-    if (
-        importModal &&
-        importModalTitle &&
-        closeImportModalButton &&
-        modalCampusId
-    ) {
-        document
-            .getElementById("campusCardsContainer")
-            .addEventListener("click", function (e) {
-                const campusCard = e.target.closest("[data-campus-id]");
-                if (campusCard) {
-                    const campusId = campusCard.getAttribute("data-campus-id"); // Get campus_id from card
-                    const campusName =
-                        campusCard.getAttribute("data-campus-name"); // Get campus_name from card
-                    // Log the campus_id to the console
-                    console.log("Campus ID:", campusId);
-                    // Set the modal title and campus_id for the forms in the modal
-                    importModalTitle.textContent = `${campusName} Import Options`;
-                    modalCampusId.value = campusId; // Set campus_id in the hidden input
-                    importModal.classList.remove("hidden");
-                }
-            });
+    if (importModal && importModalTitle && closeImportModalButton) {
+        // Open import modal and set campus ID when a campus card is clicked
+        document.getElementById("campusCardsContainer").addEventListener("click", function (e) {
+            const campusCard = e.target.closest("[data-campus-id]");
+            if (campusCard) {
+                const campusId = campusCard.getAttribute("data-campus-id");
+                const campusName = campusCard.getAttribute("data-campus-name");
 
-        closeImportModalButton.addEventListener("click", () => {
-            importModal.classList.add("hidden");
+                // Log campus_id for debugging purposes
+                console.log("Selected Campus ID:", campusId);
+
+                // Set the title and open modal
+                importModalTitle.textContent = `${campusName} Import Options`;
+
+                // Set campus_id in each form's hidden input field within the modal
+                document.querySelectorAll("#importModal .campus-id-input").forEach(input => {
+                    input.value = campusId;
+                });
+
+                importModal.classList.remove("hidden"); // Show modal
+            }
         });
 
-        window.addEventListener("click", function (e) {
-            if (e.target === importModal) {
-                importModal.classList.add("hidden");
-            }
+        // Prevent form submission from closing the modal by using AJAX
+        document.querySelectorAll("#importModal form").forEach(form => {
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(form);
+
+                // Show loading screen
+                loadingScreen.classList.remove("hidden");
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+                        },
+                        body: formData,
+                    });
+
+                    if (!response.ok) throw new Error("Failed to import data.");
+
+                    // Show a success message without closing the modal
+                    alert("Data imported successfully!");
+                } catch (error) {
+                    console.error("Error importing data:", error);
+                    alert("There was an error importing the data. Please try again.");
+                } finally {
+                    // Hide loading screen
+                    loadingScreen.classList.add("hidden");
+                }
+            });
+        });
+
+        // Close modal only when user clicks the close button
+        closeImportModalButton.addEventListener("click", () => {
+            importModal.classList.add("hidden"); // Close the modal
+            document.querySelectorAll("#importModal .campus-id-input").forEach(input => {
+                input.value = ""; // Clear campus_id for all forms on modal close
+            });
         });
     } else {
         console.error("Import modal elements not found.");
