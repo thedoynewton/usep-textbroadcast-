@@ -12,7 +12,7 @@
                 <button @click="activeTab = 'widgets'"
                     :class="{ 'text-blue-600 font-bold border-b-2 border-blue-600': activeTab === 'widgets', 'text-gray-600': activeTab !== 'widgets' }"
                     class="px-3 py-2 font-medium focus:outline-none">
-                    Widgets
+                    Summary
                 </button>
                 <button @click="activeTab = 'logs'"
                     :class="{ 'text-blue-600 font-bold border-b-2 border-blue-600': activeTab === 'logs', 'text-gray-600': activeTab !== 'logs' }"
