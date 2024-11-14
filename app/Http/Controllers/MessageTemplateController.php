@@ -36,7 +36,7 @@ class MessageTemplateController extends Controller
         MessageTemplate::create($validated);
 
         // Redirect to the 'Message Templates' section of the 'App Management' page
-        return redirect()->route('app-management.index', ['section' => 'templates'])
+        return redirect()->route('templates.index', ['section' => 'message-templates'])
             ->with('success', 'Message Template created successfully.');
     }
 
@@ -62,7 +62,7 @@ class MessageTemplateController extends Controller
         $messageTemplate->update($validated);
 
         // Redirect to the 'Message Templates' section of the 'App Management' page
-        return redirect()->route('app-management.index', ['section' => 'templates'])
+        return redirect()->route('templates.index', ['section' => 'message-templates'])
             ->with('success', 'Message Template updated successfully.');
     }
 
@@ -74,7 +74,7 @@ class MessageTemplateController extends Controller
         $messageTemplate->delete();
 
         // Redirect to the 'Message Templates' section of the 'App Management' page
-        return redirect()->route('app-management.index', ['section' => 'templates'])
+        return redirect()->route('templates.index', ['section' => 'message-templates'])
             ->with('success', 'Message Template deleted successfully.');
     }
 }

@@ -12,7 +12,7 @@ class MessageCategoryController extends Controller
     {
         // This can be called if necessary, but typically the data is loaded in AppManagementController
         $categories = MessageCategory::paginate(10);
-        return redirect()->route('app-management.index', ['section' => 'categories']);
+        return redirect()->route('templates.index', ['section' => 'categories']);
     }
 
     // Store a new category (called from AJAX in the create modal)
@@ -24,7 +24,7 @@ class MessageCategoryController extends Controller
 
         $category = MessageCategory::create(['name' => $request->name]);
 
-        return redirect()->route('app-management.index', ['section' => 'categories'])
+        return redirect()->route('templates.index', ['section' => 'categories'])
             ->with('success', 'Category created successfully.');
     }
 
@@ -37,7 +37,7 @@ class MessageCategoryController extends Controller
 
         $messageCategory->update(['name' => $request->name]);
 
-        return redirect()->route('app-management.index', ['section' => 'categories'])
+        return redirect()->route('templates.index', ['section' => 'categories'])
             ->with('success', 'Category updated successfully.');
     }
 
@@ -46,7 +46,7 @@ class MessageCategoryController extends Controller
     {
         $messageCategory->delete();
 
-        return redirect()->route('app-management.index', ['section' => 'categories'])
+        return redirect()->route('templates.index', ['section' => 'categories'])
             ->with('success', 'Category deleted successfully.');
     }
 }

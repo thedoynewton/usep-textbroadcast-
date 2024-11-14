@@ -33,18 +33,6 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('app-management.index', ['section' => 'templates']) }}"
-                                class="{{ request('section') == 'templates' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
-                                Message Templates
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('app-management.index', ['section' => 'categories']) }}"
-                                class="{{ request('section') == 'categories' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
-                                Message Categories
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('app-management.index', ['section' => 'db-connection']) }}"
                                 class="{{ request('section') == 'db-connection' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
                                 DB Connection
@@ -60,15 +48,7 @@
                 </nav>
 
                 <!-- Display section based on active tab -->
-                @if (request('section') == 'templates')
-                    <!-- Message Templates Section -->
-                    <x-message-template-table :messageTemplates="$messageTemplates" :messageCategories="$messageCategories" />
-                    <x-create-message-template-modal :messageCategories="$messageCategories" />
-                @elseif (request('section') == 'categories')
-                    <!-- Message Categories Section -->
-                    <x-message-category-table :messageCategories="$messageCategories" />
-                    <x-create-message-category-modal />
-                @elseif (request('section') == 'db-connection')
+                @if (request('section') == 'db-connection')
                     <!-- DB Connection Section -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Database Connection Settings</h3>
