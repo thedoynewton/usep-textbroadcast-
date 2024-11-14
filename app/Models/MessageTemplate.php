@@ -12,6 +12,12 @@ class MessageTemplate extends Model
 
     public function category()
     {
-        return $this->belongsTo(MessageCategory::class);
+        return $this->belongsTo(MessageCategory::class, 'category_id');
+    }
+
+    // Link to MessageLogs
+    public function messageLogs()
+    {
+        return $this->hasMany(MessageLog::class, 'template_name', 'name');
     }
 }

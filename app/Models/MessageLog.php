@@ -45,4 +45,9 @@ class MessageLog extends Model
     {
         return $this->hasMany(MessageRecipient::class);
     }
+    
+    public function messageTemplate()
+    {
+        return $this->belongsTo(MessageTemplate::class, 'template_name', 'name');
+    }
 }
