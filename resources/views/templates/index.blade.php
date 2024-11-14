@@ -23,34 +23,21 @@
                     </div>
                 @endif
 
-                <!-- Sub-navigation for different sections -->
+                <!-- Sub-navigation -->
                 <nav class="mb-6">
                     <ul class="flex space-x-4">
                         <li>
-                            <a href="{{ route('templates.index', ['section' => 'categories']) }}"
-                                class="{{ request('section', 'categories') == 'categories' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
-                                Message Categories
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('templates.index', ['section' => 'message-templates']) }}"
-                                class="{{ request('section', 'categories') == 'message-templates' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
+                                class="{{ request('section', 'message-templates') == 'message-templates' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
                                 Communication Templates
                             </a>
                         </li>
                     </ul>
                 </nav>
 
-                <!-- Display section based on active tab -->
-                @if (request('section', 'categories') == 'message-templates')
-                    <!-- Message Templates Section -->
-                    <x-message-template-table :messageTemplates="$messageTemplates" :messageCategories="$messageCategories" />
-                    <x-create-message-template-modal :messageCategories="$messageCategories" />
-                @else
-                    <!-- Message Categories Section -->
-                    <x-message-category-table :messageCategories="$messageCategories" />
-                    <x-create-message-category-modal />
-                @endif
+                <!-- Message Templates Section -->
+                <x-message-template-table :messageTemplates="$messageTemplates" :messageCategories="$messageCategories" />
+                <x-create-message-template-modal :messageCategories="$messageCategories" />
 
             </div>
         </div>

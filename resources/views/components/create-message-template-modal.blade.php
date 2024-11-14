@@ -7,12 +7,20 @@
             <!-- Category Dropdown -->
             <div class="mb-4">
                 <x-input-label for="category_id" value="Select Category" />
-                <select id="category_id" name="category_id" class="block w-full mt-1 border rounded" required>
+                <select id="category_id" name="category_id" class="block w-full mt-1 border rounded" :disabled="newCategory !== ''">
                     <option value="" disabled selected>Choose a category</option>
                     @foreach ($messageCategories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
+            </div>
+
+            <!-- New Category Input -->
+            <div class="mb-4">
+                <x-input-label for="new_category" value="Or Add New Category" />
+                <x-text-input id="new_category" name="new_category" type="text" class="block w-full mt-1"
+                              placeholder="Enter new category name" maxlength="100"
+                              x-data @input="$refs.category_id.disabled = $event.target.value !== ''" />
             </div>
 
             <!-- Title Input -->
