@@ -49,7 +49,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('/messages/cancel/{id}', [MessagesController::class, 'cancel'])->name('messages.cancel');
 
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index')->middleware('auth');
-        Route::get('/analytics-data', [AnalyticsController::class, 'getAnalyticsData']);
 
         Route::get('/app-management/search', [AppManagementController::class, 'search'])->name('app-management.search');
         Route::post('/contacts/{id}/update-number', [AppManagementController::class, 'updateContactNumber'])->name('contacts.update-number');

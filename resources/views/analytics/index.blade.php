@@ -15,14 +15,15 @@
             </div>
         @endif
 
-        <!-- Total Messages by Status Card with Bar Chart -->
+        <!-- Total Messages by Status Card with Grouped Bar Chart -->
         <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6 p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Total Messages Sent by Status</h3>
             <p class="text-gray-500 text-sm">Overview of the total number of messages sent by message status.</p>
-            <div class="relative" style="height: 250px; width: 100%;">
+            <div class="relative" style="height: 300px; width: 100%;">
                 <canvas id="messagesByStatusChart" class="absolute inset-0 w-full h-full"
-                        data-status-labels='@json(array_keys($statusCounts))'
-                        data-status-counts='@json(array_values($statusCounts))'></canvas>
+                    data-status-dates='@json($dates)'
+                    data-status-data='@json($statusData)'></canvas>
+
             </div>
         </div>
 
@@ -38,8 +39,8 @@
                 <div class="p-6">
                     <div class="relative" style="height: 0; padding-bottom: 50%;">
                         <canvas id="messagesByCategoryChart" class="absolute inset-0 w-full h-full"
-                                data-category-labels='@json($categoryLabels)'
-                                data-category-counts='@json($categoryCounts)'></canvas>
+                            data-category-labels='@json($categoryLabels)'
+                            data-category-counts='@json($categoryCounts)'></canvas>
                     </div>
                 </div>
             </div>
@@ -48,13 +49,14 @@
             <div class="bg-white shadow-lg rounded-lg overflow-hidden">
                 <div class="p-6 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800">Messages Sent by Recipient Type</h3>
-                    <p class="text-gray-500 text-sm">Total messages distributed by recipient type (e.g., Student, Employee).</p>
+                    <p class="text-gray-500 text-sm">Total messages distributed by recipient type (e.g., Student,
+                        Employee).</p>
                 </div>
                 <div class="p-6">
                     <div class="relative" style="height: 0; padding-bottom: 50%;">
                         <canvas id="messagesByRecipientTypeChart" class="absolute inset-0 w-full h-full"
-                                data-recipient-types='@json($recipientTypes)'
-                                data-recipient-counts='@json($recipientCounts)'></canvas>
+                            data-recipient-types='@json($recipientTypes)'
+                            data-recipient-counts='@json($recipientCounts)'></canvas>
                     </div>
                 </div>
             </div>
