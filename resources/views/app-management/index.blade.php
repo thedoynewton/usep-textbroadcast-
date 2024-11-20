@@ -35,7 +35,7 @@
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'db-connection']) }}"
                                 class="{{ request('section') == 'db-connection' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
-                                DB Connection
+                                Import Settings
                             </a>
                         </li>
                         <li>
@@ -195,6 +195,7 @@
         <!-- Credit Balance Section -->
         <div>
             <h3 class="text-lg font-semibold mb-4">Edit Credit Balance</h3>
+            <p class="text-sm italic mb-4">(Credit balance is handled manually due to the limitations of the Movider API that can provided to the developers.)</p>
 
             <form method="POST" action="{{ route('credit-balance.update') }}">
                 @csrf

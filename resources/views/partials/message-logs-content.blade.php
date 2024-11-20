@@ -7,7 +7,7 @@
         <table class="min-w-full">
             <thead>
                 <tr class="bg-gray-700">
-                    @foreach (['User', 'Campus', 'Recipient Type', 'Message', 'Message Type', 'Total Recipients', 'Sent Count', 'Failed Count', 'Status', 'Created At', 'Sent At', 'Scheduled At', 'Cancelled At', 'Action'] as $header)
+                    @foreach (['User', 'Campus', 'Recipient Type', 'Message Title', 'Message Type', 'Total Recipients', 'Sent Count', 'Failed Count', 'Status', 'Created At', 'Sent At', 'Scheduled At', 'Cancelled At', 'Action'] as $header)
                         <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                             {{ $header }}
                         </th>

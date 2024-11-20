@@ -99,41 +99,6 @@ class DashboardController extends Controller
         ));
     }    
 
-    // public function getRecipients(Request $request)
-    // {
-    //     $type = $request->query('type');
-    //     $perPage = $request->query('perPage', 5); // Default to 5 recipients per page
-
-    //     switch ($type) {
-    //         case 'total':
-    //             $recipients = MessageRecipient::where('sent_status', 'Sent')->paginate($perPage);
-    //             break;
-    //         case 'scheduled':
-    //             $recipients = MessageRecipient::where('sent_status', 'Sent')
-    //                 ->whereHas('messageLog', function ($query) {
-    //                     $query->where('message_type', 'scheduled');
-    //                 })->paginate($perPage);
-    //             break;
-    //         case 'instant':
-    //             $recipients = MessageRecipient::where('sent_status', 'Sent')
-    //                 ->whereHas('messageLog', function ($query) {
-    //                     $query->where('message_type', 'instant');
-    //                 })->paginate($perPage);
-    //             break;
-    //         case 'failed':
-    //             $recipients = MessageRecipient::where('sent_status', 'Failed')->paginate($perPage);
-    //             break;
-    //         default:
-    //             $recipients = collect([])->paginate($perPage); // Return empty collection if no valid type is provided
-    //     }
-
-    //     if ($request->ajax()) {
-    //         return view('recipients.pagination', compact('recipients'))->render();
-    //     }
-
-    //     return response()->json(['recipients' => $recipients]);
-    // }
-
     public function getRecipientsByMessageLog($message_log_id, Request $request)
     {
         // Retrieve recipients with pagination, 5 per page
