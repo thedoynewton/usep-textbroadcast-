@@ -135,54 +135,54 @@
             <div x-show="activeTab === 'widgets'" class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Total Messages Card -->
                 {{-- id="totalMessagesCard" --}}
-                <div class="bg-red-50 p-4 border-l-4 border-[#d50600] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                <div class="bg-green-100 p-4 border-l-4 border-[#4CAF50] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
                     >
-                    <h3 class="text-xl font-bold text-[#d50600]">Total Messages Delivered</h3>
-                    <p class="text-2xl font-semibold text-[#d50600]">{{ $totalMessages }}</p>
+                    <h3 class="text-l font-bold text-[#4CAF50]">Total Messages Delivered</h3>
+                    <p class="text-2xl font-semibold text-[#4CAF50]">{{ $totalMessages }}</p>
                 </div>
 
                 <!-- Scheduled Messages Card -->
                 {{-- id="scheduledMessagesCard" --}}
-                <div class="bg-red-100 p-4 border-l-4 border-[#b10000] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                <div class="bg-[rgb(227,255,227)] p-4 border-l-4 border-[#4CAF50] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
                     >
-                    <h3 class="text-xl font-bold text-[#b10000]">Scheduled Messages Delivered</h3>
-                    <p class="text-2xl font-semibold text-[#b10000]">{{ $scheduledMessages }}</p>
+                    <h3 class="text-l font-bold text-[#4CAF50]">Scheduled Messages Delivered</h3>
+                    <p class="text-2xl font-semibold text-[#4CAF50]">{{ $scheduledMessages }}</p>
                 </div>
 
                 <!-- Immediate Messages Card -->
                 {{-- id="immediateMessagesCard" --}}
-                <div class="bg-yellow-100 p-4 border-l-4 border-[#d1a700] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
+                <div class="bg-green-50 p-4 border-l-4 border-[#4CAF50] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
                     >
-                    <h3 class="text-xl font-bold text-[#d1a700]">Immediate Messages Delivered</h3>
-                    <p class="text-2xl font-semibold text-[#d1a700]">{{ $immediateMessages }}</p>
+                    <h3 class="text-l font-bold text-[#4CAF50]">Immediate Messages Delivered</h3>
+                    <p class="text-2xl font-semibold text-[#4CAF50]">{{ $immediateMessages }}</p>
                 </div>
 
                 <!-- Failed Messages Card -->
                 {{-- id="failedMessagesCard" --}}
                 <div class="bg-red-200 p-4 border-l-4 border-[#990000] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer"
                     >
-                    <h3 class="text-xl font-bold text-[#990000]">Failed Messages Sent</h3>
+                    <h3 class="text-l font-bold text-[#990000]">Failed Messages</h3>
                     <p class="text-2xl font-semibold text-[#990000]">{{ $failedMessages }}</p>
                 </div>
 
                 <!-- Cancelled Messages Card -->
                 <div
-                    class="bg-gray-200 p-4 border-l-4 border-[#6b7280] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
-                    <h3 class="text-xl font-bold text-[#6b7280]">Cancelled Scheduled Messages</h3>
-                    <p class="text-2xl font-semibold text-[#6b7280]">{{ $cancelledMessages }}</p>
+                    class="bg-orange-50 p-4 border-l-4 border-[#FF9800] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
+                    <h3 class="text-l font-bold text-[#FF9800]">Cancelled Scheduled Messages</h3>
+                    <p class="text-2xl font-semibold text-[#FF9800]">{{ $cancelledMessages }}</p>
                 </div>
 
                 <!-- Pending Messages Card -->
                 <div
-                    class="bg-orange-100 p-4 border-l-4 border-[#e07b00] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
-                    <h3 class="text-xl font-bold text-[#e07b00]">Pending Scheduled Messages</h3>
-                    <p class="text-2xl font-semibold text-[#e07b00]">{{ $pendingMessages }}</p>
+                    class="bg-blue-50 p-4 border-l-4 border-[#2196F3] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
+                    <h3 class="text-l font-bold text-[#2196F3]">Pending Scheduled Messages</h3>
+                    <p class="text-2xl font-semibold text-[#2196F3]">{{ $pendingMessages }}</p>
                 </div>
 
                 <!-- Movider Balance Card -->
                 <div
                     class="bg-purple-100 p-4 border-l-4 border-[#7e57c2] rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ease-in-out hover:scale-105 cursor-pointer">
-                    <div class="text-xl font-bold text-[#7e57c2]">
+                    <div class="text-l font-bold text-[#7e57c2]">
                         Remaining Credit Balance
                     </div>
                     <div class="text-2xl font-semibold text-[#7e57c2]">

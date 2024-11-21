@@ -64,8 +64,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 {
                     label: "Messages Sent",
                     data: recipientCounts,
-                    backgroundColor: "#4dc9f6",
-                    borderColor: "#4dc9f6",
+                    backgroundColor: "#4CAF50",
+                    borderColor: "#4CAF50",
                     borderWidth: 1,
                 },
             ],
