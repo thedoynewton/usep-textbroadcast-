@@ -5,9 +5,8 @@
         </h2>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
+    <div class="py-4 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
             @if (session('success'))
                 <div class="bg-green-500 text-white p-4 rounded-md mb-4">
                     {{ session('success') }}
@@ -19,37 +18,36 @@
                 </div>
             @endif
 
-            <!-- Progress Bar (Hidden by Default) -->
+            <!-- Progress Bar -->
             <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-4 mb-4 hidden">
                 <div id="progress" class="bg-blue-600 h-4 rounded-full" style="width: 0%;"></div>
             </div>
 
-
+            <!-- Main Form -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-
-                <!-- Tabs for ALL, STUDENTS, EMPLOYEES -->
-                <ul class="flex border-b">
-                    <li class="border-gray-300">
+                <!-- Tabs -->
+                <ul class="flex flex-wrap border-b">
+                    <li class="mr-4">
                         <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}"
                             class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">ALL</a>
                     </li>
-                    <li class="border-gray-300">
+                    <li class="mr-4">
                         <a href="{{ route('messages.index', ['tab' => 'students', 'campus' => request('campus')]) }}"
                             class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">STUDENTS</a>
                     </li>
-                    <li class="border-gray-300">
+                    <li>
                         <a href="{{ route('messages.index', ['tab' => 'employees', 'campus' => request('campus')]) }}"
                             class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">EMPLOYEES</a>
                     </li>
                 </ul>
 
-                <!-- Message Form based on selected tab -->
+                <!-- Form -->
                 <form action="{{ route('messages.store') }}" method="POST" id="message-form" class="mt-6">
                     @csrf
-                    <!-- Hidden field to retain the selected tab -->
                     <input type="hidden" name="tab" value="{{ request('tab') }}">
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <!-- Responsive Grid for Inputs -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <!-- Campus Dropdown -->
                         <div>
                             <x-input-label for="campus" value="Campus" />
@@ -57,7 +55,6 @@
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                 <option value="" disabled selected>Select Campus</option>
                                 <option value="all">All Campuses</option>
-                                <!-- Default option disabled and selected -->
                                 @foreach ($campuses as $campus)
                                     <option value="{{ $campus->campus_id }}"
                                         {{ old('campus') == $campus->campus_id ? 'selected' : '' }}>
@@ -67,116 +64,94 @@
                             </select>
                         </div>
 
+                        <!-- Template Dropdown -->
                         <div>
                             <x-input-label for="template" value="Select Template" />
                             <select id="template" name="template"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                 <option value="" disabled selected>Select a Template</option>
-                                <!-- Default option disabled and selected -->
                                 @foreach ($messageTemplates as $template)
                                     <option value="{{ $template->id }}" data-content="{{ $template->content }}">
                                         {{ $template->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-
                     </div>
 
                     @if (request('tab') == 'students')
-                        <!-- Filters for students -->
-                        <div class="grid grid-cols-4 gap-4 mt-6">
-                            <!-- Academic Unit (College) Dropdown -->
+                        <!-- Students Filters -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                             <div>
                                 <x-input-label for="academic_unit" value="Academic Unit" />
                                 <select id="academic_unit" name="academic_unit"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Academic Unit</option>
                                     <option value="all">All Academic Units</option>
-                                    <!-- Disabled Option -->
-                                    <!-- Options will be populated dynamically using JavaScript -->
                                 </select>
                             </div>
 
-                            <!-- Program Dropdown -->
                             <div>
                                 <x-input-label for="program" value="Program" />
                                 <select id="program" name="program"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Program</option>
                                     <option value="all">All Programs</option>
-                                    <!-- Disabled Option -->
-                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
 
-                            <!-- Major Dropdown -->
                             <div>
                                 <x-input-label for="major" value="Major" />
                                 <select id="major" name="major"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Major</option>
                                     <option value="all">All Majors</option>
-                                    <!-- Disabled Option -->
-                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
 
-                            <!-- Year Dropdown -->
                             <div>
                                 <x-input-label for="year" value="Year" />
                                 <select id="year" name="year"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Year</option>
                                     <option value="all">All Years</option>
-                                    <!-- Disabled Option -->
                                     @foreach ($years as $year)
                                         <option value="{{ $year->year_id }}">{{ $year->year_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-
                         </div>
                     @elseif(request('tab') == 'employees')
-                        <!-- Filters for employees -->
-                        <div class="grid grid-cols-3 gap-4 mt-6">
-                            <!-- Office Dropdown -->
+                        <!-- Employees Filters -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
                             <div>
                                 <x-input-label for="office" value="Office" />
                                 <select id="office" name="office"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Office</option>
                                     <option value="all">All Offices</option>
-                                    <!-- Disabled Option -->
-                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
 
-                            <!-- Type Dropdown -->
                             <div>
                                 <x-input-label for="type" value="Type" />
                                 <select id="type" name="type"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Type</option>
                                     <option value="all">All Types</option>
-                                    <!-- Disabled Option -->
-                                    <!-- Options populated dynamically using JavaScript -->
                                 </select>
                             </div>
 
-                            <!-- Status Dropdown -->
                             <div>
                                 <x-input-label for="status" value="Status" />
                                 <select id="status" name="status"
                                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none sm:text-sm">
                                     <option value="" disabled selected>Select Status</option>
                                     <option value="all">All Status</option>
-                                    <!-- Disabled Option -->
                                     @foreach ($statuses as $status)
                                         <option value="{{ $status->status_id }}">{{ $status->status_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-
                         </div>
                     @endif
 
@@ -188,18 +163,18 @@
                             placeholder="Enter your message here..."></textarea>
                     </div>
 
-                    <!-- Character count display -->
+                    <!-- Character Count -->
                     <div class="mt-1 text-sm text-gray-500 pb-10 pt-2">
                         <span id="char-count">0</span>/160 characters
                     </div>
 
                     <!-- Additional Controls -->
-                    <div class="mb-6 flex items-center space-x-8">
-
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                         <!-- Batch Size -->
                         <div>
                             <x-input-label for="batch_size" value="Batch Size" />
                             <x-text-input id="batch_size" name="batch_size" type="number" value="1"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm sm:text-sm"
                                 min="1" step="1" />
                         </div>
 
@@ -207,26 +182,37 @@
                         <div>
                             <x-input-label for="total_recipients" value="Total Recipients" />
                             <x-text-input id="total_recipients" name="total_recipients" type="number"
-                                value="{{ $totalRecipients ?? 0 }}" readonly />
+                                value="{{ $totalRecipients ?? 0 }}"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm sm:text-sm"
+                                readonly />
                         </div>
 
+                        <!-- Send Now or Later -->
                         <div>
-                            <label class="block text-sm font-medium">Send Message:</label>
-                            <div class="p-1 flex items-center space-x-2">
-                                <input type="radio" id="send_now" name="send_message" value="now" checked />
-                                <label for="send_now">Now</label>
-                                <input type="radio" id="send_later" name="send_message" value="later" />
-                                <label for="send_later">Send Later</label>
+                            <x-input-label value="Send Message" />
+                            <div class="mt-1 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" id="send_now" name="send_message" value="now" checked
+                                        class="text-blue-600 focus:ring-blue-500" />
+                                    <span class="ml-2 text-sm text-gray-600">Now</span>
+                                </label>
+                                <label class="flex items-center mt-2 sm:mt-0">
+                                    <input type="radio" id="send_later" name="send_message" value="later"
+                                        class="text-blue-600 focus:ring-blue-500" />
+                                    <span class="ml-2 text-sm text-gray-600">Send Later</span>
+                                </label>
                             </div>
                         </div>
-                        <div>
+
+                        <!-- Send Date and Time -->
+                        <div class="sm:col-span-2">
                             <x-input-label for="send_date" value="Select Date and Time" />
-                            <x-text-input id="send_date" name="send_date" type="datetime-local" />
+                            <x-text-input id="send_date" name="send_date" type="datetime-local"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
                         </div>
                     </div>
-
                     <!-- Review Button -->
-                    <div class="flex justify-end">
+                    <div class="flex flex-wrap sm:justify-end gap-4 mt-6">
                         <x-primary-button id="open-review-modal">{{ __('Review Message') }}</x-primary-button>
                     </div>
 
