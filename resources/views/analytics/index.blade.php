@@ -6,6 +6,22 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Date Range Filter -->
+            <form id="dateRangeFilterForm" method="GET" action="{{ route('analytics.index') }}" class="mb-6 flex items-center space-x-4">
+                <div>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="{{ request('startDate') }}">
+                </div>
+                <div>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="{{ request('endDate') }}">
+                </div>
+                <div>
+                    <button type="submit" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded">
+                        Apply Filter
+                    </button>
+                </div>
+            </form> 
 
         <!-- Warning Message -->
         @if ($lowBalance)

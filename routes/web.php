@@ -109,6 +109,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/analytics/export-csv', [AnalyticsController::class, 'exportCsv'])->name('analytics.export.csv');
+Route::get('/analytics/data', [AnalyticsController::class, 'getFilteredData']);
 
 // Authentication Routes
 require __DIR__ . '/auth.php';

@@ -243,4 +243,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             exportToCSV("messages_by_recipient_type.csv", rows);
         });
+
+        document.getElementById("applyFilter").addEventListener("click", function () {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+        
+            fetch(`/analytics/data?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateCharts(data);
+                });
+        });
+        
+        function updateCharts(data) {
+            // Update your charts using the `data` response
+            console.log(data); // Debug and refresh charts here
+        }
+        
 });
