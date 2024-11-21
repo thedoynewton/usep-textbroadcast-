@@ -17,7 +17,7 @@
 
             <!-- New Category Input -->
             <div class="mb-4">
-                <x-input-label for="new_category" value="Or Add New Category" />
+                <x-input-label for="new_category" value="Add New Category" />
                 <x-text-input id="new_category" name="new_category" type="text" class="block w-full mt-1"
                               placeholder="Enter new category name" maxlength="100"
                               x-data @input="$refs.category_id.disabled = $event.target.value !== ''" />
