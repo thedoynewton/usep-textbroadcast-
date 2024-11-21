@@ -19,12 +19,12 @@
         <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6 p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Total Messages Sent by Status</h3>
             <p class="text-gray-500 text-sm">Overview of the total number of messages sent by message status.</p>
-            <div class="relative" style="height: 300px; width: 100%;">
+            <div class="relative mb-4" style="height: 300px; width: 100%;">
                 <canvas id="messagesByStatusChart" class="absolute inset-0 w-full h-full"
                     data-status-dates='@json($dates)'
                     data-status-data='@json($statusData)'></canvas>
-
             </div>
+            <button id="exportStatusData" class="bg-blue-500 text-white px-4 py-2 rounded">Export to CSV</button>
         </div>
 
         <!-- Grid Layout for Other Cards -->
@@ -37,11 +37,12 @@
                     <p class="text-gray-500 text-sm">Overview of the total number of messages sent by each category.</p>
                 </div>
                 <div class="p-6">
-                    <div class="relative" style="height: 0; padding-bottom: 50%;">
+                    <div class="relative mb-4" style="height: 0; padding-bottom: 50%;">
                         <canvas id="messagesByCategoryChart" class="absolute inset-0 w-full h-full"
                             data-category-labels='@json($categoryLabels)'
                             data-category-counts='@json($categoryCounts)'></canvas>
                     </div>
+                    <button id="exportCategoryData" class="bg-blue-500 text-white px-4 py-2 rounded">Export to CSV</button>
                 </div>
             </div>
 
@@ -53,11 +54,12 @@
                         Employee).</p>
                 </div>
                 <div class="p-6">
-                    <div class="relative" style="height: 0; padding-bottom: 50%;">
+                    <div class="relative mb-4" style="height: 0; padding-bottom: 50%;">
                         <canvas id="messagesByRecipientTypeChart" class="absolute inset-0 w-full h-full"
                             data-recipient-types='@json($recipientTypes)'
                             data-recipient-counts='@json($recipientCounts)'></canvas>
                     </div>
+                    <button id="exportRecipientTypeData" class="bg-blue-500 text-white px-4 py-2 rounded">Export to CSV</button>
                 </div>
             </div>
 
