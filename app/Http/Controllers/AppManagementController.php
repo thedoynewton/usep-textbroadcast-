@@ -19,34 +19,67 @@ class AppManagementController extends Controller
 
     public function index(Request $request)
     {
-        // Get combined contacts
-        $contacts = $this->service->getContacts($request->search, $request->campus_id, $request->type);
-
-        $messageTemplates = $this->service->getMessageTemplates();
-        $messageCategories = $this->service->getMessageCategories();
-
-        $counts = $this->service->getTotalCounts();
-        $campuses = $this->service->getCampuses();
-
-        // Check if the request is an AJAX call
-        if ($request->ajax()) {
-            return view('partials.contacts-table', compact('contacts'))->render();
+        // Get the requested section, default to 'contacts'
+        $section = $request->input('section', 'contacts');
+    
+        // Check the section and fetch the appropriate data
+        if ($section === 'import-employees') {
+            // Fetch data for the "Import Employees" section (if any)
+            $employees = []; // Replace with actual employee fetching logic if needed
+            return view('app-management.index', [
+                'section' => $section,
+                'employees' => $employees,
+            ]);
         }
-
-        // Fetch the latest credit balance from the database
-        $creditBalance = CreditBalance::first()->balance ?? 0;
-
-        // Pass contacts to the view
-        return view('app-management.index', [
-            'contacts' => $contacts,
-            'messageTemplates' => $messageTemplates,
-            'messageCategories' => $messageCategories,
-            'totalStudents' => $counts['totalStudents'],
-            'totalEmployees' => $counts['totalEmployees'],
-            'campuses' => $campuses,
-            'creditBalance' => $creditBalance,
-        ]);
+    
+        // For 'contacts' section
+        if ($section === 'contacts') {
+            $contacts = $this->service->getContacts($request->search, $request->campus_id, $request->type);
+    
+            if ($request->ajax()) {
+                return view('partials.contacts-table', compact('contacts'))->render();
+            }
+    
+            $messageTemplates = $this->service->getMessageTemplates();
+            $messageCategories = $this->service->getMessageCategories();
+            $counts = $this->service->getTotalCounts();
+            $campuses = $this->service->getCampuses();
+    
+            return view('app-management.index', [
+                'section' => $section,
+                'contacts' => $contacts,
+                'messageTemplates' => $messageTemplates,
+                'messageCategories' => $messageCategories,
+                'totalStudents' => $counts['totalStudents'],
+                'totalEmployees' => $counts['totalEmployees'],
+                'campuses' => $campuses,
+            ]);
+        }
+    
+        // For 'credit-balance' section
+        if ($section === 'credit-balance') {
+            $creditBalance = CreditBalance::first()->balance ?? 0;
+    
+            return view('app-management.index', [
+                'section' => $section,
+                'creditBalance' => $creditBalance,
+            ]);
+        }
+    
+        // For 'db-connection' section
+        if ($section === 'db-connection') {
+            $campuses = $this->service->getCampuses();
+    
+            return view('app-management.index', [
+                'section' => $section,
+                'campuses' => $campuses,
+            ]);
+        }
+    
+        // Default to contacts if no valid section is provided
+        return redirect()->route('app-management.index', ['section' => 'contacts']);
     }
+    
     public function search(Request $request)
     {
         $search = $request->input('search');

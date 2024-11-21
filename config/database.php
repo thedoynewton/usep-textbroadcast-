@@ -176,6 +176,17 @@ return [
             // 'encrypt' => env('DB_ENCRYPT_ES_MABINI', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MABINI', 'false'),
         ],
+        
+        'mysql_hris' => [
+            'driver' => 'mysql',
+            'host' => '172.16.210.17',
+            'port' => '3306',
+            'database' => 'hris',
+            'username' => 'useptextblast',
+            'password' => 'US3Pt3xtb@st',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
 
     ],
 

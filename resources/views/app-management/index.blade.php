@@ -35,9 +35,16 @@
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'db-connection']) }}"
                                 class="{{ request('section') == 'db-connection' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
-                                Import Settings
+                                Import Student Data
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('app-management.index', ['section' => 'import-employees']) }}"
+                                class="{{ $section === 'import-employees' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
+                                Import Employee Data
+                            </a>
+                        </li>
+
                         <li>
                             <a href="{{ route('app-management.index', ['section' => 'credit-balance']) }}"
                                 class="{{ request('section') == 'credit-balance' ? 'text-black font-bold' : 'text-black dark:text-[#4b5563]' }}">
@@ -161,11 +168,16 @@
                         </div>
 
                         {{-- Loading screen --}}
-                        <div id="loadingScreen" class="fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center hidden z-50">
+                        <div id="loadingScreen"
+                            class="fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center hidden z-50">
                             <div class="text-center">
-                                <svg class="animate-spin h-10 w-10 text-white mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0a12 12 0 00-12 12h4zm2 5.291l-2.029 2.03a12 12 0 004.567 3.304L9 18h-3z"></path>
+                                <svg class="animate-spin h-10 w-10 text-white mx-auto mb-4"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0a12 12 0 00-12 12h4zm2 5.291l-2.029 2.03a12 12 0 004.567 3.304L9 18h-3z">
+                                    </path>
                                 </svg>
                                 <p class="text-white font-semibold">Loading...</p>
                             </div>
@@ -191,11 +203,40 @@
                 </tbody>
             </table>
         </div>
+    @elseif (request('section') == 'import-employees')
+        <div class="mt-6">
+            <h1 class="text-2xl font-bold mb-4">Import Employees</h1>
+
+            <!-- Import Offices Button -->
+            <form action="{{ route('import.offices') }}" method="POST" class="mb-4">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded">Import Offices</button>
+            </form>
+
+            <!-- Import Employment Types Button -->
+            <form action="{{ route('import.employment-types') }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Import Employment
+                    Types</button>
+            </form>
+            <!-- Import Employment Statuses Button -->
+            <form action="{{ route('import.employment-statuses') }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-purple-500 text-white rounded">Import Employment
+                    Statuses</button>
+            </form>
+            <!-- Import Employees Button -->
+            <form action="{{ route('import.employees') }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">Import Employees</button>
+            </form>
+        </div>
     @elseif (request('section') == 'credit-balance')
         <!-- Credit Balance Section -->
         <div>
             <h3 class="text-lg font-semibold mb-4">Edit Credit Balance</h3>
-            <p class="text-sm italic mb-4">(Credit balance is handled manually due to the limitations of the Movider API that can provided to the developers.)</p>
+            <p class="text-sm italic mb-4">(Credit balance is handled manually due to the limitations of the Movider
+                API that can provided to the developers.)</p>
 
             <form method="POST" action="{{ route('credit-balance.update') }}">
                 @csrf

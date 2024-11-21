@@ -12,14 +12,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('offices', function (Blueprint $table) {
-            $table->id('office_id');
-            $table->unsignedBigInteger('campus_id');
+            $table->unsignedBigInteger('office_id'); // Remove auto-increment
             $table->string('office_name');
             $table->timestamps();
-
-            $table->foreign('campus_id')->references('campus_id')->on('campuses')->onDelete('cascade');
+    
+            $table->primary('office_id'); // Set office_id as the primary key
         });
-    }
+    }    
 
     /**
      * Reverse the migrations.

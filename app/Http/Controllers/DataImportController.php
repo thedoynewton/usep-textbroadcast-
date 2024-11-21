@@ -47,7 +47,7 @@ class DataImportController extends Controller
         }
 
         return redirect()->back()->with('success', 'Colleges imported successfully!');
-    }    
+    }
 
     public function importProgramData(Request $request)
     {
@@ -56,13 +56,13 @@ class DataImportController extends Controller
 
         // Define database connection based on campus ID
         $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal';
-    
+
         // if (!$campusId) {
         //     return redirect()->back()->with('error', 'Campus ID is missing.');
         // }
-    
+
         $programs = DB::connection($databaseConnection)->table('vw_es_programs_TB')->get();
-    
+
         foreach ($programs as $program) {
             Program::updateOrCreate(
                 ['program_id' => $program->ProgID],
@@ -74,23 +74,23 @@ class DataImportController extends Controller
             );
         }
         return redirect()->back()->with('success', 'Programs imported successfully!');
-    }    
+    }
 
     public function importMajorData(Request $request)
     {
         $campusId = $request->input('campus_id');
         $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal'; // Adjust as needed for additional campuses
-    
+
         $majors = DB::connection($databaseConnection)->table('vw_ProgramMajors_TB')->get();
         $programIds = Program::pluck('program_id')->toArray();
-    
+
         foreach ($majors as $major) {
             $programId = in_array($major->ProgID, $programIds) ? $major->ProgID : null;
-    
+
             if (!$programId) {
                 $this->logMissingForeignKey('Major', $major->IndexID, 'program_id', $major->ProgID);
             }
-    
+
             Major::updateOrCreate(
                 ['major_id' => $major->IndexID],
                 [
@@ -101,9 +101,9 @@ class DataImportController extends Controller
                 ]
             );
         }
-    
+
         return redirect()->back()->with('success', 'Majors imported successfully!');
-    }    
+    }
 
     public function importYearData()
     {
@@ -123,18 +123,18 @@ class DataImportController extends Controller
     {
         $campusId = $request->input('campus_id');
         $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal'; // Adjust as needed for additional campuses
-    
+
         // Step 1: Set all students to inactive for the selected campus
         Student::where('enrollment_stat', 'active')->where('campus_id', $campusId)->update(['enrollment_stat' => 'inactive']);
-    
+
         // Step 2: Fetch the majors and programs mapping from the specified campus database
         $majorsMapping = DB::connection($databaseConnection)
             ->table('vw_ProgramMajors_TB')
             ->pluck('IndexID', 'MajorDiscID')
             ->toArray();
-    
+
         $programIds = Program::pluck('program_id')->toArray();
-    
+
         // Step 3: Process students in batches
         DB::connection($databaseConnection)->table('vw_Students_TB')
             ->distinct()
@@ -144,19 +144,19 @@ class DataImportController extends Controller
                 $existingStudents = Student::whereIn('stud_id', $students->pluck('StudentNo')->toArray())
                     ->get()
                     ->keyBy('stud_id');
-    
+
                 foreach ($students as $student) {
                     $email = !empty($student->Email) ? $student->Email : "noEmail{$student->StudentNo}@usep.edu.ph";
                     $majorId = $majorsMapping[$student->MajorID] ?? null;
                     $programId = in_array($student->ProgID, $programIds) ? $student->ProgID : null;
-    
+
                     if (is_null($majorId)) {
                         $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
                     }
                     if (is_null($programId)) {
                         $this->logMissingForeignKey('Student', $student->StudentNo, 'program_id', $student->ProgID);
                     }
-    
+
                     $existingStudent = $existingStudents->get($student->StudentNo);
                     $studentData = [
                         'stud_id' => $student->StudentNo,
@@ -172,7 +172,7 @@ class DataImportController extends Controller
                         'campus_id' => $campusId,
                         'enrollment_stat' => 'active',
                     ];
-    
+
                     if ($existingStudent) {
                         $needsUpdate = (
                             $existingStudent->stud_lname !== $student->LastName ||
@@ -187,7 +187,7 @@ class DataImportController extends Controller
                             $existingStudent->campus_id !== $campusId ||
                             $existingStudent->enrollment_stat !== 'active'
                         );
-    
+
                         if ($needsUpdate) {
                             $batchData[] = $studentData;
                         }
@@ -195,17 +195,25 @@ class DataImportController extends Controller
                         $batchData[] = $studentData;
                     }
                 }
-    
+
                 // Step 4: Upsert batch data (update existing or insert new)
                 Student::upsert($batchData, ['stud_id'], [
-                    'stud_lname', 'stud_fname', 'stud_mname', 'stud_contact',
-                    'stud_email', 'college_id', 'program_id', 'major_id',
-                    'year_id', 'campus_id', 'enrollment_stat'
+                    'stud_lname',
+                    'stud_fname',
+                    'stud_mname',
+                    'stud_contact',
+                    'stud_email',
+                    'college_id',
+                    'program_id',
+                    'major_id',
+                    'year_id',
+                    'campus_id',
+                    'enrollment_stat'
                 ]);
             });
-    
+
         return redirect()->back()->with('success', 'Students imported successfully in batches!');
-    }    
+    }
 
     private function logMissingForeignKey($entity, $entityId, $missingKey, $missingId)
     {
@@ -216,18 +224,18 @@ class DataImportController extends Controller
     {
         // Validate the incoming request
         $request->validate(['campus_name' => 'required|string|max:100']);
-        
+
         // Create a new campus in the database
         $campus = Campus::create(['campus_name' => $request->campus_name]);
-        
+
         // Generate the HTML for the new campus card using the Blade partial
         $cardHtml = view('partials.campus-card', compact('campus'))->render();
-    
+
         // Return the campus data and the generated card HTML
         return response()->json(['campus' => $campus, 'cardHtml' => $cardHtml], 201);
-    }    
+    }
 
-    // public function updateCampus(Request $request)
+        // public function updateCampus(Request $request)
     // {
     //     $request->validate([
     //         'campus_id' => 'required|exists:campuses,campus_id',
@@ -239,4 +247,132 @@ class DataImportController extends Controller
 
     //     return response()->json(['campus' => $campus], 200);
     // }
+    
+    public function importOfficeData(Request $request)
+    {
+        try {
+            // Fetch data from HRIS database
+            $offices = DB::connection('mysql_hris')->table('vw_office_tb')->get(['id', 'name']);
+
+            if ($offices->isEmpty()) {
+                return redirect()->back()->with('error', 'No offices found in the HRIS database.');
+            }
+
+            // Insert data into the MSSQL database
+            foreach ($offices as $office) {
+                DB::connection('sqlsrv')->table('offices')->updateOrInsert(
+                    ['office_id' => $office->id], // Use HRIS id as office_id
+                    [
+                        'office_name' => $office->name,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+
+            return redirect()->back()->with('success', 'Offices imported successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error importing offices: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred during the import.');
+        }
+    }
+
+    public function importEmploymentTypes(Request $request)
+    {
+        try {
+            // Fetch data from HRIS database
+            $employmentTypes = DB::connection('mysql_hris')->table('vw_employmenttype_tb')->get(['id', 'name']);
+
+            if ($employmentTypes->isEmpty()) {
+                return redirect()->back()->with('error', 'No employment types found in the HRIS database.');
+            }
+
+            // Insert or update employment types in local MSSQL database
+            foreach ($employmentTypes as $employmentType) {
+                DB::connection('sqlsrv')->table('types')->updateOrInsert(
+                    ['type_id' => $employmentType->id], // Match by HRIS id
+                    [
+                        'type_name' => $employmentType->name,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+
+            return redirect()->back()->with('success', 'Employment types imported successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error importing employment types: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred during the import.');
+        }
+    }
+
+    public function importEmploymentStatuses(Request $request)
+    {
+        try {
+            // Fetch employment statuses from HRIS database
+            $employmentStatuses = DB::connection('mysql_hris')->table('vw_employmentstatus_tb')->get(['id', 'name']);
+
+            if ($employmentStatuses->isEmpty()) {
+                return redirect()->back()->with('error', 'No employment statuses found in the HRIS database.');
+            }
+
+            // Insert or update employment statuses in the local statuses table
+            foreach ($employmentStatuses as $status) {
+                DB::connection('sqlsrv')->table('statuses')->updateOrInsert(
+                    ['status_id' => $status->id], // Match by HRIS id
+                    [
+                        'status_name' => $status->name,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+
+            return redirect()->back()->with('success', 'Employment statuses imported successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error importing employment statuses: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred during the import.');
+        }
+    }
+
+    public function importEmployees(Request $request)
+    {
+        try {
+            // Fetch employees from HRIS database
+            $employees = DB::connection('mysql_hris')->table('vw_employee_tb')->get([
+                'EmployeeID', 'FirstName', 'LastName', 'MiddleName', 'Contact #', 'Email', 
+                'CampusID', 'OfficeID', 'TypeID', 'StatusID'
+            ]);
+    
+            if ($employees->isEmpty()) {
+                return redirect()->back()->with('error', 'No employees found in the HRIS database.');
+            }
+    
+            // Insert or update employees in the local employees table
+            foreach ($employees as $employee) {
+                DB::connection('sqlsrv')->table('employees')->updateOrInsert(
+                    ['emp_id' => $employee->EmployeeID], // Match by HRIS EmployeeID
+                    [
+                        'emp_fname' => $employee->FirstName,
+                        'emp_lname' => $employee->LastName,
+                        'emp_mname' => $employee->MiddleName,
+                        'emp_contact' => $employee->{'Contact #'}, // Note: Special characters like # require braces
+                        'emp_email' => $employee->Email,
+                        'campus_id' => $employee->CampusID,
+                        'office_id' => $employee->OfficeID,
+                        'status_id' => $employee->StatusID,
+                        'type_id' => $employee->TypeID,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+    
+            return redirect()->back()->with('success', 'Employees imported successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error importing employees: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred during the import.');
+        }
+    }    
+
 }

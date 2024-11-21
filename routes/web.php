@@ -105,11 +105,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/import-years', [DataImportController::class, 'importYearData'])->name('import.years');
         Route::post('/import-students', [DataImportController::class, 'importStudentData'])->name('import.students');
         Route::get('/app-management/db-connection', [DataImportController::class, 'showDBConnection'])->name('app-management.db-connection');
+        Route::post('/import-offices', [DataImportController::class, 'importOfficeData'])->name('import.offices');
+        Route::post('/import-employment-types', [DataImportController::class, 'importEmploymentTypes'])->name('import.employment-types');
+        Route::post('/import-employment-statuses', [DataImportController::class, 'importEmploymentStatuses'])->name('import.employment-statuses');
+        Route::post('/import-employees', [DataImportController::class, 'importEmployees'])->name('import.employees');
+
     });
 });
-
-Route::post('/analytics/export-csv', [AnalyticsController::class, 'exportCsv'])->name('analytics.export.csv');
-Route::get('/analytics/data', [AnalyticsController::class, 'getFilteredData']);
 
 // Authentication Routes
 require __DIR__ . '/auth.php';

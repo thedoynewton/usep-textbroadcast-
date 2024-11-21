@@ -12,17 +12,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('statuses', function (Blueprint $table) {
-            $table->id('status_id');
+            $table->unsignedBigInteger('status_id')->primary(); // Use HRIS id as primary key
             $table->string('status_name');
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    
+    public function down()
     {
         Schema::dropIfExists('statuses');
     }
+    
 };

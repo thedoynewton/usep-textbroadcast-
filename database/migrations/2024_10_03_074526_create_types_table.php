@@ -12,18 +12,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('types', function (Blueprint $table) {
-            $table->id('type_id');
-            $table->unsignedBigInteger('campus_id');
-            $table->unsignedBigInteger('office_id');
-            $table->unsignedBigInteger('status_id');
-            $table->string('type_name');
-            $table->timestamps();
-
-            $table->foreign('campus_id')->references('campus_id')->on('campuses')->onDelete('NO ACTION');
-            $table->foreign('office_id')->references('office_id')->on('offices')->onDelete('NO ACTION');
-            $table->foreign('status_id')->references('status_id')->on('statuses')->onDelete('NO ACTION');
+            $table->unsignedBigInteger('type_id')->primary(); // HRIS id as the primary key
+            $table->string('type_name'); // Corresponds to the "name" field in HRIS
+            $table->timestamps(); // Optional: Keeps track of creation and update times
         });
-    }
+    }    
 
     /**
      * Reverse the migrations.
