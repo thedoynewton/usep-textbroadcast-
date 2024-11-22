@@ -123,18 +123,20 @@ class DataImportController extends Controller
     {
         $campusId = $request->input('campus_id');
         $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal'; // Adjust as needed for additional campuses
-
+    
         // Step 1: Set all students to inactive for the selected campus
-        Student::where('enrollment_stat', 'active')->where('campus_id', $campusId)->update(['enrollment_stat' => 'inactive']);
-
+        Student::where('enrollment_stat', 'active')
+            ->where('campus_id', $campusId)
+            ->update(['enrollment_stat' => 'inactive']);
+    
         // Step 2: Fetch the majors and programs mapping from the specified campus database
         $majorsMapping = DB::connection($databaseConnection)
             ->table('vw_ProgramMajors_TB')
             ->pluck('IndexID', 'MajorDiscID')
             ->toArray();
-
+    
         $programIds = Program::pluck('program_id')->toArray();
-
+    
         // Step 3: Process students in batches
         DB::connection($databaseConnection)->table('vw_Students_TB')
             ->distinct()
@@ -142,22 +144,27 @@ class DataImportController extends Controller
             ->chunk(50, function ($students) use ($majorsMapping, $programIds, $campusId) {
                 $batchData = [];
                 $existingStudents = Student::whereIn('stud_id', $students->pluck('StudentNo')->toArray())
+                    ->where('campus_id', $campusId)
                     ->get()
-                    ->keyBy('stud_id');
-
+                    ->keyBy(function ($student) {
+                        return $student->stud_id . '-' . $student->campus_id;
+                    });
+    
                 foreach ($students as $student) {
                     $email = !empty($student->Email) ? $student->Email : "noEmail{$student->StudentNo}@usep.edu.ph";
                     $majorId = $majorsMapping[$student->MajorID] ?? null;
                     $programId = in_array($student->ProgID, $programIds) ? $student->ProgID : null;
-
+    
                     if (is_null($majorId)) {
                         $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
                     }
                     if (is_null($programId)) {
                         $this->logMissingForeignKey('Student', $student->StudentNo, 'program_id', $student->ProgID);
                     }
-
-                    $existingStudent = $existingStudents->get($student->StudentNo);
+    
+                    $uniqueKey = $student->StudentNo . '-' . $campusId;
+                    $existingStudent = $existingStudents->get($uniqueKey);
+    
                     $studentData = [
                         'stud_id' => $student->StudentNo,
                         'stud_lname' => $student->LastName,
@@ -172,32 +179,14 @@ class DataImportController extends Controller
                         'campus_id' => $campusId,
                         'enrollment_stat' => 'active',
                     ];
-
-                    if ($existingStudent) {
-                        $needsUpdate = (
-                            $existingStudent->stud_lname !== $student->LastName ||
-                            $existingStudent->stud_fname !== $student->FirstName ||
-                            $existingStudent->stud_mname !== null ||
-                            $existingStudent->stud_contact !== $student->MobileNo ||
-                            $existingStudent->stud_email !== $email ||
-                            $existingStudent->college_id !== $student->CollegeID ||
-                            $existingStudent->program_id !== $programId ||
-                            $existingStudent->major_id !== $majorId ||
-                            $existingStudent->year_id !== $student->YearLevelID ||
-                            $existingStudent->campus_id !== $campusId ||
-                            $existingStudent->enrollment_stat !== 'active'
-                        );
-
-                        if ($needsUpdate) {
-                            $batchData[] = $studentData;
-                        }
-                    } else {
+    
+                    if (!$existingStudent || $this->needsUpdate($existingStudent, $studentData)) {
                         $batchData[] = $studentData;
                     }
                 }
-
+    
                 // Step 4: Upsert batch data (update existing or insert new)
-                Student::upsert($batchData, ['stud_id'], [
+                Student::upsert($batchData, ['stud_id', 'campus_id'], [
                     'stud_lname',
                     'stud_fname',
                     'stud_mname',
@@ -207,13 +196,30 @@ class DataImportController extends Controller
                     'program_id',
                     'major_id',
                     'year_id',
-                    'campus_id',
-                    'enrollment_stat'
+                    'enrollment_stat',
                 ]);
             });
-
+    
         return redirect()->back()->with('success', 'Students imported successfully in batches!');
     }
+    
+    /**
+     * Determine if an existing student needs an update.
+     */
+    private function needsUpdate($existingStudent, $newData)
+    {
+        return (
+            $existingStudent->stud_lname !== $newData['stud_lname'] ||
+            $existingStudent->stud_fname !== $newData['stud_fname'] ||
+            $existingStudent->stud_contact !== $newData['stud_contact'] ||
+            $existingStudent->stud_email !== $newData['stud_email'] ||
+            $existingStudent->college_id !== $newData['college_id'] ||
+            $existingStudent->program_id !== $newData['program_id'] ||
+            $existingStudent->major_id !== $newData['major_id'] ||
+            $existingStudent->year_id !== $newData['year_id'] ||
+            $existingStudent->enrollment_stat !== $newData['enrollment_stat']
+        );
+    }    
 
     private function logMissingForeignKey($entity, $entityId, $missingKey, $missingId)
     {
@@ -338,9 +344,8 @@ class DataImportController extends Controller
     public function importEmployees(Request $request)
     {
         try {
-            // Fetch employees from HRIS database
             $employees = DB::connection('mysql_hris')->table('vw_employee_tb')->get([
-                'EmployeeID', 'FirstName', 'LastName', 'MiddleName', 'Contact #', 'Email', 
+                'EmployeeID', 'FirstName', 'LastName', 'MiddleName', 'Contact #', 'Email',
                 'CampusID', 'OfficeID', 'TypeID', 'StatusID'
             ]);
     
@@ -348,15 +353,34 @@ class DataImportController extends Controller
                 return redirect()->back()->with('error', 'No employees found in the HRIS database.');
             }
     
-            // Insert or update employees in the local employees table
             foreach ($employees as $employee) {
+                // Skip if campus_id is invalid
+                if (empty($employee->CampusID) || $employee->CampusID == 0) {
+                    Log::warning("Skipping employee {$employee->EmployeeID} due to invalid campus_id: {$employee->CampusID}");
+                    continue;
+                }
+    
+                // Skip if status_id or type_id is NULL
+                if (empty($employee->StatusID) || empty($employee->TypeID)) {
+                    Log::warning("Skipping employee {$employee->EmployeeID} due to NULL status_id or type_id.");
+                    continue;
+                }
+    
+                // Skip if email is a duplicate
+                $existingEmployee = DB::connection('sqlsrv')->table('employees')->where('emp_email', $employee->Email)->first();
+                if ($existingEmployee) {
+                    Log::warning("Skipping employee {$employee->EmployeeID} due to duplicate email: {$employee->Email}");
+                    continue;
+                }
+    
+                // Insert or update employee
                 DB::connection('sqlsrv')->table('employees')->updateOrInsert(
-                    ['emp_id' => $employee->EmployeeID], // Match by HRIS EmployeeID
+                    ['emp_id' => $employee->EmployeeID],
                     [
                         'emp_fname' => $employee->FirstName,
                         'emp_lname' => $employee->LastName,
                         'emp_mname' => $employee->MiddleName,
-                        'emp_contact' => $employee->{'Contact #'}, // Note: Special characters like # require braces
+                        'emp_contact' => $employee->{'Contact #'},
                         'emp_email' => $employee->Email,
                         'campus_id' => $employee->CampusID,
                         'office_id' => $employee->OfficeID,

@@ -12,12 +12,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->unsignedBigInteger('emp_id')->primary(); // Remove auto-increment
+            $table->string('emp_id')->primary(); // Change to string for alphanumeric IDs
             $table->string('emp_fname');
             $table->string('emp_lname');
             $table->string('emp_mname')->nullable();
-            $table->string('emp_contact');
-            $table->string('emp_email')->unique();
+            $table->string('emp_contact')->nullable();
+            $table->string('emp_email')->unique()->nullable();
             $table->unsignedBigInteger('campus_id');
             $table->unsignedBigInteger('office_id');
             $table->unsignedBigInteger('status_id');
