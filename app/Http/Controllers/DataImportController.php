@@ -25,183 +25,402 @@ class DataImportController extends Controller
         return view('app-management.index', compact('campuses'));
     }
 
+
     public function importCollegeData(Request $request)
     {
+        // Validate the request to ensure campus_id is provided and valid
+        $request->validate([
+            'campus_id' => 'required|integer|exists:campuses,campus_id',
+        ]);
+    
+        // Define mapping of campus_id to database connections
+        $campusConnections = [
+            1 => 'es_obrero',
+            2 => 'es_tagum',
+            3 => 'es_mintal',
+            4 => 'es_mabini',
+        ];
+    
         // Get the campus_id from the request
         $campusId = $request->input('campus_id');
-
-        // Define database connection based on campus ID
-        $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal';
-
-        // Import college data from the specified connection
-        $colleges = DB::connection($databaseConnection)->table('vw_college_TB')->get();
-
-        foreach ($colleges as $college) {
-            College::updateOrCreate(
-                ['college_id' => $college->CollegeID],
-                [
-                    'campus_id' => $campusId,
-                    'college_name' => $college->CollegeName
-                ]
-            );
+    
+        // Retrieve the database connection for the given campus_id
+        $databaseConnection = $campusConnections[$campusId] ?? null;
+    
+        // If no database connection is found for the given campus_id, return an error
+        if (!$databaseConnection) {
+            return redirect()->back()->with('error', 'Invalid campus selected!');
         }
-
-        return redirect()->back()->with('success', 'Colleges imported successfully!');
+    
+        try {
+            // Fetch college data from the campus-specific database
+            $colleges = DB::connection($databaseConnection)->table('vw_college_TB')->get();
+    
+            if ($colleges->isEmpty()) {
+                return redirect()->back()->with('error', 'No colleges found in the selected campus database.');
+            }
+    
+            $inserted = 0;
+            $updated = 0;
+    
+            foreach ($colleges as $college) {
+                // Allow duplicate college_id if campus_id is different
+                $collegeRecord = College::updateOrCreate(
+                    [
+                        'college_id' => $college->CollegeID,
+                        'campus_id' => $campusId, // Uniqueness includes campus_id
+                    ],
+                    [
+                        'college_name' => $college->CollegeName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+    
+                // Track insertions and updates
+                if ($collegeRecord->wasRecentlyCreated) {
+                    $inserted++;
+                } else {
+                    $updated++;
+                }
+            }
+    
+            return redirect()->back()->with('success', "Colleges imported successfully! ($inserted added, $updated updated)");
+        } catch (\Exception $e) {
+            // Log the error and return an error response
+            Log::error('Error importing colleges: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred during the import process.');
+        }
     }
 
     public function importProgramData(Request $request)
     {
+        // Validate the request to ensure campus_id is provided and valid
+        $request->validate([
+            'campus_id' => 'required|integer|exists:campuses,campus_id',
+        ]);
+    
+        // Define mapping of campus_id to database connections
+        $campusConnections = [
+            1 => 'es_obrero',
+            2 => 'es_tagum',
+            3 => 'es_mintal',
+            4 => 'es_mabini',
+        ];
         // Get the campus_id from the request
         $campusId = $request->input('campus_id');
-
-        // Define database connection based on campus ID
-        $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal';
-
-        // if (!$campusId) {
-        //     return redirect()->back()->with('error', 'Campus ID is missing.');
-        // }
-
-        $programs = DB::connection($databaseConnection)->table('vw_es_programs_TB')->get();
-
-        foreach ($programs as $program) {
-            Program::updateOrCreate(
-                ['program_id' => $program->ProgID],
-                [
-                    'campus_id' => $campusId,
-                    'college_id' => $program->CollegeID,
-                    'program_name' => $program->ProgName
-                ]
-            );
+    
+        // Retrieve the database connection for the given campus_id
+        $databaseConnection = $campusConnections[$campusId] ?? null;
+    
+        // If no database connection is found for the given campus_id, return an error
+        if (!$databaseConnection) {
+            return redirect()->back()->with('error', 'Invalid campus selected!');
         }
-        return redirect()->back()->with('success', 'Programs imported successfully!');
+
+        try {
+            // Fetch college data from the campus-specific database
+            $programs = DB::connection($databaseConnection)->table('vw_es_programs_TB')->get();
+    
+            if ($programs->isEmpty()) {
+                return redirect()->back()->with('error', 'No colleges found in the selected campus database.');
+            }
+    
+            $inserted = 0;
+            $updated = 0;
+    
+            foreach ($programs as $program) {
+                // Allow duplicate college_id if campus_id is different
+                $programRecord = Program::updateOrCreate(
+                    [
+                        'program_id' => $program->ProgID,
+                        'campus_id' => $campusId, // Uniqueness includes campus_id
+                    ],
+                    [
+                        'program_name' => $program->ProgName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+    
+                // Track insertions and updates
+                if ($programRecord->wasRecentlyCreated) {
+                    $inserted++;
+                } else {
+                    $updated++;
+                }
+            }
+    
+            return redirect()->back()->with('success', "Programs imported successfully! ($inserted added, $updated updated)");
+        } catch (\Exception $e) {
+            // Log the error and return an error response
+            Log::error('Error importing colleges: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred during the import process.');
+        }
     }
 
     public function importMajorData(Request $request)
     {
+        // Validate the incoming request
+        $request->validate([
+            'campus_id' => 'required|integer|exists:campuses,campus_id',
+        ]);
+    
+        // Define mapping of campus_id to database connections
+        $campusConnections = [
+            1 => 'es_obrero',
+            2 => 'es_tagum',
+            3 => 'es_mintal',
+            4 => 'es_mabini',
+        ];
+    
+        // Get the campus_id from the request
         $campusId = $request->input('campus_id');
-        $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal'; // Adjust as needed for additional campuses
-
-        $majors = DB::connection($databaseConnection)->table('vw_ProgramMajors_TB')->get();
-        $programIds = Program::pluck('program_id')->toArray();
-
-        foreach ($majors as $major) {
-            $programId = in_array($major->ProgID, $programIds) ? $major->ProgID : null;
-
-            if (!$programId) {
-                $this->logMissingForeignKey('Major', $major->IndexID, 'program_id', $major->ProgID);
+    
+        // Retrieve the database connection for the given campus_id
+        $databaseConnection = $campusConnections[$campusId] ?? null;
+    
+        // If no database connection is found for the given campus_id, return an error
+        if (!$databaseConnection) {
+            return redirect()->back()->with('error', 'Invalid campus selected!');
+        }
+    
+        try {
+            // Fetch majors from the specified database connection
+            $majors = DB::connection($databaseConnection)->table('vw_ProgramMajors_TB')->get();
+            
+            if ($majors->isEmpty()) {
+                return redirect()->back()->with('error', 'No majors found in the selected campus database.');
             }
+    
+            $programIds = Program::pluck('program_id')->toArray();
+    
+            $inserted = 0;
+            $updated = 0;
+    
+            // Loop through the majors and insert or update them in the main database
+            foreach ($majors as $major) {
+                $programId = in_array($major->ProgID, $programIds) ? $major->ProgID : null;
+    
+                if (!$programId) {
+                    $this->logMissingForeignKey('Major', $major->IndexID, 'program_id', $major->ProgID);
+                }
 
-            Major::updateOrCreate(
-                ['major_id' => $major->IndexID],
-                [
-                    'campus_id' => $campusId,
-                    'college_id' => $major->CollegeID,
-                    'program_id' => $programId,
-                    'major_name' => $major->Major
-                ]
-            );
+                $majorData = Major::updateOrCreate(
+                    [
+                        'major_id' => $major->IndexID,
+                        'campus_id' => $campusId, // Uniqueness includes campus_id
+                    ],
+                    [
+                        'college_id' => $major->CollegeID,
+                        'program_id' => $programId,
+                        'major_name' => $major->Major,
+                    ]
+                );
+    
+                // Track insertions and updates
+                if ($majorData->wasRecentlyCreated) {
+                    $inserted++;
+                } else {
+                    $updated++;
+                }
+            }
+    
+            return redirect()->back()->with('success', "$inserted majors added, $updated majors updated.");
+        } catch (\Exception $e) {
+            Log::error('Error importing majors: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while importing majors.');
         }
+    }    
 
-        return redirect()->back()->with('success', 'Majors imported successfully!');
-    }
-
-    public function importYearData()
+    public function importYearData(Request $request)
     {
-        $esObreroYears = DB::connection('es_obrero')->table('vw_YearLevel_TB')->get();
-        foreach ($esObreroYears as $year) {
-            Year::updateOrCreate(
-                ['year_id' => $year->Yearlevelid],
-                [
-                    'year_name' => $year->Yearlevel
-                ]
-            );
+        // Validate the incoming request
+        $request->validate([
+            'campus_id' => 'required|integer|exists:campuses,campus_id',
+        ]);
+    
+        // Define mapping of campus_id to database connections
+        $campusConnections = [
+            1 => 'es_obrero',
+            2 => 'es_tagum',
+            3 => 'es_mintal',
+            4 => 'es_mabini',
+        ];
+    
+        // Get the campus_id from the request
+        $campusId = $request->input('campus_id');
+    
+        // Retrieve the database connection for the given campus_id
+        $databaseConnection = $campusConnections[$campusId] ?? null;
+    
+        // If no database connection is found for the given campus_id, return an error
+        if (!$databaseConnection) {
+            return redirect()->back()->with('error', 'Invalid campus selected!');
         }
-        return redirect()->back()->with('success', 'Years imported successfully!');
+    
+        try {
+            // Fetch years from the specified campus database connection
+            $years = DB::connection($databaseConnection)->table('vw_YearLevel_TB')->get();
+            
+            if ($years->isEmpty()) {
+                return redirect()->back()->with('error', 'No years found in the selected campus database.');
+            }
+    
+            $inserted = 0;
+            $updated = 0;
+    
+            // Loop through the years and insert or update them in the main database
+            foreach ($years as $year) {
+                $yearData = Year::updateOrCreate(
+                    ['year_id' => $year->Yearlevelid],
+                    [
+                        'year_name' => $year->Yearlevel,
+                        'campus_id' => $campusId,
+                    ]
+                );
+    
+                // Track insertions and updates
+                if ($yearData->wasRecentlyCreated) {
+                    $inserted++;
+                } else {
+                    $updated++;
+                }
+            }
+    
+            return redirect()->back()->with('success', "$inserted years added, $updated years updated.");
+        } catch (\Exception $e) {
+            Log::error('Error importing years: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while importing years.');
+        }
     }
+    
 
     public function importStudentData(Request $request)
     {
+        // Validate the incoming request
+        $request->validate([
+            'campus_id' => 'required|integer|exists:campuses,campus_id',
+        ]);
+    
+        // Define mapping of campus_id to database connections
+        $campusConnections = [
+            1 => 'es_obrero',
+            2 => 'es_tagum',
+            3 => 'es_mintal',
+            4 => 'es_mabini',
+        ];
+    
+        // Get the campus_id from the request
         $campusId = $request->input('campus_id');
-        $databaseConnection = $campusId == 1 ? 'es_obrero' : 'es_mintal'; // Adjust as needed for additional campuses
     
-        // Step 1: Set all students to inactive for the selected campus
-        Student::where('enrollment_stat', 'active')
-            ->where('campus_id', $campusId)
-            ->update(['enrollment_stat' => 'inactive']);
+        // Retrieve the database connection for the given campus_id
+        $databaseConnection = $campusConnections[$campusId] ?? null;
     
-        // Step 2: Fetch the majors and programs mapping from the specified campus database
-        $majorsMapping = DB::connection($databaseConnection)
-            ->table('vw_ProgramMajors_TB')
-            ->pluck('IndexID', 'MajorDiscID')
-            ->toArray();
+        // If no database connection is found for the given campus_id, return an error
+        if (!$databaseConnection) {
+            return redirect()->back()->with('error', 'Invalid campus selected!');
+        }
     
-        $programIds = Program::pluck('program_id')->toArray();
+        try {
+            // Step 1: Set all students to inactive for the selected campus
+            Student::where('enrollment_stat', 'active')
+                ->where('campus_id', $campusId)
+                ->update(['enrollment_stat' => 'inactive']);
     
-        // Step 3: Process students in batches
-        DB::connection($databaseConnection)->table('vw_Students_TB')
-            ->distinct()
-            ->orderBy('StudentNo')
-            ->chunk(50, function ($students) use ($majorsMapping, $programIds, $campusId) {
-                $batchData = [];
-                $existingStudents = Student::whereIn('stud_id', $students->pluck('StudentNo')->toArray())
-                    ->where('campus_id', $campusId)
-                    ->get()
-                    ->keyBy(function ($student) {
-                        return $student->stud_id . '-' . $student->campus_id;
-                    });
+            // Step 2: Fetch the majors and programs mapping from the specified campus database
+            $majorsMapping = DB::connection($databaseConnection)
+                ->table('vw_ProgramMajors_TB')
+                ->pluck('IndexID', 'MajorDiscID')
+                ->toArray();
     
-                foreach ($students as $student) {
-                    $email = !empty($student->Email) ? $student->Email : "noEmail{$student->StudentNo}@usep.edu.ph";
-                    $majorId = $majorsMapping[$student->MajorID] ?? null;
-                    $programId = in_array($student->ProgID, $programIds) ? $student->ProgID : null;
+            $programIds = Program::pluck('program_id')->toArray();
+            $majorIds = Major::pluck('major_id')->toArray(); // Fetch existing major_ids from the majors table
     
-                    if (is_null($majorId)) {
-                        $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
+            // Step 3: Process students in batches from the specified campus
+            DB::connection($databaseConnection)->table('vw_Students_TB')
+                ->distinct()
+                ->orderBy('StudentNo')
+                ->chunk(50, function ($students) use ($majorsMapping, $programIds, $majorIds, $campusId) {
+                    $batchData = [];
+                    $existingStudents = Student::whereIn('stud_id', $students->pluck('StudentNo')->toArray())
+                        ->where('campus_id', $campusId)
+                        ->get()
+                        ->keyBy(function ($student) {
+                            return $student->stud_id . '-' . $student->campus_id;
+                        });
+    
+                    foreach ($students as $student) {
+                        // Prepare the email (use a default if not provided)
+                        $email = !empty($student->Email) ? $student->Email : "noEmail{$student->StudentNo}@usep.edu.ph";
+    
+                        // Get the major_id from the majors mapping and ensure it exists in the majors table
+                        $majorId = $majorsMapping[$student->MajorID] ?? null;
+    
+                        // Validate the major_id, only use valid major_ids from the majors table
+                        if ($majorId && !in_array($majorId, $majorIds)) {
+                            $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
+                            continue; // Skip this student if major_id is invalid
+                        }
+    
+                        // Get the program_id from the list of valid program ids
+                        $programId = in_array($student->ProgID, $programIds) ? $student->ProgID : null;
+    
+                        // Log missing foreign keys if necessary
+                        if (is_null($majorId)) {
+                            $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
+                        }
+                        if (is_null($programId)) {
+                            $this->logMissingForeignKey('Student', $student->StudentNo, 'program_id', $student->ProgID);
+                        }
+    
+                        // Create a unique key for identifying existing students
+                        $uniqueKey = $student->StudentNo . '-' . $campusId;
+                        $existingStudent = $existingStudents->get($uniqueKey);
+    
+                        // Prepare the student data
+                        $studentData = [
+                            'stud_id' => $student->StudentNo,
+                            'stud_lname' => $student->LastName,
+                            'stud_fname' => $student->FirstName,
+                            'stud_mname' => null,
+                            'stud_contact' => $student->MobileNo,
+                            'stud_email' => $email,
+                            'college_id' => $student->CollegeID,
+                            'program_id' => $programId,
+                            'major_id' => $majorId,
+                            'year_id' => $student->YearLevelID,
+                            'campus_id' => $campusId,
+                            'enrollment_stat' => 'active',
+                        ];
+    
+                        // If the student data is new or needs updating, add it to the batch
+                        if (!$existingStudent || $this->needsUpdate($existingStudent, $studentData)) {
+                            $batchData[] = $studentData;
+                        }
                     }
-                    if (is_null($programId)) {
-                        $this->logMissingForeignKey('Student', $student->StudentNo, 'program_id', $student->ProgID);
-                    }
     
-                    $uniqueKey = $student->StudentNo . '-' . $campusId;
-                    $existingStudent = $existingStudents->get($uniqueKey);
+                    // Step 4: Upsert batch data (update existing or insert new)
+                    Student::upsert($batchData, ['stud_id', 'campus_id'], [
+                        'stud_lname',
+                        'stud_fname',
+                        'stud_mname',
+                        'stud_contact',
+                        'stud_email',
+                        'college_id',
+                        'program_id',
+                        'major_id',
+                        'year_id',
+                        'enrollment_stat',
+                    ]);
+                });
     
-                    $studentData = [
-                        'stud_id' => $student->StudentNo,
-                        'stud_lname' => $student->LastName,
-                        'stud_fname' => $student->FirstName,
-                        'stud_mname' => null,
-                        'stud_contact' => $student->MobileNo,
-                        'stud_email' => $email,
-                        'college_id' => $student->CollegeID,
-                        'program_id' => $programId,
-                        'major_id' => $majorId,
-                        'year_id' => $student->YearLevelID,
-                        'campus_id' => $campusId,
-                        'enrollment_stat' => 'active',
-                    ];
-    
-                    if (!$existingStudent || $this->needsUpdate($existingStudent, $studentData)) {
-                        $batchData[] = $studentData;
-                    }
-                }
-    
-                // Step 4: Upsert batch data (update existing or insert new)
-                Student::upsert($batchData, ['stud_id', 'campus_id'], [
-                    'stud_lname',
-                    'stud_fname',
-                    'stud_mname',
-                    'stud_contact',
-                    'stud_email',
-                    'college_id',
-                    'program_id',
-                    'major_id',
-                    'year_id',
-                    'enrollment_stat',
-                ]);
-            });
-    
-        return redirect()->back()->with('success', 'Students imported successfully in batches!');
-    }
+            return redirect()->back()->with('success', 'Students imported successfully in batches!');
+        } catch (\Exception $e) {
+            Log::error('Error importing students: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while importing students.');
+        }
+    }    
     
     /**
      * Determine if an existing student needs an update.
