@@ -334,6 +334,11 @@
         </div>
     </div>
 
-    @vite(['resources/js/progressBar.js', 'resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js', 'resources/js/messagePreview.js'])
+    @vite([
+        'resources/js/messages.js', 
+        'resources/js/dynamicFilters.js', 
+        'resources/js/sendMessageToggle.js', 
+        'resources/js/messagePreview.js'
+        ])
 
 </x-app-layout>
