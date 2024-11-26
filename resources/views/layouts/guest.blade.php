@@ -18,23 +18,26 @@
 </head>
 
 <body class="bg-gray-100 h-screen relative">
-    <div class="h-full flex justify-between items-center relative">
-        <!-- Left Side Content -->
-        <div class="flex flex-col items-center ml-40 mb-16">
-            <h1 class="font-semibold text-2xl text-center text-red-700">USeP TEXT BROADCAST SYSTEM</h1>
-            <!-- Illustration Image -->
+    <div class="h-full flex flex-col md:flex-row justify-center items-center relative">
+        <!-- Left Side Content (Illustration) -->
+        <div class="flex flex-col items-center justify-center md:items-start md:w-1/2 px-4 py-8 md:py-0">
+            <h1 class="font-semibold text-2xl text-red-700 text-center md:text-left pl-0 md:pl-20 mb-4">
+                USeP TEXT BROADCAST SYSTEM
+            </h1>
             <img src="{{ asset('svg/loginIllus.svg') }}" alt="Broadcasting Image"
-                class="w-[400px] h-auto lg:w-[500px] lg:h-auto">
+                class="w-[300px] h-auto md:w-[500px] lg:w-[600px]">
         </div>
+        
 
         <!-- Right Side Login Form -->
-        <div class="w-full max-w-md p-8 bg-white shadow-md rounded-lg z-10 mr-40">
+        <div class="w-full max-w-md p-8 bg-white shadow-md rounded-lg z-10 md:w-1/3 mt-[-40px] mb-8">
             {{ $slot }} <!-- This allows injecting the content (login form) here -->
         </div>
 
+
+
         <!-- Wave SVG at the Bottom -->
         <img src="{{ asset('images/wave.png') }}" alt="Wave Effect" class="absolute bottom-0 left-0 w-full h-auto z-0">
-    </div>
 </body>
 
 </html>
