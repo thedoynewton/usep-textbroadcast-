@@ -71,9 +71,9 @@ class AnalyticsController extends Controller
         ->get();
 
     // Define the possible statuses with corresponding colors
-    $statuses = ['sent', 'failed', 'cancelled', 'pending'];
+    $statuses = ['Sent', 'failed', 'cancelled', 'pending'];
     $statusColors = [
-        'sent' => '#4dc9f6',
+        'Sent' => '#4dc9f6',
         'failed' => '#f67019',
         'cancelled' => '#f53794',
         'pending' => '#acc236'
