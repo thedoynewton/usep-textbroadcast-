@@ -15,6 +15,7 @@ export default defineConfig({
             // ],
             input: [
                 'resources/css/app.css',
+                'resources/js/app.js',
                 ...fs
                     .readdirSync(path.resolve(__dirname, 'resources/js'))
                     .filter(file => file.endsWith('.js'))
