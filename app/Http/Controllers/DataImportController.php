@@ -60,20 +60,20 @@ class DataImportController extends Controller
                 return redirect()->back()->with('error', 'No colleges found in the selected campus database.');
             }
     
+            // Initialize counters for inserted and updated records
             $inserted = 0;
             $updated = 0;
     
             foreach ($colleges as $college) {
-                // Allow duplicate college_id if campus_id is different
+                // Use composite primary key (campus_id + college_id) for uniqueness
                 $collegeRecord = College::updateOrCreate(
                     [
-                        'college_id' => $college->CollegeID,
-                        'campus_id' => $campusId, // Uniqueness includes campus_id
+                        'campus_id' => $campusId, // Part of composite key
+                        'college_id' => $college->CollegeID, // Part of composite key
                     ],
                     [
                         'college_name' => $college->CollegeName,
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'updated_at' => now(), // Always update timestamps
                     ]
                 );
     
@@ -85,13 +85,17 @@ class DataImportController extends Controller
                 }
             }
     
-            return redirect()->back()->with('success', "Colleges imported successfully! ($inserted added, $updated updated)");
+            return redirect()->back()->with(
+                'success',
+                "Colleges imported successfully! $inserted added, $updated updated."
+            );
         } catch (\Exception $e) {
             // Log the error and return an error response
             Log::error('Error importing colleges: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred during the import process.');
         }
     }
+    
 
     public function importProgramData(Request $request)
     {
@@ -107,6 +111,7 @@ class DataImportController extends Controller
             3 => 'es_mintal',
             4 => 'es_mabini',
         ];
+    
         // Get the campus_id from the request
         $campusId = $request->input('campus_id');
     
@@ -117,29 +122,42 @@ class DataImportController extends Controller
         if (!$databaseConnection) {
             return redirect()->back()->with('error', 'Invalid campus selected!');
         }
-
+    
         try {
-            // Fetch college data from the campus-specific database
+            // Fetch program data from the campus-specific database
             $programs = DB::connection($databaseConnection)->table('vw_es_programs_TB')->get();
     
             if ($programs->isEmpty()) {
-                return redirect()->back()->with('error', 'No colleges found in the selected campus database.');
+                return redirect()->back()->with('error', 'No programs found in the selected campus database.');
             }
     
+            // Initialize counters for inserted and updated records
             $inserted = 0;
             $updated = 0;
     
             foreach ($programs as $program) {
-                // Allow duplicate college_id if campus_id is different
+                // Validate and retrieve college_id for the program
+                $college = College::where([
+                    'campus_id' => $campusId,
+                    'college_id' => $program->CollegeID, // Assume CollegeID is available in the view
+                ])->first();
+    
+                if (!$college) {
+                    // Skip the program if its associated college doesn't exist
+                    Log::warning("Skipped program import: No matching college for ProgramID {$program->ProgID} in campus {$campusId}.");
+                    continue;
+                }
+    
+                // Use composite primary key (campus_id + college_id + program_id) for uniqueness
                 $programRecord = Program::updateOrCreate(
                     [
-                        'program_id' => $program->ProgID,
-                        'campus_id' => $campusId, // Uniqueness includes campus_id
+                        'campus_id' => $campusId, // Part of composite key
+                        'college_id' => $college->college_id, // Part of composite key
+                        'program_id' => $program->ProgID, // Part of composite key
                     ],
                     [
                         'program_name' => $program->ProgName,
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'updated_at' => now(), // Always update timestamps
                     ]
                 );
     
@@ -151,13 +169,17 @@ class DataImportController extends Controller
                 }
             }
     
-            return redirect()->back()->with('success', "Programs imported successfully! ($inserted added, $updated updated)");
+            return redirect()->back()->with(
+                'success',
+                "Programs imported successfully! $inserted added, $updated updated."
+            );
         } catch (\Exception $e) {
             // Log the error and return an error response
-            Log::error('Error importing colleges: ' . $e->getMessage());
+            Log::error('Error importing programs: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred during the import process.');
         }
     }
+    
 
     public function importMajorData(Request $request)
     {
@@ -188,50 +210,60 @@ class DataImportController extends Controller
         try {
             // Fetch majors from the specified database connection
             $majors = DB::connection($databaseConnection)->table('vw_ProgramMajors_TB')->get();
-            
+    
             if ($majors->isEmpty()) {
                 return redirect()->back()->with('error', 'No majors found in the selected campus database.');
             }
     
-            $programIds = Program::pluck('program_id')->toArray();
-    
             $inserted = 0;
             $updated = 0;
     
-            // Loop through the majors and insert or update them in the main database
             foreach ($majors as $major) {
-                $programId = in_array($major->ProgID, $programIds) ? $major->ProgID : null;
+                // Validate associated program and college
+                $program = Program::where([
+                    'campus_id' => $campusId,
+                    'college_id' => $major->CollegeID,
+                    'program_id' => $major->ProgID,
+                ])->first();
     
-                if (!$programId) {
-                    $this->logMissingForeignKey('Major', $major->IndexID, 'program_id', $major->ProgID);
+                if (!$program) {
+                    Log::warning("Skipped major import: No matching program for MajorID {$major->IndexID}, ProgramID {$major->ProgID}, CollegeID {$major->CollegeID} in campus {$campusId}.");
+                    continue;
                 }
-
-                $majorData = Major::updateOrCreate(
+    
+                // Use composite primary key (campus_id + college_id + program_id + major_id) for uniqueness
+                $majorRecord = Major::updateOrCreate(
                     [
-                        'major_id' => $major->IndexID,
-                        'campus_id' => $campusId, // Uniqueness includes campus_id
+                        'campus_id' => $campusId, // Part of composite key
+                        'college_id' => $program->college_id, // Part of composite key
+                        'program_id' => $program->program_id, // Part of composite key
+                        'major_id' => $major->IndexID, // Part of composite key
                     ],
                     [
-                        'college_id' => $major->CollegeID,
-                        'program_id' => $programId,
                         'major_name' => $major->Major,
+                        'updated_at' => now(), // Always update timestamps
                     ]
                 );
     
                 // Track insertions and updates
-                if ($majorData->wasRecentlyCreated) {
+                if ($majorRecord->wasRecentlyCreated) {
                     $inserted++;
                 } else {
                     $updated++;
                 }
             }
     
-            return redirect()->back()->with('success', "$inserted majors added, $updated majors updated.");
+            return redirect()->back()->with(
+                'success',
+                "Majors imported successfully! $inserted added, $updated updated."
+            );
         } catch (\Exception $e) {
+            // Log the error and return an error response
             Log::error('Error importing majors: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while importing majors.');
         }
-    }    
+    }
+    
 
     public function importYearData(Request $request)
     {
@@ -317,7 +349,6 @@ class DataImportController extends Controller
         // Retrieve the database connection for the given campus_id
         $databaseConnection = $campusConnections[$campusId] ?? null;
     
-        // If no database connection is found for the given campus_id, return an error
         if (!$databaseConnection) {
             return redirect()->back()->with('error', 'Invalid campus selected!');
         }
@@ -328,14 +359,14 @@ class DataImportController extends Controller
                 ->where('campus_id', $campusId)
                 ->update(['enrollment_stat' => 'inactive']);
     
-            // Step 2: Fetch the majors and programs mapping from the specified campus database
+            // Step 2: Fetch majors and programs mapping from the specified campus database
             $majorsMapping = DB::connection($databaseConnection)
                 ->table('vw_ProgramMajors_TB')
                 ->pluck('IndexID', 'MajorDiscID')
                 ->toArray();
     
             $programIds = Program::pluck('program_id')->toArray();
-            $majorIds = Major::pluck('major_id')->toArray(); // Fetch existing major_ids from the majors table
+            $majorIds = Major::pluck('major_id')->toArray();
     
             // Step 3: Process students in batches from the specified campus
             DB::connection($databaseConnection)->table('vw_Students_TB')
@@ -343,40 +374,24 @@ class DataImportController extends Controller
                 ->orderBy('StudentNo')
                 ->chunk(50, function ($students) use ($majorsMapping, $programIds, $majorIds, $campusId) {
                     $batchData = [];
-                    $existingStudents = Student::whereIn('stud_id', $students->pluck('StudentNo')->toArray())
-                        ->where('campus_id', $campusId)
-                        ->get()
-                        ->keyBy(function ($student) {
-                            return $student->stud_id . '-' . $student->campus_id;
-                        });
     
                     foreach ($students as $student) {
-                        // Prepare the email (use a default if not provided)
+                        // Prepare the email
                         $email = !empty($student->Email) ? $student->Email : "noEmail{$student->StudentNo}@usep.edu.ph";
     
-                        // Get the major_id from the majors mapping and ensure it exists in the majors table
+                        // Map foreign keys for major_id and program_id
                         $majorId = $majorsMapping[$student->MajorID] ?? null;
-    
-                        // Validate the major_id, only use valid major_ids from the majors table
-                        if ($majorId && !in_array($majorId, $majorIds)) {
-                            $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
-                            continue; // Skip this student if major_id is invalid
-                        }
-    
-                        // Get the program_id from the list of valid program ids
                         $programId = in_array($student->ProgID, $programIds) ? $student->ProgID : null;
     
-                        // Log missing foreign keys if necessary
-                        if (is_null($majorId)) {
-                            $this->logMissingForeignKey('Student', $student->StudentNo, 'major_id', $student->MajorID);
+                        // Log missing foreign keys
+                        if ($majorId && !in_array($majorId, $majorIds)) {
+                            Log::warning("Student {$student->StudentNo}: Invalid major_id {$student->MajorID}");
+                            continue;
                         }
                         if (is_null($programId)) {
-                            $this->logMissingForeignKey('Student', $student->StudentNo, 'program_id', $student->ProgID);
+                            Log::warning("Student {$student->StudentNo}: Invalid program_id {$student->ProgID}");
+                            continue;
                         }
-    
-                        // Create a unique key for identifying existing students
-                        $uniqueKey = $student->StudentNo . '-' . $campusId;
-                        $existingStudent = $existingStudents->get($uniqueKey);
     
                         // Prepare the student data
                         $studentData = [
@@ -394,13 +409,11 @@ class DataImportController extends Controller
                             'enrollment_stat' => 'active',
                         ];
     
-                        // If the student data is new or needs updating, add it to the batch
-                        if (!$existingStudent || $this->needsUpdate($existingStudent, $studentData)) {
-                            $batchData[] = $studentData;
-                        }
+                        // Add to batch for upsert
+                        $batchData[] = $studentData;
                     }
     
-                    // Step 4: Upsert batch data (update existing or insert new)
+                    // Step 4: Upsert batch data
                     Student::upsert($batchData, ['stud_id', 'campus_id'], [
                         'stud_lname',
                         'stud_fname',
@@ -421,29 +434,7 @@ class DataImportController extends Controller
             return redirect()->back()->with('error', 'An error occurred while importing students.');
         }
     }    
-    
-    /**
-     * Determine if an existing student needs an update.
-     */
-    private function needsUpdate($existingStudent, $newData)
-    {
-        return (
-            $existingStudent->stud_lname !== $newData['stud_lname'] ||
-            $existingStudent->stud_fname !== $newData['stud_fname'] ||
-            $existingStudent->stud_contact !== $newData['stud_contact'] ||
-            $existingStudent->stud_email !== $newData['stud_email'] ||
-            $existingStudent->college_id !== $newData['college_id'] ||
-            $existingStudent->program_id !== $newData['program_id'] ||
-            $existingStudent->major_id !== $newData['major_id'] ||
-            $existingStudent->year_id !== $newData['year_id'] ||
-            $existingStudent->enrollment_stat !== $newData['enrollment_stat']
-        );
-    }    
 
-    private function logMissingForeignKey($entity, $entityId, $missingKey, $missingId)
-    {
-        Log::warning("$entity with ID '$entityId' added with NULL $missingKey due to missing $missingKey '$missingId' in related table.");
-    }
 
     public function addCampus(Request $request)
     {

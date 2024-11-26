@@ -14,28 +14,51 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->string('stud_id');
             $table->unsignedBigInteger('campus_id');
+            $table->unsignedBigInteger('college_id');
+            $table->unsignedBigInteger('program_id');
+            $table->unsignedBigInteger('major_id');
+            $table->unsignedBigInteger('year_id');
             $table->string('stud_fname');
             $table->string('stud_lname');
             $table->string('stud_mname')->nullable();
-            $table->string('stud_contact');
+            $table->string('stud_contact')->nullable();
             $table->string('stud_email')->unique()->nullable();
-            $table->unsignedBigInteger('college_id')->nullable();
-            $table->unsignedBigInteger('program_id')->nullable();
-            $table->unsignedBigInteger('major_id')->nullable();
-            $table->unsignedBigInteger('year_id')->nullable();
             $table->string('enrollment_stat');
             $table->timestamps();
-    
-            // Define composite primary key
-            $table->primary(['stud_id', 'campus_id']);
-    
-            // Foreign keys
-            $table->foreign('campus_id')->references('campus_id')->on('campuses')->onDelete('cascade');
-            $table->foreign('college_id')->references('college_id')->on('colleges')->onDelete('set null');
-            $table->foreign('program_id')->references('program_id')->on('programs')->onDelete('set null');
-            $table->foreign('major_id')->references('major_id')->on('majors')->onDelete('set null');
-            $table->foreign('year_id')->references('year_id')->on('years')->onDelete('set null');
+        
+            // Composite primary key that includes campus_id, allowing different campuses for the same student
+            $table->primary(['campus_id', 'stud_id']);
+        
+            // Unique constraint to prevent duplicate student IDs across campuses
+            $table->unique(['campus_id', 'stud_id']);
+        
+            // Foreign key constraints
+            $table->foreign('campus_id')
+                ->references('campus_id')
+                ->on('campuses')
+                ->onDelete('no action');
+        
+            $table->foreign(['campus_id', 'college_id'])
+                ->references(['campus_id', 'college_id'])
+                ->on('colleges')
+                ->onDelete('no action');
+        
+            $table->foreign(['campus_id', 'college_id', 'program_id'])
+                ->references(['campus_id', 'college_id', 'program_id'])
+                ->on('programs')
+                ->onDelete('no action');
+        
+            $table->foreign(['campus_id', 'college_id', 'program_id', 'major_id'])
+                ->references(['campus_id', 'college_id', 'program_id', 'major_id'])
+                ->on('majors')
+                ->onDelete('no action');
+        
+            $table->foreign('year_id')
+                ->references('year_id')
+                ->on('years')
+                ->onDelete('no action');
         });
+        
     }    
 
     /**
