@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             {{ __('Messages') }}
         </h2>
     </x-slot>
@@ -26,7 +26,7 @@
             <!-- Main Form -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <!-- Tabs -->
-                <ul class="flex flex-wrap border-b">
+                <ul class="flex-wrap flex border-b">
                     <li class="mr-4">
                         <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}"
                             class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">ALL</a>

@@ -115,11 +115,11 @@
     </button>
 
     <!-- Main Content Area -->
-    <div class="main-content bg-gray-200 flex-1 overflow-auto z-0">
+    <div class="main-content bg-gray-200 flex-1 overflow-auto z-0 h-screen">
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <header class="bg-[#800000] shadow pl-16">
+                <div class="max-w-7xl mx-auto py-6">
                     {{ $header }}
                 </div>
             </header>
