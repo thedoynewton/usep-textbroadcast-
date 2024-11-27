@@ -9,6 +9,7 @@ use App\Models\Major;
 use App\Models\Year;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\Status;
 use App\Models\Type;
 
 class FilterService
@@ -16,62 +17,86 @@ class FilterService
     // Generic method to fetch data based on a model and field
     public function fetchDataByField($model, $field, $value)
     {
-        if ($value === null) {
-            return $model::all(); // If no value is provided, return all results
-        }
-        return $model::where($field, $value)->get();
+        return $value === null ? $model::all() : $model::where($field, $value)->get();
     }
 
+    // Fetch colleges by campus
     public function getCollegesByCampus($campusId)
     {
-        $colleges = $campusId === null 
-            ? College::all() 
-            : $this->fetchDataByField(College::class, 'campus_id', $campusId);
-    
-        return $colleges->sortBy('college_name')->values();
+        return $this->fetchDataByField(College::class, 'campus_id', $campusId)
+            ->sortBy('college_name')
+            ->values();
     }
 
+    // Fetch programs by college
     public function getProgramsByCollege($collegeId)
     {
-        $programs = $collegeId === null
-        ? Program::all()
-        : $this->fetchDataByField(Program::class, 'college_id', $collegeId);
-
-        return $programs->sortBy('program_name')->values();
+        return $this->fetchDataByField(Program::class, 'college_id', $collegeId)
+            ->sortBy('program_name')
+            ->values();
     }
 
+    // Fetch majors by program
     public function getMajorsByProgram($programId)
     {
-        $majors = $programId === null
-        ? Major::all()
-        : $this->fetchDataByField(Major::class, 'program_id', $programId);
-
-        return $majors->sortBy('major_name')->values();
+        return $this->fetchDataByField(Major::class, 'program_id', $programId)
+            ->sortBy('major_name')
+            ->values();
     }
 
-    public function getOfficesByCampus($campusId)
-    {
-        $offices = $campusId === null 
-            ? Office::all() 
-            : $this->fetchDataByField(Office::class, 'campus_id', $campusId);
-    
-        return $offices->sortBy('office_name')->values();
-    }
-
-    public function getTypesByOffice($officeId)
-    {
-        $types = $officeId === null 
-            ? Type::all() 
-            : $this->fetchDataByField(Type::class, 'office_id', $officeId);
-    
-        return $types->sortBy('type_name')->values();
-    }
-
+    // Fetch all academic years
     public function getYears()
     {
         return Year::all();
     }
 
+    // Fetch offices by campus
+    public function getOfficesByCampus($campusId)
+    {
+        if ($campusId === null) {
+            // Return all offices if no campus is specified
+            return Office::all()->sortBy('office_name')->values();
+        }
+    
+        // Fetch unique office IDs for employees belonging to the selected campus
+        $officeIds = Employee::where('campus_id', $campusId)
+            ->pluck('office_id')
+            ->unique();
+    
+        // Fetch and return offices corresponding to those office IDs
+        return Office::whereIn('office_id', $officeIds)
+            ->get()
+            ->sortBy('office_name')
+            ->values();
+    }    
+
+    // Fetch types by office
+    public function getTypesByOffice($officeId)
+    {
+        if ($officeId === null) {
+            // Return all types if no office is specified
+            return Type::all()->sortBy('type_name')->values();
+        }
+    
+        // Fetch unique type IDs from employees associated with the selected office
+        $typeIds = Employee::where('office_id', $officeId)
+            ->pluck('type_id')
+            ->unique();
+    
+        // Fetch types corresponding to those type IDs
+        return Type::whereIn('type_id', $typeIds)
+            ->get()
+            ->sortBy('type_name')
+            ->values();
+    }       
+
+    // public function getStatuses()
+    // {
+    //     // Fetch and sort statuses alphabetically by status_name
+    //     return Status::orderBy('status_name', 'asc')->get()->values();
+    // }    
+
+    // Get recipient count
     public function getRecipientCount(
         $tab,
         $campusId = null,
@@ -83,61 +108,30 @@ class FilterService
         $typeId = null,
         $statusId = null
     ) {
-        $studentsQuery = Student::query();
-        $employeesQuery = Employee::query();
+        $query = $tab === 'students' ? Student::query() : Employee::query();
 
-        // Apply filters based on selected options, skip the filter if "all" or null
-        if ($campusId !== null) {
-            $studentsQuery->where('campus_id', $campusId);
-            $employeesQuery->where('campus_id', $campusId);
+        // Apply filters dynamically
+        $filters = [
+            'campus_id' => $campusId,
+            'college_id' => $tab === 'students' ? $collegeId : null,
+            'program_id' => $tab === 'students' ? $programId : null,
+            'major_id' => $tab === 'students' ? $majorId : null,
+            'year_id' => $tab === 'students' ? $yearId : null,
+            'office_id' => $tab === 'employees' ? $officeId : null,
+            'type_id' => $tab === 'employees' ? $typeId : null,
+            'status_id' => $tab === 'employees' ? $statusId : null,
+        ];
+
+        foreach ($filters as $field => $value) {
+            if ($value !== null) {
+                $query->where($field, $value);
+            }
         }
 
-        if ($tab === 'students') {
-            if ($collegeId !== null) {
-                $studentsQuery->where('college_id', $collegeId);
-            }
+        // Exclude records without contact numbers
+        $contactField = $tab === 'students' ? 'stud_contact' : 'emp_contact';
+        $query->whereNotNull($contactField)->where($contactField, '!=', '');
 
-            if ($programId !== null) {
-                $studentsQuery->where('program_id', $programId);
-            }
-
-            if ($majorId !== null) {
-                $studentsQuery->where('major_id', $majorId);
-            }
-
-            if ($yearId !== null) {
-                $studentsQuery->where('year_id', $yearId);
-            }
-
-            // Exclude students without contact numbers
-            $studentsQuery->whereNotNull('stud_contact')->where('stud_contact', '!=', '');
-
-            return $studentsQuery->count();
-        }
-
-        if ($tab === 'employees') {
-            if ($officeId !== null) {
-                $employeesQuery->where('office_id', $officeId);
-            }
-
-            if ($typeId !== null) {
-                $employeesQuery->where('type_id', $typeId);
-            }
-
-            if ($statusId !== null) {
-                $employeesQuery->where('status_id', $statusId);
-            }
-
-            // Exclude employees without contact numbers
-            $employeesQuery->whereNotNull('emp_contact')->where('emp_contact', '!=', '');
-
-            return $employeesQuery->count();
-        }
-
-        // For the "all" tab, include both students and employees
-        $studentsQuery->whereNotNull('stud_contact')->where('stud_contact', '!=', '');
-        $employeesQuery->whereNotNull('emp_contact')->where('emp_contact', '!=', '');
-
-        return $studentsQuery->count() + $employeesQuery->count();
+        return $query->count();
     }
 }

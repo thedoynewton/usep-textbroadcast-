@@ -30,14 +30,17 @@ class MessagesController extends Controller
         $tab = $request->get('tab', 'all'); // Default to 'all' if no tab is selected
         $campusId = $request->get('campus'); // Get the selected campus
 
-        $campuses = Campus::all(); // Fetch all campuses from the database
+        // Fetch and sort campuses alphabetically by name
+        $campuses = Campus::orderBy('campus_name', 'asc')->get();
+    
         $messageTemplates = MessageTemplate::all(); // Fetch all message templates
         $years = Year::all(); // Fetch all years to populate the year dropdown
-        $statuses = Status::all(); // Fetch all statuses to populate the status dropdown
-
+        $statuses = Status::orderBy('status_name', 'asc')->get(); // Fetch statuses sorted by name in ascending order
+    
         // Return the view with the necessary data for rendering the page
         return view('messages.index', compact('campuses', 'campusId', 'messageTemplates', 'years', 'statuses'));
     }
+    
     public function store(Request $request)
     {
         // Validate request data

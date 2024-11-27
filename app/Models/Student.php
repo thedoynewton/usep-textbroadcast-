@@ -16,7 +16,6 @@ class Student extends Model
     protected $primaryKey = ['stud_id', 'campus_id'];
 
     // Specify the key type for composite primary key
-    protected $keyType = 'string'; // `stud_id` is a string
 
     protected $fillable = [
         'stud_id',

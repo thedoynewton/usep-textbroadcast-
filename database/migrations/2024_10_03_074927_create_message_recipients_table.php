@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('message_log_id'); // Foreign key to message_logs table
             $table->enum('recipient_type', ['student', 'employee']);
-            $table->unsignedBigInteger('stud_id')->nullable(); // Student ID if recipient is a student
-            $table->unsignedBigInteger('emp_id')->nullable();  // Employee ID if recipient is an employee
+            $table->string('stud_id')->nullable(); // Student ID if recipient is a student
+            $table->string('emp_id')->nullable();  // Employee ID if recipient is an employee
             $table->string('fname');
             $table->string('lname');
             $table->string('mname')->nullable();

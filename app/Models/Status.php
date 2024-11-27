@@ -8,10 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Status extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'status_id';
 
+    // Custom primary key
+    protected $primaryKey = 'status_id';
+    public $incrementing = false; // Disable auto-increment for custom IDs
+
+    // Specify fillable fields for mass assignment
+    protected $fillable = [
+        'status_id',
+        'status_name',
+    ];
+
+    // Relationships
+    /**
+     * Get the employees with this status.
+     */
     public function employees()
     {
-        return $this->hasMany(Employee::class, 'status_id');
+        return $this->hasMany(Employee::class, 'status_id', 'status_id');
     }
 }
