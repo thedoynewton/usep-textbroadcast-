@@ -17,7 +17,7 @@
                     <input type="date" id="endDate" name="endDate" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm" value="{{ request('endDate') }}">
                 </div>
                 <div>
-                    <button type="submit" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded">
+                    <button id="applyFilter" type="submit" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded">
                         Apply Filter
                     </button>
                 </div>
