@@ -109,7 +109,11 @@ class SendScheduledMessageJob implements ShouldQueue
                 return $query->where('major_id', $majorId);
             })->when($filters['year_id'], function ($query, $yearId) {
                 return $query->where('year_id', $yearId);
-            })->get();
+            })
+            ->where('enrollment_stat', 'active') // Exclude inactive students
+            ->whereNotNull('stud_contact') // Ensure contact number is not null
+            ->where('stud_contact', '!=', '') // Ensure contact number is not empty
+            ->get();
 
             // Add students to the recipients collection
             $students->each(function ($student) use ($recipientsByPhone, $recipientDetails, $messageLog) {
@@ -144,6 +148,7 @@ class SendScheduledMessageJob implements ShouldQueue
                     'program_id' => $student->program_id,
                     'major_id' => $student->major_id,
                     'year_id' => $student->year_id,
+                    'enrollment_stat' => $student->enrollment_stat,
                     'sent_status' => 'pending',
                 ]);
             });
@@ -159,7 +164,10 @@ class SendScheduledMessageJob implements ShouldQueue
                 return $query->where('status_id', $statusId);
             })->when($filters['type_id'], function ($query, $typeId) {
                 return $query->where('type_id', $typeId);
-            })->get();
+            })
+            ->whereNotNull('emp_contact') // Ensure contact number is not null
+            ->where('emp_contact', '!=', '') // Ensure contact number is not empty
+            ->get();
 
             // Add employees to the recipients collection
             $employees->each(function ($employee) use ($recipientsByPhone, $recipientDetails, $messageLog) {
