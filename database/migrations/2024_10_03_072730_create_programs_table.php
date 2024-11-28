@@ -12,24 +12,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('programs', function (Blueprint $table) {
-            $table->unsignedBigInteger('program_id'); // Unique within a college
-            $table->unsignedBigInteger('campus_id'); // Reference to campus
-            $table->unsignedBigInteger('college_id'); // Reference to college
+            $table->unsignedBigInteger('program_id');
+            $table->unsignedBigInteger('campus_id');
+            $table->unsignedBigInteger('college_id');
             $table->string('program_name');
             $table->timestamps();
         
-            // Composite primary key
-            $table->primary(['campus_id', 'college_id', 'program_id']);
-        
-            // Unique constraint to prevent duplicate program names within the same college and campus
-            $table->unique(['campus_id', 'college_id', 'program_id']);
-        
-            // Foreign key constraints
-            $table->foreign(['campus_id', 'college_id'])
-                ->references(['campus_id', 'college_id'])
-                ->on('colleges')
-                ->onDelete('cascade');
+            // Define a composite primary key
+            $table->primary(['program_id', 'campus_id']);
         });
+        
                 
     }
 

@@ -65,22 +65,26 @@ class DataImportController extends Controller
             $updated = 0;
     
             foreach ($colleges as $college) {
-                // Use composite primary key (campus_id + college_id) for uniqueness
-                $collegeRecord = College::updateOrCreate(
-                    [
-                        'campus_id' => $campusId, // Part of composite key
-                        'college_id' => $college->CollegeID, // Part of composite key
-                    ],
-                    [
-                        'college_name' => $college->CollegeName,
-                        'updated_at' => now(), // Always update timestamps
-                    ]
-                );
+                // Check if a record with the same college_id and campus_id already exists
+                $existingCollege = College::where('college_id', $college->CollegeID)
+                                          ->where('campus_id', $campusId)
+                                          ->first();
     
-                // Track insertions and updates
-                if ($collegeRecord->wasRecentlyCreated) {
+                if (!$existingCollege) {
+                    // If no existing record found, insert a new one
+                    $newCollege = new College([
+                        'campus_id' => $campusId,
+                        'college_id' => $college->CollegeID,
+                        'college_name' => $college->CollegeName,
+                    ]);
+                    $newCollege->save();
                     $inserted++;
                 } else {
+                    // If a record exists with the same college_id and campus_id, update it
+                    $existingCollege->update([
+                        'college_name' => $college->CollegeName,
+                        'updated_at' => now(),
+                    ]);
                     $updated++;
                 }
             }
@@ -414,18 +418,20 @@ class DataImportController extends Controller
                     }
     
                     // Step 4: Upsert batch data
-                    Student::upsert($batchData, ['stud_id', 'campus_id'], [
-                        'stud_lname',
-                        'stud_fname',
-                        'stud_mname',
-                        'stud_contact',
-                        'stud_email',
-                        'college_id',
-                        'program_id',
-                        'major_id',
-                        'year_id',
-                        'enrollment_stat',
-                    ]);
+                    if (!empty($batchData)) {
+                        Student::upsert($batchData, ['stud_id', 'campus_id'], [
+                            'stud_lname',
+                            'stud_fname',
+                            'stud_mname',
+                            'stud_contact',
+                            'stud_email',
+                            'college_id',
+                            'program_id',
+                            'major_id',
+                            'year_id',
+                            'enrollment_stat',
+                        ]);
+                    }
                 });
     
             return redirect()->back()->with('success', 'Students imported successfully in batches!');
@@ -433,8 +439,7 @@ class DataImportController extends Controller
             Log::error('Error importing students: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while importing students.');
         }
-    }    
-
+    }       
 
     public function addCampus(Request $request)
     {
