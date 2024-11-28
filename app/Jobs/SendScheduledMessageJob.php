@@ -260,13 +260,20 @@ class SendScheduledMessageJob implements ShouldQueue
      */
     private function formatPhoneNumber($number)
     {
-        // Remove all non-numeric characters
+        // Remove all non-numeric characters (spaces, dashes, parentheses, etc.)
         $number = preg_replace('/\D/', '', $number);
-
-        // Get the last 10 digits
-        $number = substr($number, -10);
-
-        // Prepend +63 country code
-        return '+63' . $number;
+    
+        // Handle multiple phone numbers (e.g., 09123456789, 09123456789)
+        $numbers = explode(',', $number); // Split by comma if multiple numbers are provided
+        
+        // Take only the first number (trim any spaces)
+        $firstNumber = trim($numbers[0]);
+    
+        // Ensure we're only dealing with the last 10 digits
+        $firstNumber = substr($firstNumber, -10);
+    
+        // Prepend the +63 country code
+        return '+63' . $firstNumber;
     }
+    
 }
