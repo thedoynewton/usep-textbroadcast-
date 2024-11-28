@@ -116,9 +116,9 @@ return [
         // Obrero Campus Database Connection
         'es_obrero' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_OBRERO', '172.16.210.20'),
+            'host' => env('DB_HOST_ES_OBRERO', '172.16.210.4'),
             'port' => env('DB_PORT_ES_OBRERO', '1433'),
-            'database' => env('DB_DATABASE_ES_OBRERO', 'ES_Obrero'),
+            'database' => env('DB_DATABASE_ES_OBRERO', 'Princetech_Solutions'),
             'username' => env('DB_USERNAME_ES_OBRERO', 'useptextblast'),
             'password' => env('DB_PASSWORD_ES_OBRERO', 'US3Pt3xtb@st'),
             'charset' => 'utf8',
@@ -132,9 +132,9 @@ return [
         // Mintal Campus Database Connection
         'es_mintal' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_MINTAL', '172.16.210.20'),
+            'host' => env('DB_HOST_ES_MINTAL', '10.10.11.1'),
             'port' => env('DB_PORT_ES_MINTAL', '1433'),
-            'database' => env('DB_DATABASE_ES_MINTAL', 'es_mintal_new'),
+            'database' => env('DB_DATABASE_ES_MINTAL', 'es_mintal'),
             'username' => env('DB_USERNAME_ES_MINTAL', 'useptextblast'),
             'password' => env('DB_PASSWORD_ES_MINTAL', 'US3Pt3xtb@st'),
             'charset' => 'utf8',
@@ -148,7 +148,7 @@ return [
         // Tagum Campus Database Connection
         'es_tagum' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_TAGUM', '172.16.210.20'),
+            'host' => env('DB_HOST_ES_TAGUM', '10.10.10.1'),
             'port' => env('DB_PORT_ES_TAGUM', '1433'),
             'database' => env('DB_DATABASE_ES_TAGUM', 'es_tagum'),
             'username' => env('DB_USERNAME_ES_TAGUM', 'useptextblast'),
@@ -164,7 +164,7 @@ return [
         // Mabini Campus Database Connection
         'es_mabini' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_MABINI', '172.16.210.20'),
+            'host' => env('DB_HOST_ES_MABINI', '10.10.12.1'),
             'port' => env('DB_PORT_ES_MABINI', '1433'),
             'database' => env('DB_DATABASE_ES_MABINI', 'es_mabini'),
             'username' => env('DB_USERNAME_ES_MABINI', 'useptextblast'),
@@ -179,7 +179,7 @@ return [
         
         'mysql_hris' => [
             'driver' => 'mysql',
-            'host' => '172.16.210.17',
+            'host' => '172.16.210.15',
             'port' => '3306',
             'database' => 'hris',
             'username' => 'useptextblast',

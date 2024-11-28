@@ -57,18 +57,18 @@ class FilterService
             // Return all offices if no campus is specified
             return Office::all()->sortBy('office_name')->values();
         }
-    
+
         // Fetch unique office IDs for employees belonging to the selected campus
         $officeIds = Employee::where('campus_id', $campusId)
             ->pluck('office_id')
             ->unique();
-    
+
         // Fetch and return offices corresponding to those office IDs
         return Office::whereIn('office_id', $officeIds)
             ->get()
             ->sortBy('office_name')
             ->values();
-    }    
+    }
 
     // Fetch types by office
     public function getTypesByOffice($officeId)
@@ -77,18 +77,18 @@ class FilterService
             // Return all types if no office is specified
             return Type::all()->sortBy('type_name')->values();
         }
-    
+
         // Fetch unique type IDs from employees associated with the selected office
         $typeIds = Employee::where('office_id', $officeId)
             ->pluck('type_id')
             ->unique();
-    
+
         // Fetch types corresponding to those type IDs
         return Type::whereIn('type_id', $typeIds)
             ->get()
             ->sortBy('type_name')
             ->values();
-    }       
+    }
 
     // public function getStatuses()
     // {
@@ -131,6 +131,11 @@ class FilterService
         // Exclude records without contact numbers
         $contactField = $tab === 'students' ? 'stud_contact' : 'emp_contact';
         $query->whereNotNull($contactField)->where($contactField, '!=', '');
+
+        // Exclude inactive students
+        if ($tab === 'students') {
+            $query->where('enrollment_stat', 'active');
+        }
 
         return $query->count();
     }
