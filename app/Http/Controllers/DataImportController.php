@@ -455,19 +455,6 @@ class DataImportController extends Controller
         // Return the campus data and the generated card HTML
         return response()->json(['campus' => $campus, 'cardHtml' => $cardHtml], 201);
     }
-
-        // public function updateCampus(Request $request)
-    // {
-    //     $request->validate([
-    //         'campus_id' => 'required|exists:campuses,campus_id',
-    //         'campus_name' => 'required|string|max:100'
-    //     ]);
-
-    //     $campus = Campus::findOrFail($request->campus_id);
-    //     $campus->update(['campus_name' => $request->campus_name]);
-
-    //     return response()->json(['campus' => $campus], 200);
-    // }
     
     public function importOfficeData(Request $request)
     {
@@ -559,21 +546,18 @@ class DataImportController extends Controller
     public function importEmployees(Request $request)
     {
         try {
+            // Fetch employees from HRIS database
             $employees = DB::connection('mysql_hris')->table('vw_employee_tb')->get([
                 'EmployeeID', 'FirstName', 'LastName', 'MiddleName', 'Contact #', 'Email',
                 'CampusID', 'OfficeID', 'TypeID', 'StatusID'
             ]);
     
+            // Check if employees data exists
             if ($employees->isEmpty()) {
                 return redirect()->back()->with('error', 'No employees found in the HRIS database.');
             }
     
             foreach ($employees as $employee) {
-                // Skip if campus_id is invalid
-                if (empty($employee->CampusID) || $employee->CampusID == 0) {
-                    Log::warning("Skipping employee {$employee->EmployeeID} due to invalid campus_id: {$employee->CampusID}");
-                    continue;
-                }
     
                 // Skip if status_id or type_id is NULL
                 if (empty($employee->StatusID) || empty($employee->TypeID)) {
@@ -581,16 +565,15 @@ class DataImportController extends Controller
                     continue;
                 }
     
-                // Skip if email is a duplicate
-                $existingEmployee = DB::connection('sqlsrv')->table('employees')->where('emp_email', $employee->Email)->first();
-                if ($existingEmployee) {
-                    Log::warning("Skipping employee {$employee->EmployeeID} due to duplicate email: {$employee->Email}");
-                    continue;
-                }
+                // Check if employee with the same email exists but with a different emp_id
+                $existingEmployee = DB::connection('sqlsrv')->table('employees')
+                    ->where('emp_email', $employee->Email)
+                    ->where('emp_id', '!=', $employee->EmployeeID) // Make sure emp_id is unique
+                    ->first();
     
-                // Insert or update employee
+                // Insert or update employee (Insert even if email is the same but different emp_id)
                 DB::connection('sqlsrv')->table('employees')->updateOrInsert(
-                    ['emp_id' => $employee->EmployeeID],
+                    ['emp_id' => $employee->EmployeeID], // Using emp_id as the unique identifier
                     [
                         'emp_fname' => $employee->FirstName,
                         'emp_lname' => $employee->LastName,
@@ -605,6 +588,11 @@ class DataImportController extends Controller
                         'updated_at' => now(),
                     ]
                 );
+    
+                // Log if a duplicate email is found, but we allow the insertion to proceed
+                if ($existingEmployee) {
+                    Log::info("Employee {$employee->EmployeeID} inserted with duplicate email: {$employee->Email}");
+                }
             }
     
             return redirect()->back()->with('success', 'Employees imported successfully!');
@@ -612,6 +600,7 @@ class DataImportController extends Controller
             Log::error('Error importing employees: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred during the import.');
         }
-    }    
+    }
+          
 
 }

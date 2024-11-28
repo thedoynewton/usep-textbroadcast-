@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->string('stud_lname');
             $table->string('stud_mname')->nullable();
             $table->string('stud_contact')->nullable();
-            $table->string('stud_email')->unique()->nullable();
+            $table->string('stud_email')->nullable();
             $table->string('enrollment_stat');
             $table->timestamps();
 

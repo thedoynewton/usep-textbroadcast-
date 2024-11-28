@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('emp_lname');
             $table->string('emp_mname')->nullable();
             $table->string('emp_contact')->nullable();
-            $table->string('emp_email')->unique()->nullable();
+            $table->string('emp_email')->nullable();
             $table->unsignedBigInteger('campus_id');
             $table->unsignedBigInteger('office_id');
             $table->unsignedBigInteger('status_id');
