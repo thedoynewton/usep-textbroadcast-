@@ -1,8 +1,8 @@
 <x-modal name="create-message-template" :show="false">
     <form method="POST" action="{{ route('message-templates.store') }}">
         @csrf
-        <div class="p-4">
-            <h2 class="text-lg font-semibold mb-4">Create New Message Template</h2>
+        <div class="p-4 sm:p-6 lg:p-8">
+            <h2 class="text-lg sm:text-xl font-semibold mb-4">Create New Message Template</h2>
 
             <!-- Category Dropdown -->
             <div class="mb-4">
