@@ -101,11 +101,11 @@ return [
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
-            'host' => env('DB_HOST', 'localhost'),
+            'host' => env('DB_HOST', '172.16.210.20'),
             'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'database' => env('DB_DATABASE', 'usep-tbc'),
+            'username' => env('DB_USERNAME', 'useptextblast'),
+            'password' => env('DB_PASSWORD', 'US3Pt3xtb@st'),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
@@ -116,9 +116,9 @@ return [
         // Obrero Campus Database Connection
         'es_obrero' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_OBRERO', '172.16.210.4'),
+            'host' => env('DB_HOST_ES_OBRERO', '172.16.210.20'),
             'port' => env('DB_PORT_ES_OBRERO', '1433'),
-            'database' => env('DB_DATABASE_ES_OBRERO', 'Princetech_Solutions'),
+            'database' => env('DB_DATABASE_ES_OBRERO', 'ES_Obrero'),
             'username' => env('DB_USERNAME_ES_OBRERO', 'useptextblast'),
             'password' => env('DB_PASSWORD_ES_OBRERO', 'US3Pt3xtb@st'),
             'charset' => 'utf8',
@@ -129,12 +129,29 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_OBRERO', 'false'),
         ],
 
+
+        // // Obrero Campus Database Connection LIVE
+        // 'es_obrero' => [
+        //     'driver' => 'sqlsrv',
+        //     'host' => env('DB_HOST_ES_OBRERO', '172.16.210.4'),
+        //     'port' => env('DB_PORT_ES_OBRERO', '1433'),
+        //     'database' => env('DB_DATABASE_ES_OBRERO', 'Princetech_Solutions'),
+        //     'username' => env('DB_USERNAME_ES_OBRERO', 'useptextblast'),
+        //     'password' => env('DB_PASSWORD_ES_OBRERO', 'US3Pt3xtb@st'),
+        //     'charset' => 'utf8',
+        //     'prefix' => '',
+        //     'prefix_indexes' => true,
+        //     // Uncomment and configure if needed for encryption
+        //     // 'encrypt' => env('DB_ENCRYPT_ES_OBRERO', 'yes'),
+        //     // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_OBRERO', 'false'),
+        // ],
+
         // Mintal Campus Database Connection
         'es_mintal' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_MINTAL', '10.10.11.1'),
+            'host' => env('DB_HOST_ES_MINTAL', '172.16.210.20'),
             'port' => env('DB_PORT_ES_MINTAL', '1433'),
-            'database' => env('DB_DATABASE_ES_MINTAL', 'es_mintal'),
+            'database' => env('DB_DATABASE_ES_MINTAL', 'es_mintal_new'),
             'username' => env('DB_USERNAME_ES_MINTAL', 'useptextblast'),
             'password' => env('DB_PASSWORD_ES_MINTAL', 'US3Pt3xtb@st'),
             'charset' => 'utf8',
@@ -145,10 +162,26 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MINTAL', 'false'),
         ],
 
+        // // Mintal Campus Database Connection LIVE
+        // 'es_mintal' => [
+        //     'driver' => 'sqlsrv',
+        //     'host' => env('DB_HOST_ES_MINTAL', '10.10.11.1'),
+        //     'port' => env('DB_PORT_ES_MINTAL', '1433'),
+        //     'database' => env('DB_DATABASE_ES_MINTAL', 'es_mintal'),
+        //     'username' => env('DB_USERNAME_ES_MINTAL', 'useptextblast'),
+        //     'password' => env('DB_PASSWORD_ES_MINTAL', 'US3Pt3xtb@st'),
+        //     'charset' => 'utf8',
+        //     'prefix' => '',
+        //     'prefix_indexes' => true,
+        //     // Uncomment and configure if needed for encryption
+        //     // 'encrypt' => env('DB_ENCRYPT_ES_MINTAL', 'yes'),
+        //     // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MINTAL', 'false'),
+        // ],
+
         // Tagum Campus Database Connection
         'es_tagum' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_TAGUM', '10.10.10.1'),
+            'host' => env('DB_HOST_ES_TAGUM', '172.16.210.20'),
             'port' => env('DB_PORT_ES_TAGUM', '1433'),
             'database' => env('DB_DATABASE_ES_TAGUM', 'es_tagum'),
             'username' => env('DB_USERNAME_ES_TAGUM', 'useptextblast'),
@@ -161,10 +194,26 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_TAGUM', 'false'),
         ],
 
+        // // Tagum Campus Database Connection LIVE
+        // 'es_tagum' => [
+        //     'driver' => 'sqlsrv',
+        //     'host' => env('DB_HOST_ES_TAGUM', '10.10.10.1'),
+        //     'port' => env('DB_PORT_ES_TAGUM', '1433'),
+        //     'database' => env('DB_DATABASE_ES_TAGUM', 'es_tagum'),
+        //     'username' => env('DB_USERNAME_ES_TAGUM', 'useptextblast'),
+        //     'password' => env('DB_PASSWORD_ES_TAGUM', 'US3Pt3xtb@st'),
+        //     'charset' => 'utf8',
+        //     'prefix' => '',
+        //     'prefix_indexes' => true,
+        //     // Uncomment and configure if needed for encryption
+        //     // 'encrypt' => env('DB_ENCRYPT_ES_TAGUM', 'yes'),
+        //     // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_TAGUM', 'false'),
+        // ],
+
         // Mabini Campus Database Connection
         'es_mabini' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_ES_MABINI', '10.10.12.1'),
+            'host' => env('DB_HOST_ES_MABINI', '172.16.210.20'),
             'port' => env('DB_PORT_ES_MABINI', '1433'),
             'database' => env('DB_DATABASE_ES_MABINI', 'es_mabini'),
             'username' => env('DB_USERNAME_ES_MABINI', 'useptextblast'),
@@ -176,10 +225,27 @@ return [
             // 'encrypt' => env('DB_ENCRYPT_ES_MABINI', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MABINI', 'false'),
         ],
-        
+
+        // // Mabini Campus Database Connection LIVE
+        // 'es_mabini' => [
+        //     'driver' => 'sqlsrv',
+        //     'host' => env('DB_HOST_ES_MABINI', '10.10.12.1'),
+        //     'port' => env('DB_PORT_ES_MABINI', '1433'),
+        //     'database' => env('DB_DATABASE_ES_MABINI', 'es_mabini'),
+        //     'username' => env('DB_USERNAME_ES_MABINI', 'useptextblast'),
+        //     'password' => env('DB_PASSWORD_ES_MABINI', 'US3Pt3xtb@st'),
+        //     'charset' => 'utf8',
+        //     'prefix' => '',
+        //     'prefix_indexes' => true,
+        //     // Uncomment and configure if needed for encryption
+        //     // 'encrypt' => env('DB_ENCRYPT_ES_MABINI', 'yes'),
+        //     // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_ES_MABINI', 'false'),
+        // ],
+
+        //hris connection
         'mysql_hris' => [
             'driver' => 'mysql',
-            'host' => '172.16.210.15',
+            'host' => '172.16.210.17',
             'port' => '3306',
             'database' => 'hris',
             'username' => 'useptextblast',
@@ -187,6 +253,18 @@ return [
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
         ],
+        
+        //hris LIVE
+        // 'mysql_hris' => [
+        //     'driver' => 'mysql',
+        //     'host' => '172.16.210.15',
+        //     'port' => '3306',
+        //     'database' => 'hris',
+        //     'username' => 'useptextblast',
+        //     'password' => 'US3Pt3xtb@st',
+        //     'charset' => 'utf8mb4',
+        //     'collation' => 'utf8mb4_unicode_ci',
+        // ],
 
     ],
 
