@@ -24,24 +24,60 @@ document.addEventListener("DOMContentLoaded", function () {
         typeId = null,
         statusId = null
     ) {
-        let url = `/api/recipient-count?tab=${tab}&campus=${campusId}`;
+        if (tab === 'all' || tab === '') {
+            // For the 'all' tab, update total recipients by getting counts for both students and employees
+            let studentCountUrl = `/api/recipient-count?tab=students&campus=${campusId}`;
+            let employeeCountUrl = `/api/recipient-count?tab=employees&campus=${campusId}`;
 
-        if (collegeId) url += `&college=${collegeId}`;
-        if (programId) url += `&program=${programId}`;
-        if (majorId) url += `&major=${majorId}`;
-        if (yearId) url += `&year=${yearId}`;
-        if (officeId) url += `&office=${officeId}`;
-        if (typeId) url += `&type=${typeId}`;
-        if (statusId) url += `&status=${statusId}`;
+            if (collegeId) studentCountUrl += `&college=${collegeId}`;
+            if (programId) studentCountUrl += `&program=${programId}`;
+            if (majorId) studentCountUrl += `&major=${majorId}`;
+            if (yearId) studentCountUrl += `&year=${yearId}`;
 
-        fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                totalRecipientsInput.value = data.totalRecipients;
-            })
-            .catch((error) =>
-                console.error("Error fetching recipient count:", error)
-            );
+            if (officeId) employeeCountUrl += `&office=${officeId}`;
+            if (typeId) employeeCountUrl += `&type=${typeId}`;
+            if (statusId) employeeCountUrl += `&status=${statusId}`;
+
+            // Fetch student count
+            fetch(studentCountUrl)
+                .then(response => response.json())
+                .then(studentData => {
+                    const studentCount = studentData.totalRecipients || 0;
+
+                    // Fetch employee count
+                    fetch(employeeCountUrl)
+                        .then(response => response.json())
+                        .then(employeeData => {
+                            const employeeCount = employeeData.totalRecipients || 0;
+
+                            // Combine student and employee counts
+                            totalRecipientsInput.value = studentCount + employeeCount;
+                        })
+                        .catch(error => console.error("Error fetching employee count:", error));
+                })
+                .catch(error => console.error("Error fetching student count:", error));
+
+        } else {
+            // For specific tabs (students or employees), fetch the count for that tab
+            let url = `/api/recipient-count?tab=${tab}&campus=${campusId}`;
+
+            if (collegeId) url += `&college=${collegeId}`;
+            if (programId) url += `&program=${programId}`;
+            if (majorId) url += `&major=${majorId}`;
+            if (yearId) url += `&year=${yearId}`;
+            if (officeId) url += `&office=${officeId}`;
+            if (typeId) url += `&type=${typeId}`;
+            if (statusId) url += `&status=${statusId}`;
+
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    totalRecipientsInput.value = data.totalRecipients;
+                })
+                .catch((error) =>
+                    console.error("Error fetching recipient count:", error)
+                );
+        }
     }
 
     // Helper function to create a default "Select" option and an "All" option
