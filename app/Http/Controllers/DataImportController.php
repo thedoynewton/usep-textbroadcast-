@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Campus;
 use App\Models\College;
+use App\Models\Employee;
 use App\Models\Major;
 use App\Models\Program;
 use App\Models\Student;
@@ -546,6 +547,11 @@ class DataImportController extends Controller
     public function importEmployees(Request $request)
     {
         try {
+
+             // Step 1: Set all employees to inactive
+             Employee::where('is_active', 1)
+             ->update(['is_active' => 0]);
+
             // Fetch employees from HRIS database
             $employees = DB::connection('mysql_hris')->table('vw_employee_tb')->get([
                 'EmployeeID', 'FirstName', 'LastName', 'MiddleName', 'Contact #', 'Email',
@@ -584,6 +590,7 @@ class DataImportController extends Controller
                         'office_id' => $employee->OfficeID,
                         'status_id' => $employee->StatusID,
                         'type_id' => $employee->TypeID,
+                        'is_active' => 1,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]
@@ -601,6 +608,5 @@ class DataImportController extends Controller
             return redirect()->back()->with('error', 'An error occurred during the import.');
         }
     }
-          
-
+        
 }

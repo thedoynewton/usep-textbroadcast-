@@ -137,6 +137,19 @@ class FilterService
             $query->where('enrollment_stat', 'active');
         }
 
+        // Exclude inactive employees
+        if ($tab === 'employees') {
+            $query->where('is_active', 1);
+        }
+
+        // Exclude both students and employees if the tab is 'all'
+        if ($tab === 'all') {
+            $query->where(function ($query) {
+                $query->where('enrollment_stat', '!=', 'active')
+                    ->orWhere('is_active', '!=', 1);
+            });
+        }
+
         return $query->count();
     }
 }
