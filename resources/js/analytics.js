@@ -2,101 +2,115 @@ document.addEventListener("DOMContentLoaded", function () {
     // Pie chart for messages by category
     const ctxCategory = document
         .getElementById("messagesByCategoryChart")
-        .getContext("2d");
-    const categoryLabels = JSON.parse(
-        ctxCategory.canvas.dataset.categoryLabels
-    );
-    const categoryCounts = JSON.parse(
-        ctxCategory.canvas.dataset.categoryCounts
-    );
+        ?.getContext("2d");
+    if (ctxCategory) {
+        const categoryLabels = JSON.parse(
+            ctxCategory.canvas.dataset.categoryLabels || "[]"
+        );
+        const categoryCounts = JSON.parse(
+            ctxCategory.canvas.dataset.categoryCounts || "[]"
+        );
 
-    new Chart(ctxCategory, {
-        type: "pie",
-        data: {
-            labels: categoryLabels,
-            datasets: [
-                {
-                    label: "Messages Category",
-                    data: categoryCounts,
-                    backgroundColor: [
-                        "#4dc9f6",
-                        "#f67019",
-                        "#f53794",
-                        "#537bc4",
-                        "#acc236",
-                        "#166a8f",
-                        "#00a950",
-                        "#58595b",
-                        "#8549ba",
-                    ],
-                    hoverOffset: 4,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: "bottom",
+        new Chart(ctxCategory, {
+            type: "pie",
+            data: {
+                labels: categoryLabels,
+                datasets: [
+                    {
+                        label: "Messages Category",
+                        data: categoryCounts,
+                        backgroundColor: [
+                            "#4dc9f6",
+                            "#f67019",
+                            "#f53794",
+                            "#537bc4",
+                            "#acc236",
+                            "#166a8f",
+                            "#00a950",
+                            "#58595b",
+                            "#8549ba",
+                        ],
+                        hoverOffset: 4,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                    },
                 },
             },
-        },
-    });
+        });
+    }
 
     // Bar chart for messages by recipient type
     const ctxRecipientType = document
         .getElementById("messagesByRecipientTypeChart")
-        .getContext("2d");
+        ?.getContext("2d");
+    if (ctxRecipientType) {
+        const recipientTypes = JSON.parse(
+            ctxRecipientType.canvas.dataset.recipientTypes || "[]"
+        );
+        const recipientCounts = JSON.parse(
+            ctxRecipientType.canvas.dataset.recipientCounts || "[]"
+        );
 
-    const recipientTypes = JSON.parse(
-        ctxRecipientType.canvas.dataset.recipientTypes
-    );
-    const recipientCounts = JSON.parse(
-        ctxRecipientType.canvas.dataset.recipientCounts
-    );
-
-    new Chart(ctxRecipientType, {
-        type: "bar",
-        data: {
-            labels: recipientTypes,
-            datasets: [
-                {
-                    label: "Messages Sent",
-                    data: recipientCounts,
-                    backgroundColor: "#4CAF50",
-                    borderColor: "#4CAF50",
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1, // Ensure step increments by 1
-                        callback: function (value) {
-                            return Math.round(value); // Ensure only integers are displayed
+        new Chart(ctxRecipientType, {
+            type: "bar",
+            data: {
+                labels: recipientTypes,
+                datasets: [
+                    {
+                        label: "Messages Sent",
+                        data: recipientCounts,
+                        backgroundColor: "#4CAF50",
+                        borderColor: "#4CAF50",
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1, // Ensure step increments by 1
+                            callback: function (value) {
+                                return Math.round(value); // Ensure only integers are displayed
+                            },
                         },
                     },
                 },
-            },
-            plugins: {
-                legend: {
-                    display: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
                 },
             },
-        },
-    });
+        });
+    }
 
     // Grouped bar chart for messages by status
     const ctxStatus = document.getElementById("messagesByStatusChart");
     if (ctxStatus) {
-        const dates = JSON.parse(ctxStatus.dataset.statusDates || "[]");
-        const statusData = JSON.parse(ctxStatus.dataset.statusData || "[]");
+        let dates = JSON.parse(ctxStatus.dataset.statusDates || "[]"); // Use let here
+        let statusData = JSON.parse(ctxStatus.dataset.statusData || "[]");
+
+        // Ensure 'dates' is an array and convert if it's an object
+        if (typeof dates === "object" && !Array.isArray(dates)) {
+            dates = Object.values(dates); // Convert object values to an array
+        }
+
+        // Ensure 'dates' is an array
+        if (!Array.isArray(dates)) {
+            console.error("Invalid dates format:", dates);
+            return;
+        }
 
         // Assign colors for statuses
         const statusColors = {
@@ -106,12 +120,14 @@ document.addEventListener("DOMContentLoaded", function () {
             Pending: "#2196F3",
         };
 
+        // Map over statusData and add colors dynamically based on labels
         const updatedStatusData = statusData.map((dataset) => ({
             ...dataset,
             backgroundColor: statusColors[dataset.label] || "#999999",
             borderColor: statusColors[dataset.label] || "#999999",
         }));
 
+        // Create the chart
         new Chart(ctxStatus.getContext("2d"), {
             type: "bar",
             data: {
@@ -165,17 +181,29 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle Export for Status Data
     document
         .getElementById("exportStatusData")
-        .addEventListener("click", () => {
-            const dates = JSON.parse(
+        ?.addEventListener("click", () => {
+            let dates = JSON.parse(
                 document
                     .getElementById("messagesByStatusChart")
-                    .getAttribute("data-status-dates")
+                    ?.getAttribute("data-status-dates") || "[]"
             );
-            const statusData = JSON.parse(
+
+            let statusData = JSON.parse(
                 document
                     .getElementById("messagesByStatusChart")
-                    .getAttribute("data-status-data")
+                    ?.getAttribute("data-status-data") || "[]"
             );
+
+            // Ensure 'dates' is an array. If it's an object, convert to array using Object.values().
+            if (typeof dates === "object" && !Array.isArray(dates)) {
+                dates = Object.values(dates); // Convert object values to an array
+            }
+
+            // If 'dates' is not an array or it's an empty array, log an error and stop the execution
+            if (!Array.isArray(dates) || dates.length === 0) {
+                console.error("Invalid or empty dates format:", dates);
+                return;
+            }
 
             // Prepare header row with all statuses dynamically from the datasets
             const statusKeys = statusData.map((dataset) => dataset.label); // Extract all status labels
@@ -195,22 +223,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 rows.push(row);
             });
 
+            // Call function to export data to CSV
             exportToCSV("messages_by_status.csv", rows);
         });
 
     // Handle Export for Category Data
     document
         .getElementById("exportCategoryData")
-        .addEventListener("click", () => {
+        ?.addEventListener("click", () => {
             const labels = JSON.parse(
                 document
                     .getElementById("messagesByCategoryChart")
-                    .getAttribute("data-category-labels")
+                    .getAttribute("data-category-labels") || "[]"
             );
             const counts = JSON.parse(
                 document
                     .getElementById("messagesByCategoryChart")
-                    .getAttribute("data-category-counts")
+                    .getAttribute("data-category-counts") || "[]"
             );
 
             const rows = [["Category", "Count"]];
@@ -224,16 +253,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // Handle Export for Recipient Type Data
     document
         .getElementById("exportRecipientTypeData")
-        .addEventListener("click", () => {
+        ?.addEventListener("click", () => {
             const types = JSON.parse(
                 document
                     .getElementById("messagesByRecipientTypeChart")
-                    .getAttribute("data-recipient-types")
+                    .getAttribute("data-recipient-types") || "[]"
             );
             const counts = JSON.parse(
                 document
                     .getElementById("messagesByRecipientTypeChart")
-                    .getAttribute("data-recipient-counts")
+                    .getAttribute("data-recipient-counts") || "[]"
             );
 
             const rows = [["Recipient Type", "Count"]];
@@ -244,20 +273,32 @@ document.addEventListener("DOMContentLoaded", function () {
             exportToCSV("messages_by_recipient_type.csv", rows);
         });
 
-        document.getElementById("applyFilter").addEventListener("click", function () {
-            const startDate = document.getElementById("startDate").value;
-            const endDate = document.getElementById("endDate").value;
-        
-            fetch(`/analytics/data?startDate=${startDate}&endDate=${endDate}`)
-                .then(response => response.json())
-                .then(data => {
-                    updateCharts(data);
-                });
+    // Date filter handling
+    document
+        .getElementById("applyFilter")
+        ?.addEventListener("click", function () {
+            const startDate = document.getElementById("startDate")?.value || "";
+            const endDate = document.getElementById("endDate")?.value || "";
+
+            if (startDate && endDate) {
+                fetch(
+                    `/analytics/data?startDate=${startDate}&endDate=${endDate}`
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        updateCharts(data);
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching filtered data:", error);
+                    });
+            } else {
+                console.error("Start Date or End Date is missing.");
+            }
         });
-        
-        function updateCharts(data) {
-            // Update your charts using the `data` response
-            console.log(data); // Debug and refresh charts here
-        }
-        
+
+    // Update charts with new data
+    function updateCharts(data) {
+        console.log(data); // Debug and refresh charts here
+        // Here, you'd typically update the charts with the new data
+    }
 });

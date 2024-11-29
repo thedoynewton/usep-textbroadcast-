@@ -108,7 +108,19 @@ class AnalyticsController extends Controller
             ];
         }
 
-        // Pass all the prepared data to the view
+        // Return the data as JSON for API responses (for frontend charting)
+        if ($request->wantsJson()) {
+            return response()->json([
+                'categoryLabels' => $categoryLabels,
+                'categoryCounts' => $categoryCounts,
+                'recipientTypes' => $recipientTypes,
+                'recipientCounts' => $recipientCounts,
+                'statusData' => $statusData,
+                'dates' => $dates,
+            ]);
+        }
+
+        // Pass all the prepared data to the view for rendering
         return view('analytics.index', [
             'categoryLabels' => $categoryLabels, // Category names
             'categoryCounts' => $categoryCounts, // Corresponding message log counts
