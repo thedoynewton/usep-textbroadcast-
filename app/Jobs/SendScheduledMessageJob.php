@@ -166,6 +166,7 @@ class SendScheduledMessageJob implements ShouldQueue
                 return $query->where('type_id', $typeId);
             })
             ->whereNotNull('emp_contact') // Ensure contact number is not null
+            ->where('is_active', '=', 1) // Ensure contact number is not empty
             ->where('emp_contact', '!=', '') // Ensure contact number is not empty
             ->get();
 
