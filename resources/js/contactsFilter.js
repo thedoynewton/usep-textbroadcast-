@@ -175,14 +175,33 @@ document.addEventListener("DOMContentLoaded", function () {
                             );
                             clearEditForm();
 
-                            alert("Contact number updated successfully.");
+                            // Success SweetAlert
+                            Swal.fire({
+                                title: "Success",
+                                text: "Contact number updated successfully.",
+                                icon: "success",
+                                confirmButtonText: "OK",
+                            });
                         } else {
-                            alert("Failed to update contact number.");
+                            // Failure SweetAlert
+                            Swal.fire({
+                                title: "Failed",
+                                text: "Failed to update contact number.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                            });
                         }
                     })
-                    .catch((error) =>
-                        console.error("Error updating contact number:", error)
-                    );
+                    .catch((error) => {
+                        console.error("Error updating contact number:", error);
+                        // Error SweetAlert in case of a fetch error
+                        Swal.fire({
+                            title: "Error",
+                            text: "An error occurred while updating the contact number.",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+                    });
             });
         }
 
