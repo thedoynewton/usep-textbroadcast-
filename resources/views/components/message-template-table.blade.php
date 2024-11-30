@@ -1,41 +1,36 @@
 <div>
-    <!-- Button to Open Create Modal -->
-    <button class="bg-[#9d1e18] text-white px-4 py-2 rounded mb-4" x-data
-        @click="$dispatch('open-modal', 'create-message-template')">
-        Create New Template
-    </button>
 
     <!-- Message Templates Table -->
     <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border-collapse border border-gray-300 rounded-lg text-center">
-            <thead class="bg-gray-700">
+        <table class="min-w-full bg-white border-collapse border border-gray-300 rounded-lg text-center min-h-1">
+            <thead class="bg-gray-600">
                 <tr class="text-center">
                     <th
-                        class="py-3 px-4 border-b text-xs sm:text-sm md:text-base font-semibold text-white uppercase tracking-wider">
+                        class="py-3 px-4 border-b text-xs sm:text-xs md:text-xs font-semibold text-white tracking-wider">
                         Category</th>
                     <th
-                        class="py-3 px-4 border-b text-xs sm:text-sm md:text-base font-semibold text-white uppercase tracking-wider">
+                        class="py-3 px-4 border-b text-xs sm:text-xs md:text-xs font-semibold text-white tracking-wider">
                         Title</th>
                     <th
-                        class="py-3 px-4 border-b text-xs sm:text-sm md:text-base font-semibold text-white uppercase tracking-wider">
+                        class="py-3 px-4 border-b text-xs sm:text-xs md:text-xs font-semibold text-white tracking-wider">
                         Content</th>
                     <th
-                        class="py-3 px-4 border-b text-xs sm:text-sm md:text-base font-semibold text-white uppercase tracking-wider">
+                        class="py-3 px-4 border-b text-xs sm:text-xs md:text-xs font-semibold text-white tracking-wider">
                         Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($messageTemplates as $template)
                     <tr class="hover:bg-red-100 transition duration-150 ease-in-out">
-                        <td class="border dark:border-gray-700 px-4 py-2 text-xs sm:text-sm md:text-base">
+                        <td class="border dark:border-gray-700 px-2 py-1 text-left text-xs sm:text-xs md:text-xs">
                             {{ $template->category->name ?? 'Uncategorized' }}</td>
-                        <td class="border dark:border-gray-700 px-4 py-2 text-xs sm:text-sm md:text-base">
+                        <td class="border dark:border-gray-700 px-2 py-1 text-left text-xs sm:text-xs md:text-xs">
                             {{ $template->name }}</td>
-                        <td class="border dark:border-gray-700 px-4 py-2 text-left text-xs sm:text-sm md:text-base">
+                        <td class="border dark:border-gray-700 px-2 py-1 text-left text-xs sm:text-xs md:text-xs">
                             <!-- Display short content with "Read More" link if content exceeds 30 characters -->
                             @if (strlen($template->content) > 30)
                                 {{ Str::limit($template->content, 30) }}...
-                                <button class="text-blue-500 hover:underline text-xs sm:text-sm md:text-base" x-data
+                                <button class="text-blue-500 hover:underline text-xs sm:text-xs md:text-xs" x-data
                                     @click="$dispatch('open-modal', 'read-more-{{ $template->id }}')">
                                     Read More
                                 </button>
@@ -44,11 +39,11 @@
                             @endif
                         </td>
 
-                        <td class="border dark:border-gray-700 px-4 py-2 text-xs sm:text-sm md:text-base">
+                        <td class="border dark:border-gray-700 px-4 py-1 text-xs sm:text-sm md:text-base">
                             <!-- Button to Open Edit Modal -->
                             <button class="rounded-full bg-blue-500 p-2 hover:bg-blue-600 items-center justify-center"
                                 x-data @click="$dispatch('open-modal', 'edit-message-template-{{ $template->id }}')">
-                                <img src="{{ asset('images/edit.png') }}" alt="Edit" class="h-5 w-5"
+                                <img src="{{ asset('images/edit.png') }}" alt="Edit" class="h-4 w-4"
                                     style="filter: brightness(0) invert(1);">
                             </button>
 

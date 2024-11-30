@@ -1,42 +1,47 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-white leading-tight">
-            {{ ('Dashboard') }}
+            {{ 'Dashboard' }}
         </h2>
     </x-slot>
 
-    <div x-data="{ activeTab: 'logs' }" class="container mx-auto px-4 sm:px-6 lg:px-8">
+    @if (session('error'))
+        <div class="bg-red-500 text-white font-bold py-2 px-4 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div x-data="{ activeTab: 'logs' }" class="pt-4 container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white p-4 rounded-lg shadow-lg">
 
             <!-- Tabs Navigation -->
-            <div class="flex-wrap flex border-b">
-                <nav class="flex space-x-4" aria-label="Tabs">
+            <div class="flex-wrap flex border-b-2">
+                <nav class="flex" aria-label="Tabs">
                     <button @click="activeTab = 'logs'"
-                        :class="{ 'border-b-2 border-blue-700 text-blue-600': activeTab === 'logs', 'inline-block py-2 px-4 text-black font-semibold': activeTab !== 'logs' }"
-                        class="px-3 py-2 font-medium focus:outline-none">
-                        LOGS
+                        :class="{
+                            'text-white bg-[#333333] font-semibold border-b-2': activeTab === 'logs',
+                            'inline-block py-2 px-4 text-black font-semibold hover:bg-gray-100': activeTab !== 'logs'
+                        }"
+                        class="px-3 py-2 font-medium focus:outline-none rounded-tl-lg rounded-tr-lg transition duration-200 ease-in-out">
+                        Message Logs
                     </button>
                     <button @click="activeTab = 'widgets'"
-                        :class="{ 'border-b-2 border-blue-700 text-blue-600': activeTab === 'widgets', 'inline-block py-2 px-4 text-black font-semibold': activeTab !== 'widgets' }"
-                        class="px-3 py-2 font-medium focus:outline-none">
-                        SUMMARY
+                        :class="{
+                            'text-white bg-[#333333] font-semibold border-b-2': activeTab === 'widgets',
+                            'inline-block py-2 px-4 text-black font-semibold hover:bg-gray-100': activeTab !== 'widgets'
+                        }"
+                        class="px-3 py-2 font-medium focus:outline-none rounded-tl-lg rounded-tr-lg transition duration-200 ease-in-out">
+                        Summary
                     </button>
                 </nav>
             </div>
 
-
-            @if (session('error'))
-                <div class="bg-red-500 text-white font-bold py-2 px-4 rounded mb-4">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             <!-- Logs Section -->
             <div x-show="activeTab === 'logs'" class="space-y-6">
                 <!-- Search and Filters -->
-                <div class="p-4 bg-white shadow-sm sm:rounded-lg">
+                <div class="px-4 pt-10 sm:rounded-lg">
                     <form id="form" method="GET" action="{{ route('dashboard') }}"
-                        class="flex flex-col md:flex-row gap-4 items-center pb-3">
+                        class="text-sm flex flex-col md:flex-row gap-4 items-center pb-3">
                         <!-- Search Bar -->
                         <div class="flex-grow w-full md:w-auto">
                             <input type="text" name="search" id="searchInput" value="{{ request('search') }}"
@@ -76,8 +81,8 @@
 
                         <div class="relative inline-block text-left sm:w-auto">
                             <button type="button" id="generateReportButton"
-                                class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Generate Message Logs Report
+                                class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Generate Report
                             </button>
 
                             <div id="reportDropdown"
@@ -96,10 +101,16 @@
 
 
                     <!-- Message Logs Table -->
-                    <div class="overflow-x-auto rounded-lg shadow-md border border-gray-300">
-                        <div id="messageLogsContainer">
-                            @include('partials.message-logs-content', ['messageLogs' => $messageLogs])
+                    <div class="">
+                        <div class="   border border-gray-300">
+                            <div id="messageLogsContainer">
+                                @include('partials.message-logs-content', ['messageLogs' => $messageLogs])
+                            </div>
                         </div>
+                    </div>
+                    <!-- Pagination Links -->
+                    <div id="paginationContainer" class="sticky bottom-0 pt-3 pb-5">
+                        {{ $messageLogs->links() }}
                     </div>
                 </div>
 
@@ -127,7 +138,8 @@
             </div>
 
             <!-- Widgets Section -->
-            <div x-show="activeTab === 'widgets'" class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-5">
+            <div x-show="activeTab === 'widgets'"
+                class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-5">
                 <!-- Total Messages Card -->
                 {{-- id="totalMessagesCard" --}}
                 <div

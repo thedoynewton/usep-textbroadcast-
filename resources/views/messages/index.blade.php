@@ -24,25 +24,35 @@
             </div>
 
             <!-- Main Form -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="bg-white p-4 rounded-lg shadow-md">
                 <!-- Tabs -->
-                <ul class="flex-wrap flex border-b">
-                    <li class="mr-4">
+                <ul class="flex-wrap flex border-b-2">
+                    <li>
                         <a href="{{ route('messages.index', ['tab' => 'all', 'campus' => request('campus')]) }}"
-                            class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'all' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">ALL</a>
+                            class="inline-block py-2 px-4 text-black font-semibold focus:outline-none rounded-tl-lg rounded-tr-lg transition duration-200 ease-in-out 
+            {{ request('tab') == 'all' || !request('tab') ? 'text-white bg-[#333333] border-b-2' : 'hover:bg-gray-100    ' }}">
+                            All
+                        </a>
                     </li>
-                    <li class="mr-4">
+                    <li>
                         <a href="{{ route('messages.index', ['tab' => 'students', 'campus' => request('campus')]) }}"
-                            class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'students' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">STUDENTS</a>
+                            class="inline-block py-2 px-4 text-black font-semibold focus:outline-none rounded-tl-lg rounded-tr-lg transition duration-200 ease-in-out 
+            {{ request('tab') == 'students' ? ' text-white bg-[#333333] border-b-2' : 'hover:bg-gray-100' }}">
+                            Students
+                        </a>
                     </li>
                     <li>
                         <a href="{{ route('messages.index', ['tab' => 'employees', 'campus' => request('campus')]) }}"
-                            class="inline-block py-2 px-4 text-black font-semibold {{ request('tab') == 'employees' ? 'border-b-2 border-blue-700 text-blue-600' : '' }}">EMPLOYEES</a>
+                            class="inline-block py-2 px-4 text-black font-semibold focus:outline-none rounded-tl-lg rounded-tr-lg transition duration-200 ease-in-out 
+            {{ request('tab') == 'employees' ? ' text-white bg-[#333333] border-b-2' : 'hover:bg-gray-100' }}">
+                            Employees
+                        </a>
                     </li>
                 </ul>
 
+
                 <!-- Form -->
-                <form action="{{ route('messages.store') }}" method="POST" id="message-form" class="mt-6">
+                <form action="{{ route('messages.store') }}" method="POST" id="message-form" class="pt-10">
                     @csrf
                     <input type="hidden" name="tab" value="{{ request('tab') }}">
 
@@ -158,7 +168,7 @@
                     <!-- Message Input -->
                     <div class="mt-6">
                         <x-input-label for="message" value="Message" />
-                        <textarea id="message" name="message" rows="4" maxlength="160"
+                        <textarea id="message" name="message" rows="7" maxlength="160"
                             class="block w-full mt-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50 focus:ring-indigo-300 p-2 text-sm overflow-y-auto resize-none"
                             placeholder="Enter your message here..."></textarea>
                     </div>
@@ -183,7 +193,7 @@
                             <x-input-label for="total_recipients" value="Total Recipients" />
                             <x-text-input id="total_recipients" name="total_recipients" type="number"
                                 value="{{ $totalRecipients ?? 0 }}"
-                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm sm:text-sm"
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm sm:text-sm"
                                 readonly />
                         </div>
 
@@ -334,11 +344,6 @@
         </div>
     </div>
 
-    @vite([
-        'resources/js/messages.js', 
-        'resources/js/dynamicFilters.js', 
-        'resources/js/sendMessageToggle.js', 
-        'resources/js/messagePreview.js'
-        ])
+    @vite(['resources/js/messages.js', 'resources/js/dynamicFilters.js', 'resources/js/sendMessageToggle.js', 'resources/js/messagePreview.js'])
 
 </x-app-layout>

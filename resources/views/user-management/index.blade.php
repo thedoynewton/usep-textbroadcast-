@@ -5,27 +5,27 @@
         </h2>
     </x-slot>
 
-    <div class="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl">
+    <!-- Display success message -->
+    @if (session('success'))
+        <div x-data="{ open: true }" x-init="setTimeout(() => open = false, 2000)" x-show="open"
+            class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-black bg-opacity-50 absolute inset-0 backdrop-blur-sm"></div>
+            <div class="bg-green-500 text-white px-6 py-4 rounded-md shadow-lg z-10">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    <!-- Display error message -->
+    @if (session('error'))
+        <div class="bg-red-500 text-white p-4 rounded-md mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div class="bg-white p-6 rounded-lg shadow-lg">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-
-                <!-- Display success message -->
-                @if (session('success'))
-                    <div x-data="{ open: true }" x-init="setTimeout(() => open = false, 2000)" x-show="open"
-                        class="fixed inset-0 flex items-center justify-center z-50">
-                        <div class="bg-black bg-opacity-50 absolute inset-0 backdrop-blur-sm"></div>
-                        <div class="bg-green-500 text-white px-6 py-4 rounded-md shadow-lg z-10">
-                            {{ session('success') }}
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Display error message -->
-                @if (session('error'))
-                    <div class="bg-red-500 text-white p-4 rounded-md mb-4">
-                        {{ session('error') }}
-                    </div>
-                @endif
+            <div class="overflow-hidden shadow-lg sm:rounded-lg p-6">
 
                 <!-- Display error like the success message -->
 
@@ -54,8 +54,7 @@
                         </div>
                         <button type="reset" class="px-4 py-2 bg-[#4b5563] p-2 hover:bg-[#6b7280] text-white rounded">
                             Clear Fields</button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-[#9d1e18] p-2 hover:bg-red-500 text-white rounded">
+                        <button type="submit" class="px-4 py-2 bg-[#9d1e18] p-2 hover:bg-red-500 text-white rounded">
                             Add User</button>
                     </form>
                 </div>
@@ -64,24 +63,21 @@
                     List of Users
                 </h2>
 
-                <table class="text-center min-w-full bg-white border rounded-md overflow-hidden shadow-sm transition-shadow duration-300 hover:shadow-md">
+                <table
+                    class="text-center min-w-full border rounded-md overflow-hidden shadow-sm transition-shadow duration-300 hover:shadow-md">
                     <thead>
                         <tr class=" bg-gray-700">
-                            <th
-                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
+                            <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Name</th>
-                            <th
-                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
+                            <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Email</th>
-                            <th
-                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
+                            <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Role</th>
-                            <th
-                                class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
+                            <th class="py-2 px-4 border-b text-xs font-medium text-white uppercase tracking-wider">
                                 Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class=" divide-y divide-gray-200">
                         @foreach ($users as $user)
                             <tr class="hover:bg-red-100 transition-colors duration-300">
                                 <td class="py-2 px-4 text-xs text-gray-700">

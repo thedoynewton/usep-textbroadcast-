@@ -132,7 +132,7 @@
 
         <!-- Wave Effect -->
         <img id="waveEffect" src="/images/wave.png" alt="Wave Effect"
-            class="absolute bottom-0 left-0 w-full h-auto z-0">
+            class="absolute bottom-0 left-0 w-full h-auto z-0 opacity-70">
     </div>
 
     <script>

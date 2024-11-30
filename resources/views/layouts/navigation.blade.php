@@ -63,7 +63,7 @@
         <!-- Navigation Links -->
         <ul class="mt-5">
             <li
-                class="{{ request()->routeIs('dashboard') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
+                class="{{ request()->routeIs('dashboard') ? 'button-selected font-bold bg-red-400' : 'button-default button-hover font-normal' }} my-3 hover:bg-red-300">
                 <a href="{{ route('dashboard') }}" class="px-10 py-3 flex items-center w-full h-full text-lg">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
@@ -82,7 +82,7 @@
 
             @if (Auth::user()->role === 'admin' || Auth::user()->role === 'subadmin')
                 <li
-                    class="{{ request()->routeIs('messages.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
+                    class="{{ request()->routeIs('messages.index') ? 'button-selected font-bold bg-red-400' : 'button-default button-hover font-normal' }} my-3 hover:bg-red-300">
                     <a href="{{ route('messages.index') }}" class="px-10 py-3 flex items-center w-full h-full text-lg">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
@@ -96,7 +96,7 @@
                     </a>
                 </li>
                 <li
-                    class="{{ request()->routeIs('templates.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
+                    class="{{ request()->routeIs('templates.index') ? 'button-selected font-bold bg-red-400' : 'button-default button-hover font-normal' }} my-3 hover:bg-red-300">
                     <a href="{{ route('templates.index') }}"
                         class="px-10 py-3 flex items-center w-full h-full text-lg">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-[1.2rem]">
@@ -109,7 +109,7 @@
                 </li>
 
                 <li
-                    class="{{ request()->routeIs('analytics.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
+                    class="{{ request()->routeIs('analytics.index') ? 'button-selected font-bold bg-red-400' : 'button-default button-hover font-normal' }} my-3 hover:bg-red-300">
                     <a href="{{ route('analytics.index') }}"
                         class="px-10 py-3 flex items-center w-full h-full text-lg">
                         <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
@@ -137,7 +137,7 @@
 
             @if (Auth::user()->role === 'admin')
                 <li
-                    class="{{ request()->routeIs('user-management') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
+                    class="{{ request()->routeIs('user-management') ? 'button-selected font-bold bg-red-400' : 'button-default button-hover font-normal' }} my-3 hover:bg-red-300">
                     <a href="{{ route('user-management') }}"
                         class="px-10 py-3 flex items-center w-full h-full text-lg">
                         <svg width="23" height="23" viewBox="0 0 23 23" fill="none"
@@ -171,7 +171,7 @@
                 </li>
 
                 <li
-                    class="{{ request()->routeIs('app-management.index') ? 'button-selected font-bold' : 'button-default button-hover font-normal' }} my-3">
+                    class="{{ request()->routeIs('app-management.index') ? 'button-selected font-bold bg-red-400' : 'button-default button-hover font-normal' }} my-3 hover:bg-red-300">
                     <a href="{{ route('app-management.index') }}"
                         class="px-10 py-3 flex items-center w-full h-full text-lg">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"

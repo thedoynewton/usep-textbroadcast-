@@ -54,7 +54,7 @@ class DashboardController extends Controller
         // Paginate the results
         $messageLogs = $query->with(['user', 'campus'])
             ->orderBy('created_at', 'desc')
-            ->paginate(5)
+            ->paginate(10)
             ->appends($request->all());
     
         // Check if the request is AJAX
