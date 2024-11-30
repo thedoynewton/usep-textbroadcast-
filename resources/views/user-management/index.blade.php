@@ -16,7 +16,7 @@
                 timer: 2000 // Auto-close the alert after 2 seconds
             });
         @endif
-    
+
         // Check if there's an error message in the session
         @if (session('error'))
             Swal.fire({
@@ -80,29 +80,37 @@
                                 <td class="py-2 px-4 text-xs text-gray-700">
                                     {{ $user->role ?? 'None' }}</td>
                                 <td class="border border-gray-700 px-4 py-2">
-                                    <form action="{{ route('user-management.updateRole', $user->id) }}" method="POST"
-                                        class="inline-block">
-                                        @csrf
-                                        <!-- Hidden input to toggle the role -->
-                                        <input type="hidden" name="role"
-                                            value="{{ $user->role === 'admin' ? 'subadmin' : 'admin' }}">
+                                    @if (Auth::user()->id !== $user->id)
+                                        <!-- Only show actions if user is not logged in user -->
+                                        <form action="{{ route('user-management.updateRole', $user->id) }}"
+                                            method="POST" class="inline-block">
+                                            @csrf
+                                            <!-- Hidden input to toggle the role -->
+                                            <input type="hidden" name="role"
+                                                value="{{ $user->role === 'admin' ? 'subadmin' : 'admin' }}">
 
-                                        <button type="submit" class="rounded-full bg-[#9d1e18] p-2 hover:bg-red-500"
-                                            title="Change Role">
-                                            <img src="/svg/switch user.svg" alt="Change Role" class="h-5 w-5"
-                                                style="filter: brightness(0) invert(1);">
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('user-management.removeRole', $user->id) }}" method="POST"
-                                        class="inline-block mt-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="rounded-full bg-[#4b5563] p-2 hover:bg-[#6b7280]"
-                                            title="Remove Access">
-                                            <img src="/svg/remove access.svg" alt="Remove Access" class="h-5 w-5"
-                                                style="filter: brightness(0) invert(1);">
-                                        </button>
-                                    </form>
+                                            <button type="submit"
+                                                class="rounded-full bg-[#9d1e18] p-2 hover:bg-red-500"
+                                                title="Change Role">
+                                                <img src="/svg/switch user.svg" alt="Change Role" class="h-5 w-5"
+                                                    style="filter: brightness(0) invert(1);">
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('user-management.removeRole', $user->id) }}"
+                                            method="POST" class="inline-block mt-2">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="rounded-full bg-[#4b5563] p-2 hover:bg-[#6b7280]"
+                                                title="Remove Access">
+                                                <img src="/svg/remove access.svg" alt="Remove Access" class="h-5 w-5"
+                                                    style="filter: brightness(0) invert(1);">
+                                            </button>
+                                        </form>
+                                    @else
+                                        <!-- Optionally, you can display a message or hide the actions -->
+                                        <span class="text-gray-400">Actions disabled</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

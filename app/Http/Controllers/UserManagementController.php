@@ -68,11 +68,18 @@ class UserManagementController extends Controller
     public function updateRole(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
+        
+        // Update the user's role
         $this->userService->updateUserRole($user, $request->role);
-
-        return redirect()->route('user-management')->with('success', 'User role updated successfully.');
-    }
+        
+        // Get the new role after the update
+        $newRole = $request->role;
+        $newRole = ucfirst($newRole);
+        
+        // Redirect with a success message including the new role
+        return redirect()->route('user-management')
+                         ->with('success', "User role updated successfully to $newRole.");
+    }    
 
     /**
      * Remove the user's role.
