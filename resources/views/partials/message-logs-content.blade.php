@@ -46,7 +46,7 @@
                                     @method('PATCH')
                                     <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                                 </form>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmCancel({{ $log->id }})">Cancel</button>
+                                <button type="button" class="btn btn-danger btn-sm text-red-600" onclick="confirmCancel({{ $log->id }})">Cancel</button>
                             @endif
                         </td>
                         
