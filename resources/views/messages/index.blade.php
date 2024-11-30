@@ -7,21 +7,33 @@
 
     <div class="py-4 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
-            @if (session('success'))
-                <div class="bg-green-500 text-white p-4 rounded-md mb-4">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="bg-red-500 text-white font-bold py-2 px-4 rounded mb-4">
-                    {{ session('error') }}
-                </div>
-            @endif
+            <script>
+                // Check if there's a success message in the session
+                @if (session('success'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: "{{ session('success') }}",
+                        showConfirmButton: false,
+                        timer: 2000 // Auto-close the alert after 2 seconds
+                    });
+                @endif
+            
+                // Check if there's an error message in the session
+                @if (session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: "{{ session('error') }}",
+                        showConfirmButton: true // Show the "OK" button
+                    });
+                @endif
+            </script>
 
             <!-- Progress Bar -->
-            <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-4 mb-4 hidden">
+            {{-- <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-4 mb-4 hidden">
                 <div id="progress" class="bg-blue-600 h-4 rounded-full" style="width: 0%;"></div>
-            </div>
+            </div> --}}
 
             <!-- Main Form -->
             <div class="bg-white p-4 rounded-lg shadow-md">
@@ -52,7 +64,7 @@
 
 
                 <!-- Form -->
-                <form action="{{ route('messages.store') }}" method="POST" id="message-form" class="pt-10">
+                <form action="{{ route('messages.store') }}" method="POST" id="message-form" class="pt-3">
                     @csrf
                     <input type="hidden" name="tab" value="{{ request('tab') }}">
 

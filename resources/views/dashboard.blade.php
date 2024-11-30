@@ -39,7 +39,7 @@
             <!-- Logs Section -->
             <div x-show="activeTab === 'logs'" class="space-y-6">
                 <!-- Search and Filters -->
-                <div class="px-4 pt-10 sm:rounded-lg">
+                <div class="px-4 pt-3 sm:rounded-lg">
                     <form id="form" method="GET" action="{{ route('dashboard') }}"
                         class="text-sm flex flex-col md:flex-row gap-4 items-center pb-3">
                         <!-- Search Bar -->

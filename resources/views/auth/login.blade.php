@@ -5,7 +5,7 @@
     <!-- Display Session Error Message -->
     @if(session('error'))
         <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
-            <h2 class="font-bold">Error</h2>
+            <h2 class="font-bold"></h2>
             <p>{{ session('error') }}</p>
         </div>
     @endif

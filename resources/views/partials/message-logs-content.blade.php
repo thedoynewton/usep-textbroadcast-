@@ -41,14 +41,34 @@
                         </td>
                         <td class="py-3 px-4 border-b text-gray-600">
                             @if ($log->status === 'pending' && $log->message_type === 'scheduled')
-                                <form action="{{ route('messages.cancel', $log->id) }}" method="POST"
-                                    onsubmit="return confirm('Are you sure you want to cancel this scheduled message?');">
+                                <form id="cancel-form-{{ $log->id }}" action="{{ route('messages.cancel', $log->id) }}" method="POST" style="display: none;">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="btn btn-danger btn-sm px-4 py-2 text-sm md:text-base">Cancel</button>
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                                 </form>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmCancel({{ $log->id }})">Cancel</button>
                             @endif
                         </td>
+                        
+                        <script>
+                            function confirmCancel(logId) {
+                                Swal.fire({
+                                    title: 'Are you sure you want to cancel this message?',
+                                    text: "You won't be able to revert this!",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                    confirmButtonText: 'Yes, cancel it!'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Submit the form if user confirms
+                                        document.getElementById('cancel-form-' + logId).submit();
+                                    }
+                                });
+                            }
+                        </script>
+                        
                     </tr>
 
                     <!-- Toggle Row for Extra Information -->

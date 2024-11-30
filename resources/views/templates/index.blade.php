@@ -5,19 +5,28 @@
         </h2>
     </x-slot>
 
-                    <!-- Success Message -->
-                    @if (session('success'))
-                    <div class="bg-green-500 text-white font-bold py-2 px-4 rounded mb-4">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                <!-- Error Message -->
-                @if (session('error'))
-                    <div class="bg-red-500 text-white font-bold py-2 px-4 rounded mb-4">
-                        {{ session('error') }}
-                    </div>
-                @endif
+    <script>
+        // Check if there's a success message in the session
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 2000 // Auto-close the alert after 2 seconds
+            });
+        @endif
+    
+        // Check if there's an error message in the session
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: "{{ session('error') }}",
+                showConfirmButton: true // Show the "OK" button
+            });
+        @endif
+    </script>
 
     <div class="py-5">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

@@ -5,39 +5,32 @@
         </h2>
     </x-slot>
 
-    <!-- Display success message -->
-    @if (session('success'))
-        <div x-data="{ open: true }" x-init="setTimeout(() => open = false, 2000)" x-show="open"
-            class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="bg-black bg-opacity-50 absolute inset-0 backdrop-blur-sm"></div>
-            <div class="bg-green-500 text-white px-6 py-4 rounded-md shadow-lg z-10">
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif
-
-    <!-- Display error message -->
-    @if (session('error'))
-        <div class="bg-red-500 text-white p-4 rounded-md mb-4">
-            {{ session('error') }}
-        </div>
-    @endif
+    <script>
+        // Check if there's a success message in the session
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 2000 // Auto-close the alert after 2 seconds
+            });
+        @endif
+    
+        // Check if there's an error message in the session
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: "{{ session('error') }}",
+                showConfirmButton: true // Show the "OK" button
+            });
+        @endif
+    </script>
 
     <div class="bg-white p-6 rounded-lg shadow-lg">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="overflow-hidden shadow-lg sm:rounded-lg p-6">
-
-                <!-- Display error like the success message -->
-
-                {{-- @if (session('error'))
-                <div x-data="{ open: true }" x-init="setTimeout(() => open = false, 2500)" x-show="open"
-                    class="fixed inset-0 flex items-center justify-center z-50">
-                    <div class="bg-black bg-opacity-50 absolute inset-0 backdrop-blur-sm"></div>
-                    <div class="bg-red-500 text-white px-6 py-4 rounded-md shadow-lg z-10">
-                        {{ session('success') }}
-                    </div>
-                </div>
-                @endif --}}
 
                 <!-- Add User Form -->
                 <div class="mb-6">

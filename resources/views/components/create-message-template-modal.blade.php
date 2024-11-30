@@ -7,7 +7,7 @@
             <!-- Category Dropdown -->
             <div class="mb-4">
                 <x-input-label for="category_id" value="Select Category" />
-                <select id="category_id" name="category_id" class="block w-full mt-1 border rounded" :disabled="newCategory !== ''">
+                <select id="category_id" name="category_id" class="block w-full mt-1 border rounded">
                     <option value="" disabled selected>Choose a category</option>
                     @foreach ($messageCategories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -19,8 +19,7 @@
             <div class="mb-4">
                 <x-input-label for="new_category" value="Add New Category" />
                 <x-text-input id="new_category" name="new_category" type="text" class="block w-full mt-1"
-                              placeholder="Enter new category name" maxlength="100"
-                              x-data @input="$refs.category_id.disabled = $event.target.value !== ''" />
+                              placeholder="Enter new category name" maxlength="100" />
             </div>
 
             <!-- Title Input -->
@@ -41,3 +40,16 @@
         </div>
     </form>
 </x-modal>
+
+<script>
+    // Wait for the DOM to fully load before attaching event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        const newCategoryInput = document.getElementById('new_category');
+        const categoryDropdown = document.getElementById('category_id');
+
+        // Disable or enable the category dropdown based on the new category input
+        newCategoryInput.addEventListener('input', function() {
+            categoryDropdown.disabled = newCategoryInput.value !== '';
+        });
+    });
+</script>
