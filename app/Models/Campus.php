@@ -10,6 +10,8 @@ class Campus extends Model
     use HasFactory;
     protected $primaryKey = 'campus_id';
 
+    public $incrementing = false;  // Ensure that campus_id is not auto-incrementing
+
     protected $fillable = [
         'campus_id',
         'campus_name',

@@ -444,18 +444,39 @@ class DataImportController extends Controller
 
     public function addCampus(Request $request)
     {
-        // Validate the incoming request
-        $request->validate(['campus_name' => 'required|string|max:100']);
-
-        // Create a new campus in the database
-        $campus = Campus::create(['campus_name' => $request->campus_name]);
-
-        // Generate the HTML for the new campus card using the Blade partial
-        $cardHtml = view('partials.campus-card', compact('campus'))->render();
-
-        // Return the campus data and the generated card HTML
-        return response()->json(['campus' => $campus, 'cardHtml' => $cardHtml], 201);
-    }
+        try {
+            // Validate the incoming request
+            $validated = $request->validate([
+                'campus_name' => 'required|string|max:50',
+                'campus_id' => 'required|string|max:50|unique:campuses',
+            ]);
+    
+            // Create a new campus in the database
+            $campus = Campus::create([
+                'campus_id' => $request->campus_id,
+                'campus_name' => $request->campus_name,
+            ]);
+    
+            // Return the campus data as JSON
+            return response()->json([
+                'campus' => $campus,  // Return the newly created campus object
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log the validation error and return the message
+            Log::error('Validation failed:', $e->errors());
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422); // Unprocessable Entity
+        } catch (\Exception $e) {
+            // Log any other errors and return a general error message
+            Log::error('Error adding campus:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Failed to add campus.',
+                'error' => $e->getMessage(),
+            ], 500); // Internal Server Error
+        }
+    }    
     
     public function importOfficeData(Request $request)
     {
