@@ -84,29 +84,29 @@
                         </div>
 
                         <!-- Add Campus Modal -->
-                        <x-modal name="addCampusModal" maxWidth="md">
-                            <div class="mx-5 my-5">
-                                <h2 class="text-lg font-semibold mb-4">Add Campus</h2>
+                        <x-modal name="addCampusModal" maxWidth="sm">
+                            <div class=" mx-5 my-5 max-xs">
+                                <h2 class="text-sm sm:text-lg font-semibold mb-4">Add Campus</h2>
                                 <form id="addCampusForm">
                                     @csrf
                                     <!-- Campus Name Input -->
                                     <div class="mb-4">
-                                        <label for="campusName" class="block font-medium text-gray-700">Campus
+                                        <label for="campusName" class="block font-medium text-gray-700 text-sm sm:text-lg">Campus
                                             Name</label>
                                         <input type="text" id="campusName" name="campus_name"
                                             class="border rounded w-full px-4 py-2" required />
                                     </div>
                                     <!-- Campus ID Input -->
                                     <div class="mb-4">
-                                        <label for="campusId" class="block font-medium text-gray-700">Campus ID</label>
+                                        <label for="campusId" class="block font-medium text-gray-700 text-sm sm:text-lg">Campus ID</label>
                                         <input type="text" id="campusId" name="campus_id"
-                                            class="border rounded w-full px-4 py-2" required />
+                                            class="border rounded w-full px-4 py-2 text-sm sm:text-lg" required />
                                     </div>
                                     <div class="flex justify-end space-x-2">
-                                        <button type="button" class="px-4 py-2 bg-gray-300 rounded"
+                                        <button type="button" class="px-4 py-2 bg-gray-300 rounded text-sm sm:text-lg"
                                             x-on:click="$dispatch('close-modal', 'addCampusModal')">Cancel</button>
                                         <button type="submit"
-                                            class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                            class="px-4 py-2 bg-blue-500 text-white rounded text-sm sm:text-lg">Save</button>
                                     </div>
                                 </form>
                             </div>
@@ -211,27 +211,31 @@
                         <!-- Import Offices Button -->
                         <form action="{{ route('import.offices') }}" method="POST" class="mb-4">
                             @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-700">Import
+                            <button type="submit"
+                                class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-700">Import
                                 Offices</button>
                         </form>
 
                         <!-- Import Employment Types Button -->
                         <form action="{{ route('import.employment-types') }}" method="POST" class="mb-4">
                             @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-800 text-white rounded hover:bg-red-600">Import Employment
+                            <button type="submit"
+                                class="px-4 py-2 bg-red-800 text-white rounded hover:bg-red-600">Import Employment
                                 Types</button>
                         </form>
                         <!-- Import Employment Statuses Button -->
                         <form action="{{ route('import.employment-statuses') }}" method="POST" class="mb-4">
                             @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-500">Import
+                            <button type="submit"
+                                class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-500">Import
                                 Employment
                                 Statuses</button>
                         </form>
                         <!-- Import Employees Button -->
                         <form action="{{ route('import.employees') }}" method="POST" class="mb-4">
                             @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-400">Import
+                            <button type="submit"
+                                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-400">Import
                                 Employees</button>
                         </form>
                     </div>
